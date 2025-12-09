@@ -4,7 +4,6 @@
 #include <iostream>
 #include<Windows.h>
 #include "Player.h"
-//test
 // マクロ定義
 #define CLASS_NAME   "DX21Hew"// ウインドウクラスの名前
 #define WINDOW_NAME  "DirectX初期化"// ウィンドウの名前
