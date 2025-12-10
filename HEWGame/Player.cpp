@@ -30,17 +30,21 @@ void Player::Update()
 	DirectX::XMFLOAT3 pos = m_player.GetPos();  //位置情報の保存
 	
 	//---- 入力処理 ----
-	bool moveRight = input.GetButtonPress(VK_D);
-	bool moveLeft = input.GetButtonPress(VK_A);
+	bool moveRight = input.GetKeyPress(VK_D);
+	bool moveLeft = input.GetKeyPress(VK_A);
 	
 	//---- 更新処理 ----
 	if (moveRight)
 	{
+		pos.x += 0.1f;
+		m_player.SetPosition(pos);
 		state = PlayerState::MOVE;  //状態を「MOVE」に変更
 		dir = PlayerDirection::RIGHT;  //方向を「RIGHT」に変更
 	}
 	else if (moveLeft)
 	{
+		pos.x += 0.1f;
+		m_player.SetPosition(pos);
 		state = PlayerState::MOVE;  //状態を「MOVE」に変更
 		dir = PlayerDirection::LEFT;  //方向を「LEFT」に変更
 	}

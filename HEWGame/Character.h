@@ -8,7 +8,7 @@ protected:
 	const float gravity = -0.5f;
 
 	bool isGround = false;
-	//bool isNotDamage;
+	bool isNotDamage;
 
 
 public:

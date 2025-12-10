@@ -177,7 +177,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{ //入力されたキーがESCAPEなら
 			PostMessage(hWnd, WM_CLOSE, wParam, lParam);//「WM_CLOSE」を送る
 		}
-		if (LOWORD(wParam) == VK_A) //お試し
+		if (LOWORD(wParam) == VK_Z) //お試し
 		{
 			int res = MessageBoxA(hWnd, "あ", "キー入力", MB_OK);
 		}
