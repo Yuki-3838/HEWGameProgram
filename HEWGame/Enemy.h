@@ -21,7 +21,7 @@ private:
 	bool isGround;
 	bool isNoDamage;
 	EnemyState state;
-	Object Enemy;
+	Object m_enemy;
 	bool isContact;
 	int speed;
 	int gravity;
