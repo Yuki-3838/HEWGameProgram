@@ -42,11 +42,10 @@ public:
 	HRESULT Init(const char* imgname,int sx = 1, int sy = 1);//初期化
 	void Draw();
 	void Uninit();
-	void SetPos(float x, float y, float z);//座標をセット
-	void SetSize(float x, float y, float z);//大きさをセット
+	void SetPos(const DirectX::XMFLOAT3& newPos);//座標をセット
+	void SetSize(const DirectX::XMFLOAT3& newSize);//大きさをセット
 	void SetAngle(float a);                 //角度をセット
-	void SetColor(float r, float g, float b, float a);//色をセット
-	void SetPosition(const DirectX::XMFLOAT3& newPos);
+	void SetColor(const DirectX::XMFLOAT4& newCol);//色をセット
 	DirectX::XMFLOAT3 GetPos() const;
 	DirectX::XMFLOAT3 GetSize() const;
 	float GetAngle();

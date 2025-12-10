@@ -8,8 +8,10 @@ void Player::Init(HWND hWnd)
 	// ゲームループに入る前にDirectXの初期化をする
 	RendererInit(hWnd);
 	m_player.Init("asset/unnamed.jpg");//画像の設定
-	m_player.SetPos(0.0f, 0.0f, 0.0f);//位置を設定
-	m_player.SetSize(200.0f, 200.0f, 0.0f);//大きさを指定
+	DirectX::XMFLOAT3 pos = {0.0f, 0.0f, 0.0f};
+	DirectX::XMFLOAT3 size = { 200.0f, 200.0f, 0.0f };
+	m_player.SetPos(pos);//位置を設定
+	m_player.SetSize(size);//大きさを指定
 	m_player.SetAngle(0.0f);//角度を設定
 	hp = 100;  //(仮決め)
 	speed = 0.6f;  //移動スピード（仮決め）
@@ -19,7 +21,6 @@ void Player::Init(HWND hWnd)
 
 	isGround = true;  //地面と接触しているかどうか
 	
-	m_player.SetPos(0.0f, 0.0f, 0.0f);
 }
 
 //=====================================
@@ -30,29 +31,29 @@ void Player::Update()
 	DirectX::XMFLOAT3 pos = m_player.GetPos();  //位置情報の保存
 	
 	//---- 入力処理 ----
-	bool moveRight = input.GetKeyPress(VK_D);
-	bool moveLeft = input.GetKeyPress(VK_A);
-	
+	bool moveRight;
+	bool moveLeft;
+
 	//---- 更新処理 ----
-	if (moveRight)
-	{
+	//if (input.GetKeyPress(VK_D))
+	//{
 		pos.x += 0.1f;
-		m_player.SetPosition(pos);
+		m_player.SetPos(pos);
 		state = PlayerState::MOVE;  //状態を「MOVE」に変更
 		dir = PlayerDirection::RIGHT;  //方向を「RIGHT」に変更
-	}
-	else if (moveLeft)
-	{
-		pos.x += 0.1f;
-		m_player.SetPosition(pos);
-		state = PlayerState::MOVE;  //状態を「MOVE」に変更
-		dir = PlayerDirection::LEFT;  //方向を「LEFT」に変更
-	}
-	else
-	{
-		dir = PlayerDirection::NONE;  //状態を「NONE」に変更
-		state = PlayerState::STAY;  //方向を「STAY」に変更
-	}
+	//}
+	//else if (input.GetKeyPress(VK_A))
+	//{
+	//	pos.x += 0.1f;
+	//	m_player.SetPos(pos);
+	//	state = PlayerState::MOVE;  //状態を「MOVE」に変更
+	//	dir = PlayerDirection::LEFT;  //方向を「LEFT」に変更
+	//}
+	//else
+	//{
+	//	dir = PlayerDirection::NONE;  //状態を「NONE」に変更
+	//	state = PlayerState::STAY;  //方向を「STAY」に変更
+	//}
 	
 	//---- ジャンプ ----
 	if (input.GetKeyTrigger(VK_SPACE) && isGround == true)
@@ -107,7 +108,7 @@ void Player::Move()
 		}
 	}
 
-	m_player.SetPos(pos.x, pos.y, pos.z);  //プレイヤーの座標を更新
+	//m_player.SetPos(pos.x, pos.y, pos.z);  //プレイヤーの座標を更新
 	
 }
 

@@ -92,20 +92,20 @@ void Object::Uninit()
 	SAFE_RELEASE(m_pTextureView);
 	SAFE_RELEASE(m_pVertexBuffer);
 }
-void Object::SetPos(float x, float y, float z)
+void Object::SetPos(const DirectX::XMFLOAT3& newPos)
 {
 	//座標をセットする
-	m_pos.x = x;
-	m_pos.y = y;
-	m_pos.z = z;
+	m_pos.x = newPos.x;
+	m_pos.y = newPos.y;
+	m_pos.z = newPos.z;
 }
 
-void Object::SetSize(float x, float y, float z)
+void Object::SetSize(const DirectX::XMFLOAT3& newSize)
 {
 	//大きさをセットする
-	m_size.x = x;
-	m_size.y = y;
-	m_size.z = z;
+	m_size.x = newSize.x;
+	m_size.y = newSize.y;
+	m_size.z = newSize.z;
 }
 
 void Object::SetAngle(float a)
@@ -113,18 +113,15 @@ void Object::SetAngle(float a)
 	//角度をセットする
 	angle = a;
 }
-void Object::SetColor(float r, float g, float b, float a)
+void Object::SetColor(const DirectX::XMFLOAT4& newCol)
 {
 	//色をセットする
-	m_color.x = r;
-	m_color.y = g;
-	m_color.z = b;
-	m_color.w = a;
+	m_color.x = newCol.x;
+	m_color.y = newCol.y;
+	m_color.z = newCol.z;
+	m_color.w = newCol.w;
 }
-void Object::SetPosition(const DirectX::XMFLOAT3& newPos)
-{
 
-}
 DirectX::XMFLOAT3 Object::GetPos() const
 {
 	return m_pos;      //座標をゲット
