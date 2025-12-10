@@ -28,6 +28,7 @@ void Player::Init(HWND hWnd)
 //=====================================
 void Player::Update()
 {
+	input.Update();
 	DirectX::XMFLOAT3 pos = m_player.GetPos();  //位置情報の保存
 	
 	//---- 入力処理 ----
@@ -35,25 +36,25 @@ void Player::Update()
 	bool moveLeft;
 
 	//---- 更新処理 ----
-	//if (input.GetKeyPress(VK_D))
-	//{
+	if (input.GetKeyPress(VK_D))
+	{
 		pos.x += 0.1f;
 		m_player.SetPos(pos);
 		state = PlayerState::MOVE;  //状態を「MOVE」に変更
 		dir = PlayerDirection::RIGHT;  //方向を「RIGHT」に変更
-	//}
-	//else if (input.GetKeyPress(VK_A))
-	//{
-	//	pos.x += 0.1f;
-	//	m_player.SetPos(pos);
-	//	state = PlayerState::MOVE;  //状態を「MOVE」に変更
-	//	dir = PlayerDirection::LEFT;  //方向を「LEFT」に変更
-	//}
-	//else
-	//{
-	//	dir = PlayerDirection::NONE;  //状態を「NONE」に変更
-	//	state = PlayerState::STAY;  //方向を「STAY」に変更
-	//}
+	}
+	else if (input.GetKeyPress(VK_A))
+	{
+		pos.x += 0.1f;
+		m_player.SetPos(pos);
+		state = PlayerState::MOVE;  //状態を「MOVE」に変更
+		dir = PlayerDirection::LEFT;  //方向を「LEFT」に変更
+	}
+	else
+	{
+		dir = PlayerDirection::NONE;  //状態を「NONE」に変更
+		state = PlayerState::STAY;  //方向を「STAY」に変更
+	}
 	
 	//---- ジャンプ ----
 	if (input.GetKeyTrigger(VK_SPACE) && isGround == true)
