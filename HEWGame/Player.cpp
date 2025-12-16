@@ -45,7 +45,7 @@ void Player::Update()
 	}
 	else if (input.GetKeyPress(VK_A))
 	{
-		pos.x += 0.1f;
+		pos.x -= 0.1f;
 		m_player.SetPos(pos);
 		state = PlayerState::MOVE;  //状態を「MOVE」に変更
 		dir = PlayerDirection::LEFT;  //方向を「LEFT」に変更
