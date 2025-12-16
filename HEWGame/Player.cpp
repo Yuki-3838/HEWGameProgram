@@ -15,6 +15,8 @@ void Player::Init(HWND hWnd)
 	m_player.SetAngle(0.0f);//角度を設定
 	hp = 100;  //(仮決め)
 	speed = 0.6f;  //移動スピード（仮決め）
+	jumpPower = 8.0f;  //ジャンプ初速
+	velocityY = 0.0f;  
 
 	state = PlayerState::STAY;  //プレイヤーの状態
 	dir = PlayerDirection::NONE;  //プレイヤーの方向
@@ -38,32 +40,32 @@ void Player::Update()
 	//---- 更新処理 ----
 	if (input.GetKeyPress(VK_D))
 	{
-		pos.x += 0.1f;
-		m_player.SetPos(pos);
 		state = PlayerState::MOVE;  //状態を「MOVE」に変更
 		dir = PlayerDirection::RIGHT;  //方向を「RIGHT」に変更
 	}
 	else if (input.GetKeyPress(VK_A))
 	{
-		pos.x -= 0.1f;
-		m_player.SetPos(pos);
 		state = PlayerState::MOVE;  //状態を「MOVE」に変更
 		dir = PlayerDirection::LEFT;  //方向を「LEFT」に変更
 	}
 	else
 	{
-		dir = PlayerDirection::NONE;  //状態を「NONE」に変更
 		state = PlayerState::STAY;  //方向を「STAY」に変更
+		dir = PlayerDirection::NONE;  //状態を「NONE」に変更
 	}
+	
+	Move();
 	
 	//---- ジャンプ ----
 	if (input.GetKeyTrigger(VK_SPACE) && isGround == true)
 	{
 		isGround = false;
 		state = JUMP;
+		velocityY = jumpPower;  //上方向へ
 	}
 	
-	
+	Jump();
+
 }
 
 //=====================================
@@ -89,12 +91,12 @@ void Player::UnInit()
 //=====================================
 void Player::Move()
 {
-	DirectX::XMFLOAT3 pos = m_player.GetPos();  //位置情報の保存
-
 	if (state != MOVE)
 	{
 		return;
 	}
+
+	DirectX::XMFLOAT3 pos = m_player.GetPos();  //位置情報の保存
 
 	//stateが「MOVE」かつdirがどちらかの方向に向いていれば...
 	if (state == PlayerState::MOVE)
@@ -109,7 +111,7 @@ void Player::Move()
 		}
 	}
 
-	//m_player.SetPos(pos.x, pos.y, pos.z);  //プレイヤーの座標を更新
+	m_player.SetPos(pos);  //プレイヤーの座標を更新
 	
 }
 
@@ -130,15 +132,19 @@ void Player::Jump()
 	//空中にいるときだけ重力がかかる
 	if (isGround == false)
 	{
+		//速度を座標に反映
+		pos.y += velocityY;  
+		//重力で速度を減らす
 		velocityY += gravity;
-		pos.y += velocityY;
+		if (isGround == true)
+		{
+			velocityY = 0.0f;
+			state = PlayerState::STAY;
+		}
+	
 	}
 
-	if (isGround == true)
-	{
-		state = STAY;
-		velocityY = jumpPower;
-	}
+	m_player.SetPos(pos);
 	
 }
 

@@ -33,7 +33,7 @@ private:
 
 	//ジャンプ関連
 	bool isJump = false;  //ジャンプしているかどうか
-	float jumpPower = 8.0f; //ジャンプ初速
+	float jumpPower = 0.0f; //ジャンプ初速
 	float velocityY = 0.0f;  //ジャンプ速度
 	
 	//入力
