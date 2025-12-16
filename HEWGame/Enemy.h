@@ -1,9 +1,8 @@
-
 #pragma once
 #include"Character.h"
 
 
-enum EnemyState
+enum class EState
 {
 	STY,
 	JUMP,
@@ -20,7 +19,7 @@ private:
 	int hp;
 	bool isGround;
 	bool isNoDamage;
-	EnemyState state;
+	EState state;
 	Object m_enemy;
 	bool isContact;
 	int speed;

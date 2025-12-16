@@ -4,6 +4,7 @@
 #include <iostream>
 #include<Windows.h>
 #include "Player.h"
+#include "Enemy.h"
 // マクロ定義
 
 #define CLASS_NAME   "DX21Hew"// ウインドウクラスの名前
@@ -77,7 +78,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance, 
 	//ゲームの初期化
 	Player player;
 	player.Init(hWnd);
-	
+
+	Enemy enemy;
+	//enemy.Init(hWnd);
 
 	MSG msg;
 
@@ -123,6 +126,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance, 
 				player.Update();
 				player.Draw();
 
+			//	enemy.Update();
+				//enemy.Draw();
+
+
 				fpsCounter++; //ゲーム処理を実行したら＋１をする
 				oldCount = nowCount;
 			}
@@ -143,6 +150,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance, 
 	}
 	//ゲーム終了
 	player.UnInit();
+	//enemy.UnInit();
 	
 
 	UnregisterClass(CLASS_NAME, hInstance);
