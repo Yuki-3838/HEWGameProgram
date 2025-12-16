@@ -2,7 +2,7 @@
 #include"Character.h"
 #include"Input.h"
 
-enum PlayerState
+enum class PState
 {
 	STAY,				//止まっている
 	MOVE,				//移動
@@ -16,7 +16,7 @@ enum PlayerState
 
 };
 
-enum PlayerDirection
+enum PDirection
 {
 	NONE,				//動きなし
 	RIGHT,				//右
@@ -28,8 +28,8 @@ class Player : public Character
 private:
 	
 	//プレイヤーの状態
-	PlayerState state = STAY;
-	PlayerDirection dir = NONE;
+	PState state = PState::STAY;
+	PDirection dir = NONE;
 
 	//ジャンプ関連
 	bool isJump = false;  //ジャンプしているかどうか

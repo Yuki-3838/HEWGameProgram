@@ -18,8 +18,8 @@ void Player::Init(HWND hWnd)
 	jumpPower = 8.0f;  //ジャンプ初速
 	velocityY = 0.0f;  
 
-	state = PlayerState::STAY;  //プレイヤーの状態
-	dir = PlayerDirection::NONE;  //プレイヤーの方向
+	state = PState::STAY;  //プレイヤーの状態
+	dir = PDirection::NONE;  //プレイヤーの方向
 
 	isGround = true;  //地面と接触しているかどうか
 	
@@ -40,18 +40,18 @@ void Player::Update()
 	//---- 更新処理 ----
 	if (input.GetKeyPress(VK_D))
 	{
-		state = PlayerState::MOVE;  //状態を「MOVE」に変更
-		dir = PlayerDirection::RIGHT;  //方向を「RIGHT」に変更
+		state = PState::MOVE;  //状態を「MOVE」に変更
+		dir = PDirection::RIGHT;  //方向を「RIGHT」に変更
 	}
 	else if (input.GetKeyPress(VK_A))
 	{
-		state = PlayerState::MOVE;  //状態を「MOVE」に変更
-		dir = PlayerDirection::LEFT;  //方向を「LEFT」に変更
+		state = PState::MOVE;  //状態を「MOVE」に変更
+		dir = PDirection::LEFT;  //方向を「LEFT」に変更
 	}
 	else
 	{
-		state = PlayerState::STAY;  //方向を「STAY」に変更
-		dir = PlayerDirection::NONE;  //状態を「NONE」に変更
+		state = PState::STAY;  //方向を「STAY」に変更
+		dir = PDirection::NONE;  //状態を「NONE」に変更
 	}
 	
 	Move();
@@ -60,7 +60,7 @@ void Player::Update()
 	if (input.GetKeyTrigger(VK_SPACE) && isGround == true)
 	{
 		isGround = false;
-		state = JUMP;
+		state = PState::JUMP;
 		velocityY = jumpPower;  //上方向へ
 	}
 	
@@ -91,7 +91,7 @@ void Player::UnInit()
 //=====================================
 void Player::Move()
 {
-	if (state != MOVE)
+	if (state != PState::MOVE)
 	{
 		return;
 	}
@@ -99,13 +99,13 @@ void Player::Move()
 	DirectX::XMFLOAT3 pos = m_player.GetPos();  //位置情報の保存
 
 	//stateが「MOVE」かつdirがどちらかの方向に向いていれば...
-	if (state == PlayerState::MOVE)
+	if (state == PState::MOVE)
 	{
-		if (dir == PlayerDirection::RIGHT)
+		if (dir == PDirection::RIGHT)
 		{
 			pos.x += speed;
 		}
-		if (dir == PlayerDirection::LEFT)
+		if (dir == PDirection::LEFT)
 		{
 			pos.x -= speed;
 		}
@@ -139,7 +139,7 @@ void Player::Jump()
 		if (isGround == true)
 		{
 			velocityY = 0.0f;
-			state = PlayerState::STAY;
+			state = PState::STAY;
 		}
 	
 	}
