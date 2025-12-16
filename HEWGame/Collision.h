@@ -1,22 +1,14 @@
 #pragma once
-#include "HewStd.h"
 #include "Object.h"
 
-// 衝突方向
-enum class ColDir
+// 接触したかとその方向 (上下方向より左右方向を優先、左右方向で同じなら左方向を優先)
+enum class ColRes
 {
-	NONE,	// なし
-	TOP,	// 上から
-	BOTTOM,	// 下から
-	LEFT,	// 左から
-	RIGHT	// 右から
-};
-
-// 衝突したかと衝突方向
-struct ColRes
-{
-	bool hit;
-	ColDir dir;
+	NONE,	// 接触してない	if(!NONE) = 接触している
+	TOP,	// 上から接触
+	BOTTOM,	// 下から接触
+	LEFT,	// 左から接触
+	RIGHT,	// 右から接触
 };
 
 //長方形(AABB)での接触判定、返り値はbool型の接触しているか、enumでAがBに接触した方向

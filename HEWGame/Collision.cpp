@@ -3,7 +3,7 @@
 #include <algorithm>
 ColRes CollisionRect(const Object& a, const Object& b)
 {
-	ColRes colres{ false, ColDir::NONE };
+	ColRes colres = ColRes::NONE;
 
 	// オブジェクトの座標とサイズを取得
 	DirectX::XMFLOAT3 aPos = a.GetPos();
@@ -21,7 +21,6 @@ ColRes CollisionRect(const Object& a, const Object& b)
 	}
 
 //---- 当たっている場合の処理 -------------------------------//
-	colres.hit = true; // 接触している
 	
 	// 接触方向の計算
 	// どれくらい重なっているかを計算
@@ -33,11 +32,10 @@ ColRes CollisionRect(const Object& a, const Object& b)
 	float minOverlap = (std::min)({ overlapLeft, overlapRight, overlapTop, overlapBottom });
 
 
-	if (minOverlap == overlapLeft)			colres.dir = ColDir::LEFT;		// 一番重なりが少ないのが左なら左
-	else if (minOverlap == overlapRight)	colres.dir = ColDir::RIGHT;		// 一番重なりが少ないのが右なら右
-	else if (minOverlap == overlapTop)		colres.dir = ColDir::TOP;		// 一番重なりが少ないのが上なら上
-	else if (minOverlap == overlapBottom)	colres.dir = ColDir::BOTTOM;	// 一番重なりが少ないのが下なら下
-	else									colres.dir = ColDir::NONE;		// 一番重なりが少ないのが同じならなし
+	if (minOverlap == overlapLeft)			colres = ColRes::LEFT;		// 一番重なりが少ないのが左なら左
+	else if (minOverlap == overlapRight)	colres = ColRes::RIGHT;		// 一番重なりが少ないのが右なら右
+	else if (minOverlap == overlapTop)		colres = ColRes::TOP;		// 一番重なりが少ないのが上なら上
+	else if (minOverlap == overlapBottom)	colres = ColRes::BOTTOM;	// 一番重なりが少ないのが下なら下
 	
 	return colres;  // 当たっている状態を返す
 }
@@ -45,9 +43,7 @@ ColRes CollisionRect(const Object& a, const Object& b)
 ColRes CollisionRect(const Object& a, DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
 {
 
-	ColRes colres;
-	colres.hit = false;
-	colres.dir = ColDir::NONE;
+	ColRes colres = ColRes::NONE;
 
 	DirectX::XMFLOAT3 aPos = a.GetPos();
 	DirectX::XMFLOAT3 aSize = a.GetSize();
@@ -62,7 +58,6 @@ ColRes CollisionRect(const Object& a, DirectX::XMFLOAT3& bPos, const DirectX::XM
 	}
 
 	//---- 当たっている場合の処理 -------------------------------//
-	colres.hit = true; // 接触している
 
 	// 接触方向の計算
 	// どれくらい重なっているかを計算
@@ -74,20 +69,17 @@ ColRes CollisionRect(const Object& a, DirectX::XMFLOAT3& bPos, const DirectX::XM
 	float minOverlap = (std::min)({ overlapLeft, overlapRight, overlapTop, overlapBottom });
 
 
-	if (minOverlap == overlapLeft)			colres.dir = ColDir::LEFT;		// 一番重なりが少ないのが左なら左
-	else if (minOverlap == overlapRight)	colres.dir = ColDir::RIGHT;		// 一番重なりが少ないのが右なら右
-	else if (minOverlap == overlapTop)		colres.dir = ColDir::TOP;		// 一番重なりが少ないのが上なら上
-	else if (minOverlap == overlapBottom)	colres.dir = ColDir::BOTTOM;	// 一番重なりが少ないのが下なら下
-	else									colres.dir = ColDir::NONE;		// 一番重なりが少ないのが同じならなし
+	if (minOverlap == overlapLeft)			colres = ColRes::LEFT;		// 一番重なりが少ないのが左なら左
+	else if (minOverlap == overlapRight)	colres = ColRes::RIGHT;		// 一番重なりが少ないのが右なら右
+	else if (minOverlap == overlapTop)		colres = ColRes::TOP;		// 一番重なりが少ないのが上なら上
+	else if (minOverlap == overlapBottom)	colres = ColRes::BOTTOM;	// 一番重なりが少ないのが下なら下
 
 	return colres;  // 当たっている状態を返す
 }
 
 ColRes CollisionRect(const DirectX::XMFLOAT3& aPos, const DirectX::XMFLOAT3& aSize, const DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
 {
-	ColRes colres;
-	colres.hit = false;
-	colres.dir = ColDir::NONE;
+	ColRes colres = ColRes::NONE;
 
 	// AABB外側判定（衝突していない場合）
 	if (aPos.x >= bPos.x + bSize.x ||    // aがbの右側
@@ -99,7 +91,6 @@ ColRes CollisionRect(const DirectX::XMFLOAT3& aPos, const DirectX::XMFLOAT3& aSi
 	}
 
 	//---- 当たっている場合の処理 -------------------------------//
-	colres.hit = true; // 接触している
 
 	// 接触方向の計算
 	// どれくらい重なっているかを計算
@@ -111,11 +102,10 @@ ColRes CollisionRect(const DirectX::XMFLOAT3& aPos, const DirectX::XMFLOAT3& aSi
 	float minOverlap = (std::min)({ overlapLeft, overlapRight, overlapTop, overlapBottom });
 
 
-	if (minOverlap == overlapLeft)			colres.dir = ColDir::LEFT;		// 一番重なりが少ないのが左なら左
-	else if (minOverlap == overlapRight)	colres.dir = ColDir::RIGHT;		// 一番重なりが少ないのが右なら右
-	else if (minOverlap == overlapTop)		colres.dir = ColDir::TOP;		// 一番重なりが少ないのが上なら上
-	else if (minOverlap == overlapBottom)	colres.dir = ColDir::BOTTOM;	// 一番重なりが少ないのが下なら下
-	else									colres.dir = ColDir::NONE;		// 一番重なりが少ないのが同じならなし
+	if (minOverlap == overlapLeft)			colres = ColRes::LEFT;		// 一番重なりが少ないのが左なら左
+	else if (minOverlap == overlapRight)	colres = ColRes::RIGHT;		// 一番重なりが少ないのが右なら右
+	else if (minOverlap == overlapTop)		colres = ColRes::TOP;		// 一番重なりが少ないのが上なら上
+	else if (minOverlap == overlapBottom)	colres = ColRes::BOTTOM;	// 一番重なりが少ないのが下なら下
 
 	return colres;  // 当たっている状態を返す
 }
