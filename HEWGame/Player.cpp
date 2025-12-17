@@ -14,7 +14,7 @@ void Player::Init(HWND hWnd)
 	m_player.SetSize(size);//大きさを指定
 	m_player.SetAngle(0.0f);//角度を設定
 	hp = 100;  //(仮決め)
-	speed = 0.6f;  //移動スピード（仮決め）
+	speed = 1.6f;  //移動スピード（仮決め）
 	jumpPower = 8.0f;  //ジャンプ初速
 	velocityY = 0.0f;  
 
@@ -32,13 +32,14 @@ void Player::Update()
 {
 	input.Update();
 	DirectX::XMFLOAT3 pos = m_player.GetPos();  //位置情報の保存
-	
-	//---- 入力処理 ----
-	bool moveRight;
-	bool moveLeft;
 
 	//---- 更新処理 ----
-	if (input.GetKeyPress(VK_D))
+	if (input.GetKeyPress(VK_D) && input.GetKeyPress(VK_A))
+	{
+		state = PState::STAY;  //方向を「STAY」に変更
+		dir = PDirection::NONE;  //状態を「NONE」に変更
+	}
+	else if (input.GetKeyPress(VK_D))
 	{
 		state = PState::MOVE;  //状態を「MOVE」に変更
 		dir = PDirection::RIGHT;  //方向を「RIGHT」に変更
@@ -53,6 +54,7 @@ void Player::Update()
 		state = PState::STAY;  //方向を「STAY」に変更
 		dir = PDirection::NONE;  //状態を「NONE」に変更
 	}
+	
 	
 	Move();
 	
