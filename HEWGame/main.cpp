@@ -79,7 +79,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance, 
 	Player player;
 	player.Init(hWnd);
 
-	Enemy enemy;
+	//Enemy enemy;
 	//enemy.Init(hWnd);
 
 	MSG msg;

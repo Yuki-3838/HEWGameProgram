@@ -23,6 +23,18 @@ enum PDirection
 	LEFT,				//ç∂
 };
 
+
+enum class EState
+{
+	STY,
+	JUMP,
+	STAN,
+	ATTACK,
+	CONTACT,
+	RIGHT,
+	LEFT
+};
+
 class Player : public Character
 {
 private:
@@ -46,6 +58,9 @@ private:
 	bool isWall = false;
 	bool isWallJump = false;
 	bool isDodge = false;
+
+	EState mstate;
+	Object m_enemy;
 
 public:
 

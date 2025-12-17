@@ -22,6 +22,20 @@ void Player::Init(HWND hWnd)
 	dir = PDirection::NONE;  //プレイヤーの方向
 
 	isGround = true;  //地面と接触しているかどうか
+
+
+
+	//エネミー初期化
+	m_enemy.Init("asset/gu230.jpg");//画像の設定
+	DirectX::XMFLOAT3 mpos = { 200.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 msize = { 300.0f, 200.0f, 0.0f };
+	m_enemy.SetPos(mpos);//位置を設定
+	m_enemy.SetSize(msize);//大きさを指定
+	m_enemy.SetAngle(0.0f);//角度を設定
+	mstate = EState::LEFT;          // 初期状態：左向き
+	hp = 1;                //HPを１に設定
+	speed = 1.0f;          //スピード
+	isGround = true;       //地面と接触しているかどうか
 	
 }
 
@@ -32,6 +46,7 @@ void Player::Update()
 {
 	input.Update();
 	DirectX::XMFLOAT3 pos = m_player.GetPos();  //位置情報の保存
+	DirectX::XMFLOAT3 mpos = m_enemy.GetPos();  //位置情報の保存
 
 	//---- 更新処理 ----
 	if (input.GetKeyPress(VK_D) && input.GetKeyPress(VK_A))
@@ -77,6 +92,7 @@ void Player::Draw()
 {
 	RendererDrawStart();//描画開始
 	m_player.Draw();
+	m_enemy.Draw();
 	RendererDrawEnd();//描画終了
 }
 
@@ -86,6 +102,7 @@ void Player::Draw()
 void Player::UnInit()
 {
 	m_player.Uninit();
+	m_enemy.Uninit();
 	RendererUninit(); // DirectXを終了
 }
 //=====================================
