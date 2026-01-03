@@ -1,24 +1,19 @@
 #pragma once
-#include"Object.h"
-class Character
+#include "GameObject.h"
+
+class Character : public GameObject
 {
 protected:
-	int hp;
-	float speed;
-	const float gravity = -0.5f;
-
-	bool isGround = false;
-	bool isNotDamage;
-
+    float m_Speed;      // 移動速度
+    int   m_HP;         // 体力
+    // その他、ジャンプ力や向きなどキャラクター共通の変数をここに追加
 
 public:
-	virtual void Init(HWND hWnd) = 0;
-	virtual void Update() = 0;
-	virtual void Draw() = 0;
-	virtual void UnInit() = 0;
+    Character();
+    virtual ~Character() {}
 
-	virtual void Move() = 0;
-	virtual void Attack() = 0;
-	virtual void Jump() = 0;
+    // キャラクター共通の初期化（必要であれば）
+    virtual void Init(ID3D11ShaderResourceView* pTexture) override {
+        GameObject::Init(pTexture);
+    }
 };
-

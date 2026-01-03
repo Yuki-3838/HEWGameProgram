@@ -26,15 +26,15 @@ void Enemy::Update()
 
 void Enemy::Draw()
 {
-    RendererDrawStart();//描画開始
+    //RendererDrawStart();//描画開始
     m_enemy.Draw();
-    RendererDrawEnd();//描画終了
+    //RendererDrawEnd();//描画終了
 }
 
 void Enemy::UnInit()
 {
     m_enemy.Uninit();
-    RendererUninit(); // DirectXを終了
+    //RendererUninit(); // DirectXを終了
 }
 
 void Enemy::Move()

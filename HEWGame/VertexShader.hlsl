@@ -1,56 +1,33 @@
-//--------------------------------------------------------------------------------------
-// 頂点シェーダー
-//--------------------------------------------------------------------------------------
-
-// 頂点のデータを表す構造体（受け取り用）
-struct VS_IN
+// 定数バッファ (C++側の SpriteConstantBufferData と一致させる)
+cbuffer SpriteConstantBuffer : register(b0)
 {
-    float4 pos : POSITION;
-    float4 col : COLOR0;
-    float2 tex : TEX; //UV座標
+    float4x4 World; // スプライトの位置・サイズ
+    float4x4 ViewProjection; // カメラの行列
 };
 
-//グローバル変数の宣言
-//定数バッファ受け取り用
-cbuffer ConstBuffer : register(b0)
+struct VS_INPUT
 {
-    //頂点カラー
-    float4 vertexColor;
-    //UV行列
-    matrix matrixTex;
-    //プロジェクション変換行列
-    matrix matrixProj;
-    //ワールド変換行列
-    matrix matrixWorld;
-}
-
-// 頂点のデータを表す構造体（送信用） 
-struct VS_OUT
-{
-    float4 pos : SV_POSITION;
-    float4 col : COLOR0;
-    float2 tex : TEXCOORD; //UV座標
+    float3 Pos : POSITION;
+    float2 Tex : TEXCOORD;
 };
- 
-// 頂点シェーダーのエントリポイント 
-VS_OUT main(VS_IN input)
+
+struct VS_OUTPUT
 {
-    VS_OUT output;
- 
-    //ワールド変換行列を頂点座標に掛けて、移動、回転、拡大縮小する
-    output.pos = mul(input.pos,matrixWorld);
-    //頂点座標に投影行列をかけて、平面上の座標にする
-    output.pos = mul(output.pos, matrixProj);
-    //頂点カラーをセットする
-    output.col = input.col * vertexColor;
+    float4 Pos : SV_POSITION;
+    float2 Tex : TEXCOORD;
+};
+
+VS_OUTPUT main(VS_INPUT Input)
+{
+    VS_OUTPUT Output;
     
-    //UV座標を移動させる
-    float4 uv;
-    uv.xy = input.tex;//行列掛け算のためfloat4型に移す
-    uv.z = 0.0f;
-    uv.w = 1.0f;
-    uv = mul(uv, matrixTex);//UV座標と移動行列を掛け算
-    output.tex = uv.xy;//掛け算の結果を送信用変数にセット
-
-    return output;
+    // 1. ローカル座標をワールド座標へ、さらにカメラ空間へ変換
+    float4 pos = float4(Input.Pos, 1.0f);
+    pos = mul(pos, World);
+    pos = mul(pos, ViewProjection);
+    
+    Output.Pos = pos;
+    Output.Tex = Input.Tex;
+    
+    return Output;
 }

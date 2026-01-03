@@ -1,31 +1,15 @@
-//--------------------------------------------------------------------------------------
-// ピクセルシェーダー
-//--------------------------------------------------------------------------------------
+Texture2D g_texture : register(t0);
+SamplerState g_sampler : register(s0);
 
-// ピクセルの情報の構造体（受け取り用）
-struct PS_IN
+struct VS_OUTPUT
 {
-    // float4型　→　float型が４つの構造体
-    float4 pos : SV_POSITION; // ピクセルの画面上の座標
-    float4 col : COLOR0;
-    float2 tex : TEXCOORD; //UV座標
+    float4 Pos : SV_POSITION;
+    float2 Tex : TEXCOORD;
 };
-//グローバル変数の宣言
-//※C言語側からデータを渡された時にセットされる
-Texture2D myTexture : register(t0);//テクスチャー
-SamplerState mySampler : register(s0);//サンプラー
-// ピクセルシェーダーのエントリポイント
-float4 main(PS_IN input) : SV_Target
+
+float4 main(VS_OUTPUT Input) : SV_Target
 {
-    //Sample関数→テクスチャから該当のUV位置のピクセル色を取って来る
-    float4 color = myTexture.Sample(mySampler, input.tex);
-   
-    //テクスチャの色に頂点データの色を掛ける
-    color = color * input.col;
-    
-    //決定した色をreturnする
+    // テクスチャから色を抽出し、透明度も含めて出力
+    float4 color = g_texture.Sample(g_sampler, Input.Tex);
     return color;
-    
-    return input.col;
-    //return float4(1,1,1,1)
 }

@@ -3,15 +3,14 @@
 #include "input.h"
 #include <iostream>
 #include<Windows.h>
-#include "Player.h"
-#include "Enemy.h"
-// マクロ定義
+#include "Game.h"
 
+// マクロ定義
 #define CLASS_NAME   "DX21Hew"// ウインドウクラスの名前
 #define WINDOW_NAME  "DirectX初期化"// ウィンドウの名前
 
-#define SCREEN_WIDTH (640)		// ウインドウの幅
-#define SCREEN_HEIGHT (480)		// ウインドウの高さ
+#define SCREEN_WIDTH (1280)		// ウインドウの幅
+#define SCREEN_HEIGHT (720)		// ウインドウの高さ
 
 
 // 関数のプロトタイプ宣言
@@ -76,11 +75,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance, 
 	UpdateWindow(hWnd);
 
 	//ゲームの初期化
-	Player player;
-	player.Init(hWnd);
-
-	Enemy enemy;
-	//enemy.Init(hWnd);
+	Game game;
+	game.Init(hWnd, SCREEN_WIDTH, SCREEN_HEIGHT);
+	
 
 	MSG msg;
 
@@ -123,12 +120,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance, 
 			if (nowCount >= oldCount + frequency / 60) //ここにゲーム関数の呼び出し
 			{
 				//ゲーム処理実行
-				player.Update();
-				player.Draw();
-
-			//	enemy.Update();
-				//enemy.Draw();
-
+				game.Update();
+				game.Draw();
 
 				fpsCounter++; //ゲーム処理を実行したら＋１をする
 				oldCount = nowCount;
@@ -149,8 +142,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance, 
 		}
 	}
 	//ゲーム終了
-	player.UnInit();
-	//enemy.UnInit();
+	game.Uninit();
 	
 
 	UnregisterClass(CLASS_NAME, hInstance);
@@ -185,7 +177,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{ //入力されたキーがESCAPEなら
 			PostMessage(hWnd, WM_CLOSE, wParam, lParam);//「WM_CLOSE」を送る
 		}
-		if (LOWORD(wParam) == VK_Z) //お試し
+		if (LOWORD(wParam) == VK_C) //お試し
 		{
 			int res = MessageBoxA(hWnd, "あ", "キー入力", MB_OK);
 		}
