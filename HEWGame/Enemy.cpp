@@ -14,7 +14,6 @@ void Enemy::Init(HWND hWnd)
     hp = 1;                //HPを１に設定
     speed = 1.0f;          //スピード
     isGround = true;       //地面と接触しているかどうか
-    isNoDamage = false;    //ダメージをくらってるかどうか
 }
 
 
