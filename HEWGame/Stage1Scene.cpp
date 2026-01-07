@@ -18,7 +18,7 @@ void Stage1Scene::Init()
     m_pPlayer->Init(m_pPlayerTex);
 
     m_IsFinished = false;
-    m_pPlayer->SetPosition(100.0f, 100.0f,0.0f); // 画面内に強制配置
+    m_pPlayer->SetPosition(100.0f, 100.0f); // 画面内に強制配置
     m_pPlayer->SetSize(200.0f, 200.0f);     // 大きめに表示
 }
 
