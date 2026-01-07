@@ -12,7 +12,7 @@ void TitleScene::Init()
     {
         m_pBackground->Init(m_pTitleTex);
         m_pBackground->SetSize(1280.0f, 720.0f); // ‰æ–ÊƒTƒCƒY‚É‡‚í‚¹‚é
-        m_pBackground->SetPosition(0.0f, 0.0f);
+        m_pBackground->SetPosition(0.0f, 0.0f,0.0f);
     }
     m_IsFinished = false;
 }

@@ -1,13 +1,13 @@
 #include "Collision.h"
 #include "HewStd.h"
 #include <algorithm>
-ColRes CollisionRect(const Object& a, const Object& b)
+ColRes CollisionRect(const GameObject& a, const GameObject& b)
 {
 	ColRes colres = ColRes::NONE;
 
 	// オブジェクトの座標とサイズを取得
-	DirectX::XMFLOAT3 aPos = a.GetPos();
-	DirectX::XMFLOAT3 bPos = b.GetPos();
+	DirectX::XMFLOAT3 aPos = a.GetPosition();
+	DirectX::XMFLOAT3 bPos = b.GetPosition();
 	DirectX::XMFLOAT3 aSize = a.GetSize();
 	DirectX::XMFLOAT3 bSize = b.GetSize();
 
@@ -40,12 +40,12 @@ ColRes CollisionRect(const Object& a, const Object& b)
 	return colres;  // 当たっている状態を返す
 }
 
-ColRes CollisionRect(const Object& a, DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
+ColRes CollisionRect(const GameObject& a, DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
 {
 
 	ColRes colres = ColRes::NONE;
 
-	DirectX::XMFLOAT3 aPos = a.GetPos();
+	DirectX::XMFLOAT3 aPos = a.GetPosition();
 	DirectX::XMFLOAT3 aSize = a.GetSize();
 
 	// AABB外側判定（衝突していない場合）
