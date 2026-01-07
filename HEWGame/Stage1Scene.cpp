@@ -3,7 +3,7 @@ void Stage1Scene::Init()
 {
     // 1. 各種マネージャー・マップの生成
     m_pTileMap = new TileMap();
-    m_pTileMap->LoadCSV("assets/map/Stage1.csv");
+    m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(1280, 720);
 
@@ -11,8 +11,8 @@ void Stage1Scene::Init()
     m_pPlayer = new Player();
 
     // 3. テクスチャのロード
-    m_pMapTex = m_pResourceManager->LoadTexture("assets/texture/kinnniku.png", m_pRenderer->GetDevice());
-    m_pPlayerTex = m_pResourceManager->LoadTexture("assets/texture/kinnniku.png", m_pRenderer->GetDevice());
+    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
+    m_pPlayerTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
 
     // プレイヤーにテクスチャを渡す
     m_pPlayer->Init(m_pPlayerTex);

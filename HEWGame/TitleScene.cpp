@@ -6,7 +6,7 @@ void TitleScene::Init()
     m_pCamera = new Camera(1280, 720);
     // タイトル画像の読み込み
     m_pBackground = new BackGround(); // メンバ変数として保持
-    m_pTitleTex = m_pResourceManager->LoadTexture("assets/texture/kinnniku.png", m_pRenderer->GetDevice());
+    m_pTitleTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
 
     if (m_pTitleTex) 
     {
