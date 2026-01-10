@@ -4,5 +4,5 @@ Character::Character()
 {
 	m_Speed = 1.0f;
 	m_HP = 1;
-	//test 2
+	//test test
 }
