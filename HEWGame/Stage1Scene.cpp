@@ -1,6 +1,19 @@
 #include "Stage1Scene.h"
 void Stage1Scene::Init()
 {
+
+    // === 金田作成 ===//
+    // タイルの情報
+    Kaneda::TileInfo tileTable[] =
+    {
+        {false,false,false},    // 空
+        {true,false,false},     // 壁
+        {false,false,true}      // ゴール
+    };
+
+    //============================//
+    
+
     // 1. 各種マネージャー・マップの生成
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
@@ -9,6 +22,8 @@ void Stage1Scene::Init()
 
     // 2. プレイヤーの生成と初期化
     m_pPlayer = new Player();
+
+    
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
@@ -29,6 +44,12 @@ void Stage1Scene::Update()
     {
         m_pPlayer->Update();
     }
+
+    int tileX = m_pPlayer->GetPosition().x / m_pMapRenderer->GetTitleSize();
+    int tileY = m_pPlayer->GetPosition().y / m_pMapRenderer->GetTitleSize();
+
+    //TileID id = m_pTileMap[tileY][tileX];
+
 
     // シーン終了判定
     if (m_pInput->GetKeyTrigger(VK_SPACE)) 

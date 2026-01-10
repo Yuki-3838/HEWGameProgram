@@ -6,10 +6,10 @@ ColRes CollisionRect(const GameObject& a, const GameObject& b)
 	ColRes colres = ColRes::NONE;
 
 	// オブジェクトの座標とサイズを取得
-	DirectX::XMFLOAT3 aPos = a.GetPosition();
-	DirectX::XMFLOAT3 bPos = b.GetPosition();
-	DirectX::XMFLOAT3 aSize = a.GetSize();
-	DirectX::XMFLOAT3 bSize = b.GetSize();
+	DirectX::XMFLOAT2 aPos = a.GetPosition();
+	DirectX::XMFLOAT2 bPos = b.GetPosition();
+	DirectX::XMFLOAT2 aSize = a.GetSize();
+	DirectX::XMFLOAT2 bSize = b.GetSize();
 
 	// AABB外側判定（衝突していない場合）
 	if (aPos.x >= bPos.x + bSize.x ||    // aがbの右側
@@ -40,13 +40,13 @@ ColRes CollisionRect(const GameObject& a, const GameObject& b)
 	return colres;  // 当たっている状態を返す
 }
 
-ColRes CollisionRect(const GameObject& a, DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
+ColRes CollisionRect(const GameObject& a, DirectX::XMFLOAT2& bPos, const DirectX::XMFLOAT2& bSize)
 {
 
 	ColRes colres = ColRes::NONE;
 
-	DirectX::XMFLOAT3 aPos = a.GetPosition();
-	DirectX::XMFLOAT3 aSize = a.GetSize();
+	DirectX::XMFLOAT2 aPos = a.GetPosition();
+	DirectX::XMFLOAT2 aSize = a.GetSize();
 
 	// AABB外側判定（衝突していない場合）
 	if (aPos.x >= bPos.x + bSize.x ||    // aがbの右側
@@ -77,7 +77,7 @@ ColRes CollisionRect(const GameObject& a, DirectX::XMFLOAT3& bPos, const DirectX
 	return colres;  // 当たっている状態を返す
 }
 
-ColRes CollisionRect(const DirectX::XMFLOAT3& aPos, const DirectX::XMFLOAT3& aSize, const DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
+ColRes CollisionRect(const DirectX::XMFLOAT2& aPos, const DirectX::XMFLOAT2& aSize, const DirectX::XMFLOAT2& bPos, const DirectX::XMFLOAT2& bSize)
 {
 	ColRes colres = ColRes::NONE;
 

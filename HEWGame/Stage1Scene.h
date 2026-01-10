@@ -23,3 +23,22 @@ public:
     void Uninit() override;
     bool ShouldChangeScene() const override { return m_IsFinished; }
 };
+
+namespace Kaneda
+{
+    // タイルID
+    enum TileID
+    {
+        TILE_EMPTY = 0,     // 空き
+        TILE_WALL = 1,      // 壁
+        TILE_GOAL = 2       // ゴール
+    };
+
+    // タイルの情報
+    struct TileInfo // 当たり判定、ダメージ判定、ゴール判定
+    {
+        bool isSolid;       // 当たり判定
+        bool isDamage;      // ダメージ
+        bool isGoal;        // ゴール
+    };
+};
