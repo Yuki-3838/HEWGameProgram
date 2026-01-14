@@ -6,10 +6,10 @@ ColRes CollisionRect(const GameObject& a, const GameObject& b)
 	ColRes colres = ColRes::NONE;
 
 	// オブジェクトの座標とサイズを取得
-	DirectX::XMFLOAT3 aPos = a.GetPosition();
-	DirectX::XMFLOAT3 bPos = b.GetPosition();
-	DirectX::XMFLOAT3 aSize = a.GetSize();
-	DirectX::XMFLOAT3 bSize = b.GetSize();
+	DirectX::XMFLOAT2 aPos = a.GetPosition();
+	DirectX::XMFLOAT2 bPos = b.GetPosition();
+	DirectX::XMFLOAT2 aSize = a.GetSize();
+	DirectX::XMFLOAT2 bSize = b.GetSize();
 
 	// AABB外側判定（衝突していない場合）
 	if (aPos.x >= bPos.x + bSize.x ||    // aがbの右側
@@ -20,10 +20,10 @@ ColRes CollisionRect(const GameObject& a, const GameObject& b)
 		return colres; // 当たっていので早期リターン
 	}
 
-//---- 当たっている場合の処理 -------------------------------//
-	
-	// 接触方向の計算
-	// どれくらい重なっているかを計算
+	//---- 当たっている場合の処理 -------------------------------//
+
+		// 接触方向の計算
+		// どれくらい重なっているかを計算
 	float overlapLeft = (aPos.x + aSize.x) - bPos.x;	// 左側に
 	float overlapRight = (bPos.x + bSize.x) - aPos.x;	// 右側に
 	float overlapTop = (aPos.y + aSize.y) - bPos.y;		// 上側に
@@ -36,17 +36,17 @@ ColRes CollisionRect(const GameObject& a, const GameObject& b)
 	else if (minOverlap == overlapRight)	colres = ColRes::RIGHT;		// 一番重なりが少ないのが右なら右
 	else if (minOverlap == overlapTop)		colres = ColRes::TOP;		// 一番重なりが少ないのが上なら上
 	else if (minOverlap == overlapBottom)	colres = ColRes::BOTTOM;	// 一番重なりが少ないのが下なら下
-	
+
 	return colres;  // 当たっている状態を返す
 }
 
-ColRes CollisionRect(const GameObject& a, DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
+ColRes CollisionRect(const GameObject& a, const DirectX::XMFLOAT2& bPos, const DirectX::XMFLOAT2& bSize)
 {
 
 	ColRes colres = ColRes::NONE;
 
-	DirectX::XMFLOAT3 aPos = a.GetPosition();
-	DirectX::XMFLOAT3 aSize = a.GetSize();
+	DirectX::XMFLOAT2 aPos = a.GetPosition();
+	DirectX::XMFLOAT2 aSize = a.GetSize();
 
 	// AABB外側判定（衝突していない場合）
 	if (aPos.x >= bPos.x + bSize.x ||    // aがbの右側
@@ -77,7 +77,7 @@ ColRes CollisionRect(const GameObject& a, DirectX::XMFLOAT3& bPos, const DirectX
 	return colres;  // 当たっている状態を返す
 }
 
-ColRes CollisionRect(const DirectX::XMFLOAT3& aPos, const DirectX::XMFLOAT3& aSize, const DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
+ColRes CollisionRect(const DirectX::XMFLOAT2& aPos, const DirectX::XMFLOAT2& aSize, const DirectX::XMFLOAT2& bPos, const DirectX::XMFLOAT2& bSize)
 {
 	ColRes colres = ColRes::NONE;
 

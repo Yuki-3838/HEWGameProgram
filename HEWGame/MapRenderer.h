@@ -7,7 +7,7 @@
 class MapRenderer
 {
 private:
-    float m_TileSize = 32.0f; // タイル1枚の表示サイズ
+    static constexpr float m_TileSize = 32.0f; // タイル1枚の表示サイズ
 
 public:
     // マップ全体の描画
@@ -16,6 +16,7 @@ public:
         const TileMap& tileMap,
         ID3D11ShaderResourceView* pTexture,
         DirectX::XMMATRIX viewProj);
+    inline float GetTitleSize() { return m_TileSize; }
 
-    void SetTileSize(float size) { m_TileSize = size; }
+    //void SetTileSize(float size) { m_TileSize = size; }
 };

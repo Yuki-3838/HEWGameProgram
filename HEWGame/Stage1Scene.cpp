@@ -1,14 +1,30 @@
 #include "Stage1Scene.h"
+#include "Collision.h"
 void Stage1Scene::Init()
 {
+
+    // === 金田作成 ===//
+    // タイルの情報
+    Kaneda::s_TileInfo tileTable[] =
+    {
+        {false,false,false},    // 空
+        {true,false,false},     // 壁
+        {false,false,true}      // ゴール
+    };
+
+    //============================//
+
+
     // 1. 各種マネージャー・マップの生成
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(1280, 720);
 
+
     // 2. プレイヤーの生成と初期化
     m_pPlayer = new Player();
+
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
@@ -22,7 +38,7 @@ void Stage1Scene::Init()
     m_pPlayer->SetSize(200.0f, 200.0f);     // 大きめに表示
 }
 
-void Stage1Scene::Update() 
+void Stage1Scene::Update()
 {
     // プレイヤーの更新（キー入力移動）
     if (m_pPlayer)
@@ -30,14 +46,32 @@ void Stage1Scene::Update()
         m_pPlayer->Update();
     }
 
+    // プレイヤーからステージへの当たり判定（仮）
+    if (m_pPlayer)
+    {
+        int tileX = m_pPlayer->GetPosition().x / m_pMapRenderer->GetTitleSize();
+        int tileY = m_pPlayer->GetPosition().y / m_pMapRenderer->GetTitleSize();
+        DirectX::XMFLOAT2 tilePos(tileX, tileY);
+        DirectX::XMFLOAT2 tileSize(m_pMapRenderer->GetTitleSize(), m_pMapRenderer->GetTitleSize());
+        Kaneda::e_TileId id = m_pTileMap->GetTileID(tileY, tileX);
+
+        if (CollisionRect(*m_pPlayer, tilePos, tileSize) != ColRes::NONE)
+        {
+            int a;
+        }
+    }
+
+
+
+
     // シーン終了判定
-    if (m_pInput->GetKeyTrigger(VK_SPACE)) 
+    if (m_pInput->GetKeyTrigger(VK_SPACE))
     {
         m_IsFinished = true;
     }
 }
 
-void Stage1Scene::Draw() 
+void Stage1Scene::Draw()
 {
     // 背景色クリア（空の色）
     float clearColor[4] = { 0.f, 1.f, 0.f, 1.0f };
@@ -58,7 +92,7 @@ void Stage1Scene::Draw()
     m_pRenderer->EndFrame();
 }
 
-void Stage1Scene::Uninit() 
+void Stage1Scene::Uninit()
 {
     // メモリ解放
     if (m_pPlayer) { delete m_pPlayer; m_pPlayer = nullptr; }
