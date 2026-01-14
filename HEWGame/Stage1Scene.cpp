@@ -3,7 +3,6 @@
 #include "iostream"
 void Stage1Scene::Init()
 {
-
     // === 金田作成 ===//
     // タイルの情報
     Kaneda::s_TileInfo tileTable[] =
@@ -14,7 +13,11 @@ void Stage1Scene::Init()
     };
 
     //============================//
-
+    
+    // リスト作成
+    CreateList(maxChara);
+    // キャラクター作成
+    m_pCharaList[Kaneda::e_Player] = AddList(Kaneda::e_Player);
 
     // 1. 各種マネージャー・マップの生成
     m_pTileMap = new TileMap();
@@ -24,62 +27,65 @@ void Stage1Scene::Init()
 
 
     // 2. プレイヤーの生成と初期化
-    m_pPlayer = new Player();
+    //m_pPlayer = new Player();
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
     m_pPlayerTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
 
     // プレイヤーにテクスチャを渡す
-    m_pPlayer->Init(m_pPlayerTex);
+    //m_pPlayer->Init(m_pPlayerTex);
+    m_pCharaList[Kaneda::e_Player]->Init(m_pPlayerTex);
 
     m_IsFinished = false;
-    m_pPlayer->SetPosition(0.0f, 0.0f); // 画面内に強制配置
-    m_pPlayer->SetSize(200.0f, 200.0f);     // 大きめに表示
+    m_pCharaList[Kaneda::e_Player]->SetPosition(0.0f, 0.0f);// 画面内に強制配置
+    m_pCharaList[Kaneda::e_Player]->SetSize(200.0f, 200.0f);     // 大きめに表示
 }
 
 void Stage1Scene::Update()
 {
-    // プレイヤーの更新（キー入力移動）
-    if (m_pPlayer)
+    for (int i = 0; i < m_currentCharaNum; i++)
     {
-        m_pPlayer->Update();
-    }
-
-    // プレイヤーからステージへの当たり判定（仮）
-    if (m_pPlayer)
-    {
-        // 画面サイズ / マップサイズ　＝　1マスのサイズ
-        // 画面サイズ / １マスのサイズ　＝　マスの量
-        // プレイヤー座標＋表示サイズ/2　と　近くのマップの座標を計算する
-        float sizeX = m_pMapRenderer->GetSizex() / m_pTileMap->GetWidth();  // 横の１マス当たりの大きさ
-        float sizeY = m_pMapRenderer->GetSizey() / m_pTileMap->GetHeight(); // 縦の１マス当たりの大きさ
-
-
-        float left = m_pPlayer->GetPosition().x;
-        float right = (m_pPlayer->GetPosition().x + m_pPlayer->GetSize().x);
-        float top = m_pPlayer->GetPosition().y;
-        float bottom = (m_pPlayer->GetPosition().y + m_pPlayer->GetSize().y);
-
-        int tileX_L = static_cast<int>(left / 32);
-        int tileX_R = static_cast<int>(right / 32);
-        int tileY_T = static_cast<int>(top / 32);
-        int tileY_B = static_cast<int>(bottom / 32);
-
-        for (int y = top; y <= bottom; y++)
+        if (m_pCharaList[i])
         {
-            for (int x = left; x <= right; x++)
+            m_pCharaList[i]->Update();
+            // 画面サイズ / マップサイズ　＝　1マスのサイズ
+            // 画面サイズ / １マスのサイズ　＝　マスの量
+            // プレイヤー座標＋表示サイズ/2　と　近くのマップの座標を計算する
+            float sizeX = m_pMapRenderer->GetSizex() / m_pTileMap->GetWidth();  // 横の１マス当たりの大きさ
+            float sizeY = m_pMapRenderer->GetSizey() / m_pTileMap->GetHeight(); // 縦の１マス当たりの大きさ
+
+
+            float left = m_pCharaList[i]->GetPosition().x;
+            float right = (m_pCharaList[i]->GetPosition().x + m_pCharaList[i]->GetSize().x);
+            float top = m_pCharaList[i]->GetPosition().y;
+            float bottom = (m_pCharaList[i]->GetPosition().y + m_pCharaList[i]->GetSize().y);
+
+            int tileX_L = static_cast<int>(left / 32);
+            int tileX_R = static_cast<int>(right / 32);
+            int tileY_T = static_cast<int>(top / 32);
+            int tileY_B = static_cast<int>(bottom / 32);
+
+            for (int y = top; y <= bottom; y++)
             {
-                if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_WALL)
+                for (int x = left; x <= right; x++)
                 {
-                    int a;
-                }
-                else if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_EMPTY)
-                {
-                    int a;
+                    if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_WALL)
+                    {
+                        int a;
+                    }
+                    else if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_EMPTY)
+                    {
+                        int a;
+                    }
                 }
             }
         }
+    }
+    // プレイヤーの更新（キー入力移動）
+    if (m_pPlayer)
+    {
+        //m_pPlayer->Update();
     }
 
     // シーン終了判定
@@ -102,9 +108,16 @@ void Stage1Scene::Draw()
     m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
 
     // 2. プレイヤーの描画
+    for (int i = 0; i < m_currentCharaNum; i++)
+    {
+        if (m_pCharaList[i])
+        {
+            m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+        }
+    }
     if (m_pPlayer)
     {
-        m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+        //m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
     }
 
     m_pRenderer->EndFrame();
@@ -117,4 +130,48 @@ void Stage1Scene::Uninit()
     if (m_pTileMap) { delete m_pTileMap; m_pTileMap = nullptr; }
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
+    AllClearList(m_pCharaList);
+}
+
+void Stage1Scene::CreateList(int num)
+{
+    if (m_pCharaList == nullptr)
+    {
+        m_pCharaList = new Character * [num];
+        
+    }
+}
+
+void Stage1Scene::ClearList(Character* list)
+{
+    delete list;
+    list = nullptr;
+    m_currentCharaNum--;
+}
+
+void Stage1Scene::AllClearList(Character** list)
+{
+    for (int i = 0; i < m_currentCharaNum; i++)
+    {
+        if (list[i] != nullptr)
+        {
+            delete list[i];
+            list[i] = nullptr;
+        }
+    }
+}
+
+Character* Stage1Scene::AddList(Kaneda::Chara e_name)
+{
+    m_currentCharaNum++;
+    switch (e_name)
+    {
+    case Kaneda::e_Player:
+        return new Player;
+        break;
+    case Kaneda::e_Enemy:
+        //return new Enemy;
+        break;
+    };
+    
 }
