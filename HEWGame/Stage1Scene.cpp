@@ -1,9 +1,9 @@
 #include "Stage1Scene.h"
-#include "Collision.h"
 #include "iostream"
+#include "Collision.h"
+
 void Stage1Scene::Init()
 {
-    // === 金田作成 ===//
     // タイルの情報
     Kaneda::s_TileInfo tileTable[] =
     {
@@ -11,13 +11,8 @@ void Stage1Scene::Init()
         {true,false,false},     // 壁
         {false,false,true}      // ゴール
     };
-
-    //============================//
-    
     // リスト作成
     CreateList(maxChara);
-    // キャラクター作成
-    m_pCharaList[Kaneda::e_Player] = AddList(Kaneda::e_Player);
 
     // 1. 各種マネージャー・マップの生成
     m_pTileMap = new TileMap();
@@ -25,25 +20,24 @@ void Stage1Scene::Init()
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(1920,1080);
 
-
     // 2. プレイヤーの生成と初期化
-    //m_pPlayer = new Player();
+    m_pCharaList[Kaneda::e_Player] = AddList(Kaneda::e_Player);
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
     m_pPlayerTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
 
     // プレイヤーにテクスチャを渡す
-    //m_pPlayer->Init(m_pPlayerTex);
     m_pCharaList[Kaneda::e_Player]->Init(m_pPlayerTex);
 
     m_IsFinished = false;
-    m_pCharaList[Kaneda::e_Player]->SetPosition(0.0f, 0.0f);// 画面内に強制配置
-    m_pCharaList[Kaneda::e_Player]->SetSize(200.0f, 200.0f);     // 大きめに表示
+    m_pCharaList[Kaneda::e_Player]->SetPosition(0.0f, 0.0f);    // 画面内に強制配置
+    m_pCharaList[Kaneda::e_Player]->SetSize(200.0f, 200.0f);    // 大きめに表示
 }
 
 void Stage1Scene::Update()
 {
+    // 現在のキャラクターの数だけ更新
     for (int i = 0; i < m_currentCharaNum; i++)
     {
         if (m_pCharaList[i])
@@ -52,42 +46,11 @@ void Stage1Scene::Update()
             // 画面サイズ / マップサイズ　＝　1マスのサイズ
             // 画面サイズ / １マスのサイズ　＝　マスの量
             // プレイヤー座標＋表示サイズ/2　と　近くのマップの座標を計算する
-            float sizeX = m_pMapRenderer->GetSizex() / m_pTileMap->GetWidth();  // 横の１マス当たりの大きさ
-            float sizeY = m_pMapRenderer->GetSizey() / m_pTileMap->GetHeight(); // 縦の１マス当たりの大きさ
-
-
-            float left = m_pCharaList[i]->GetPosition().x;
-            float right = (m_pCharaList[i]->GetPosition().x + m_pCharaList[i]->GetSize().x);
-            float top = m_pCharaList[i]->GetPosition().y;
-            float bottom = (m_pCharaList[i]->GetPosition().y + m_pCharaList[i]->GetSize().y);
-
-            int tileX_L = static_cast<int>(left / 32);
-            int tileX_R = static_cast<int>(right / 32);
-            int tileY_T = static_cast<int>(top / 32);
-            int tileY_B = static_cast<int>(bottom / 32);
-
-            for (int y = top; y <= bottom; y++)
-            {
-                for (int x = left; x <= right; x++)
-                {
-                    if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_WALL)
-                    {
-                        int a;
-                    }
-                    else if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_EMPTY)
-                    {
-                        int a;
-                    }
-                }
-            }
+            //float sizeX = m_pMapRenderer->GetSizex() / m_pTileMap->GetWidth();  // 横の１マス当たりの大きさ
+            //float sizeY = m_pMapRenderer->GetSizey() / m_pTileMap->GetHeight(); // 縦の１マス当たりの大きさ
+            m_pCharaList[i]->Collison(*m_pTileMap);
         }
     }
-    // プレイヤーの更新（キー入力移動）
-    if (m_pPlayer)
-    {
-        //m_pPlayer->Update();
-    }
-
     // シーン終了判定
     if (m_pInput->GetKeyTrigger(VK_SPACE))
     {
@@ -174,4 +137,28 @@ Character* Stage1Scene::AddList(Kaneda::Chara e_name)
         break;
     };
     
+}
+
+void Stage1Scene::TileCollision(int charaName)
+{
+    float left = m_pCharaList[charaName]->GetPosition().x;
+    float right = (m_pCharaList[charaName]->GetPosition().x + m_pCharaList[charaName]->GetSize().x);
+    float top = m_pCharaList[charaName]->GetPosition().y;
+    float bottom = (m_pCharaList[charaName]->GetPosition().y + m_pCharaList[charaName]->GetSize().y);
+
+    int tileX_L = static_cast<int>(left / 32);
+    int tileX_R = static_cast<int>(right / 32);
+    int tileY_T = static_cast<int>(top / 32);
+    int tileY_B = static_cast<int>(bottom / 32);
+
+    for (int y = top; y <= bottom; y++)
+    {
+        for (int x = left; x <= right; x++)
+        {
+            if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_WALL)
+            {
+                
+            }
+        }
+    }
 }

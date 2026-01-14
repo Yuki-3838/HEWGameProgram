@@ -12,6 +12,7 @@ namespace Kaneda
         e_Player,
         e_Enemy
     };
+
 }
 
 class Stage1Scene : public Scene
@@ -20,10 +21,11 @@ private:
     TileMap* m_pTileMap;
     MapRenderer* m_pMapRenderer;
     Player* m_pPlayer;
-    Character** m_pCharaList = nullptr;
 
-    int m_currentCharaNum = 0;
-    int maxChara = 10;
+    // キャラクターに関する変数
+    Character** m_pCharaList = nullptr; // キャラクターリスト
+    int m_currentCharaNum = 0;          // 現在のキャラクター数
+    static constexpr int maxChara = 10; // 最大キャラ数
 
     ID3D11ShaderResourceView* m_pMapTex;
     ID3D11ShaderResourceView* m_pPlayerTex;
@@ -38,8 +40,11 @@ public:
     bool ShouldChangeScene() const override { return m_IsFinished; }
 
     // リストに関係する
-    void CreateList(int num);
-    void ClearList(Character* list);
-    void AllClearList(Character** list);
-    Character* AddList(Kaneda::Chara e_name);
+    void CreateList(int num);                   // リストを作成
+    void ClearList(Character* list);            // リストの一部を解放
+    void AllClearList(Character** list);        // リストを全て解放
+    Character* AddList(Kaneda::Chara e_name);   // リストにオブジェクトを追加
+
+    // 当たり判定
+    void TileCollision(int charaName);
 };

@@ -11,6 +11,8 @@ enum class ColRes
 	RIGHT,	// 右から接触
 };
 
+
+
 //長方形(AABB)での接触判定、返り値はbool型の接触しているか、enumでAがBに接触した方向
 ColRes CollisionRect(const GameObject& a, const GameObject& b); // オブジェクト同士の判定
 ColRes CollisionRect(const GameObject& a, const DirectX::XMFLOAT2& bPos, const DirectX::XMFLOAT2& bSize); // オブジェクトと座標・サイズで判定

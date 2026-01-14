@@ -37,8 +37,8 @@ private:
     float velocityY = 0.0f;  //ジャンプ速度
 
     //入力
-    Input input;
-    GameObject* m_player;
+    //Input input;
+    GameObject* m_player = nullptr;
 
 
     bool isBlink = false;
@@ -56,8 +56,8 @@ public:
 
 
     // 毎フレームの更新処理（入力による移動など）
-    void Update() override;
-
+    void Update()override;
+    void Collison(const TileMap& tile) override;
 
     void UnInit()override;
 
@@ -68,4 +68,5 @@ public:
     void WallJump();
     void Blink();
     void GetBlink();
+
 };

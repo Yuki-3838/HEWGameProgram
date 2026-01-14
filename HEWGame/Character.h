@@ -1,5 +1,8 @@
 #pragma once
 #include "GameObject.h"
+#include "Collision.h"
+#include "MapRenderer.h"
+#include "TileMap.h"
 
 class Character : public GameObject
 {
@@ -21,6 +24,8 @@ public:
     virtual void Move() = 0;
     virtual void Attack() = 0;
     virtual void Jump() = 0;
+
+    virtual void Collison(const TileMap& tile) = 0;
 
     // キャラクター共通の初期化（必要であれば）
     virtual void Init(ID3D11ShaderResourceView* pTexture) override 
