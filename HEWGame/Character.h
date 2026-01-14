@@ -13,7 +13,8 @@ public:
     virtual ~Character() {}
 
     // キャラクター共通の初期化（必要であれば）
-    virtual void Init(ID3D11ShaderResourceView* pTexture) override {
+    virtual void Init(ID3D11ShaderResourceView* pTexture) override 
+    {
         GameObject::Init(pTexture);
     }
 };
