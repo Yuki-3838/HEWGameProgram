@@ -13,7 +13,7 @@ bool TileMap::LoadCSV(const std::string& fileName)
     while (std::getline(file, line))
     {
         // Excel特有の改行コード(\r)が末尾に残っている場合を除去
-        if (!line.empty() && line.back() == '\r') 
+        if (!line.empty() && line.back() == '\r')
         {
             line.pop_back();
         }
@@ -40,7 +40,7 @@ bool TileMap::LoadCSV(const std::string& fileName)
             }
         }
 
-        if (!row.empty()) 
+        if (!row.empty())
         {
             m_MapData.push_back(row);
         }
@@ -51,10 +51,24 @@ bool TileMap::LoadCSV(const std::string& fileName)
     return true;
 }
 
-int TileMap::GetTileID(int x, int y) const 
+Kaneda::e_TileId TileMap::GetTileID(int x, int y) const
 {
-    if (x < 0 || x >= m_MapWidth || y < 0 || y >= m_MapHeight) return -1;
-    return m_MapData[y][x];
+    if (x < 0 || x >= m_MapWidth || y < 0 || y >= m_MapHeight) return Kaneda::TILE_NOTFOUND;
+
+    // 取得したタイルIDに
+    switch (m_MapData[y][x])
+    {
+    case 0:
+        return Kaneda::TILE_EMPTY;
+        break;
+    case 1:
+        return Kaneda::TILE_WALL;
+        break;
+    case 2:
+        return Kaneda::TILE_GOAL;
+        break;
+
+    }
 }
 
 void TileMap::Clear()
