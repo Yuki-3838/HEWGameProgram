@@ -1,5 +1,6 @@
 #include "Stage1Scene.h"
 #include "Collision.h"
+#include "iostream"
 void Stage1Scene::Init()
 {
 
@@ -19,7 +20,7 @@ void Stage1Scene::Init()
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
-    m_pCamera = new Camera(1280, 720);
+    m_pCamera = new Camera(1920,1080);
 
 
     // 2. プレイヤーの生成と初期化
@@ -33,7 +34,7 @@ void Stage1Scene::Init()
     m_pPlayer->Init(m_pPlayerTex);
 
     m_IsFinished = false;
-    m_pPlayer->SetPosition(100.0f, 100.0f); // 画面内に強制配置
+    m_pPlayer->SetPosition(0.0f, 0.0f); // 画面内に強制配置
     m_pPlayer->SetSize(200.0f, 200.0f);     // 大きめに表示
 }
 
@@ -48,15 +49,36 @@ void Stage1Scene::Update()
     // プレイヤーからステージへの当たり判定（仮）
     if (m_pPlayer)
     {
-        int tileX = m_pPlayer->GetPosition().x / m_pMapRenderer->GetTitleSize();
-        int tileY = m_pPlayer->GetPosition().y / m_pMapRenderer->GetTitleSize();
-        DirectX::XMFLOAT2 tilePos(tileX, tileY);
-        DirectX::XMFLOAT2 tileSize(m_pMapRenderer->GetTitleSize(), m_pMapRenderer->GetTitleSize());
-        Kaneda::e_TileId id = m_pTileMap->GetTileID(tileY, tileX);
+        // 画面サイズ / マップサイズ　＝　1マスのサイズ
+        // 画面サイズ / １マスのサイズ　＝　マスの量
+        // プレイヤー座標＋表示サイズ/2　と　近くのマップの座標を計算する
+        float sizeX = m_pMapRenderer->GetSizex() / m_pTileMap->GetWidth();  // 横の１マス当たりの大きさ
+        float sizeY = m_pMapRenderer->GetSizey() / m_pTileMap->GetHeight(); // 縦の１マス当たりの大きさ
 
-        if (CollisionRect(*m_pPlayer, tilePos, tileSize) != ColRes::NONE)
+
+        float left = m_pPlayer->GetPosition().x;
+        float right = (m_pPlayer->GetPosition().x + m_pPlayer->GetSize().x);
+        float top = m_pPlayer->GetPosition().y;
+        float bottom = (m_pPlayer->GetPosition().y + m_pPlayer->GetSize().y);
+
+        int tileX_L = static_cast<int>(left / 32);
+        int tileX_R = static_cast<int>(right / 32);
+        int tileY_T = static_cast<int>(top / 32);
+        int tileY_B = static_cast<int>(bottom / 32);
+
+        for (int y = top; y <= bottom; y++)
         {
-            int a;
+            for (int x = left; x <= right; x++)
+            {
+                if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_WALL)
+                {
+                    int a;
+                }
+                else if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_EMPTY)
+                {
+                    int a;
+                }
+            }
         }
     }
 

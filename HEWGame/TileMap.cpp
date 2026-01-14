@@ -67,6 +67,9 @@ Kaneda::e_TileId TileMap::GetTileID(int x, int y) const
     case 2:
         return Kaneda::TILE_GOAL;
         break;
+    default:
+        return Kaneda::TILE_NOTFOUND;
+        break;
 
     }
 }

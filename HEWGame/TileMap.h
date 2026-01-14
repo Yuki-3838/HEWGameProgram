@@ -2,8 +2,6 @@
 #include <vector>
 #include <string>
 
-
-
 namespace Kaneda
 {
     // ƒ^ƒCƒ‹ID

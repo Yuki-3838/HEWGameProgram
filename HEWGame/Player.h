@@ -13,4 +13,5 @@ public:
 
     // 毎フレームの更新処理（入力による移動など）
     void Update() override;
+
 };

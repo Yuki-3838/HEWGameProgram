@@ -6,8 +6,8 @@ Player::Player()
 {
     // プレイヤー固有の初期設定
     m_Speed = 5.0f;
-    m_Size.x = 48.0f;
-    m_Size.y = 48.0f;
+    m_Size.x = 90.0f;
+    m_Size.y = 90.0f;
     m_Position.x = 100.0f;
     m_Position.y = 100.0f;
 }

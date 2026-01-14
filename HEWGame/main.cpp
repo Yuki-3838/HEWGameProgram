@@ -9,8 +9,8 @@
 #define CLASS_NAME   "DX21Hew"// ウインドウクラスの名前
 #define WINDOW_NAME  "DirectX初期化"// ウィンドウの名前
 
-#define SCREEN_WIDTH (1280)		// ウインドウの幅
-#define SCREEN_HEIGHT (720)		// ウインドウの高さ
+#define SCREEN_WIDTH (1920)		// ウインドウの幅
+#define SCREEN_HEIGHT (1080)		// ウインドウの高さ
 
 
 // 関数のプロトタイプ宣言
