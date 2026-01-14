@@ -7,7 +7,7 @@ protected:
     float m_Speed;      // 移動速度
     int   m_HP;         // 体力
 
-    const float gravity;
+    float gravity = 0.5f;
 
     bool isGround = false;
     // その他、ジャンプ力や向きなどキャラクター共通の変数をここに追加
