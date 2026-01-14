@@ -40,7 +40,7 @@ ColRes CollisionRect(const GameObject& a, const GameObject& b)
 	return colres;  // “–‚½‚Á‚Ä‚¢‚éó‘Ô‚ğ•Ô‚·
 }
 
-ColRes CollisionRect(const GameObject& a, DirectX::XMFLOAT3& bPos, const DirectX::XMFLOAT3& bSize)
+ColRes CollisionRect(const GameObject& a, const DirectX::XMFLOAT2& bPos, const DirectX::XMFLOAT2& bSize)
 {
 
 	ColRes colres = ColRes::NONE;
