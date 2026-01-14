@@ -25,7 +25,6 @@ void Stage1Scene::Init()
     // 2. プレイヤーの生成と初期化
     m_pPlayer = new Player();
 
-
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
     m_pPlayerTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
@@ -60,9 +59,6 @@ void Stage1Scene::Update()
             int a;
         }
     }
-
-
-
 
     // シーン終了判定
     if (m_pInput->GetKeyTrigger(VK_SPACE))
