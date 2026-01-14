@@ -37,7 +37,7 @@ private:
 
 	//“ü—Í
 	Input input;
-	//GameObject m_player;
+	GameObject *m_player;
 
 
 	bool isBlink = false;
