@@ -1,6 +1,8 @@
 #include "Collision.h"
 #include "HewStd.h"
+#include <DirectXMath.h>
 #include <algorithm>
+
 ColRes CollisionRect(const GameObject& a, const GameObject& b)
 {
 	ColRes colres = ColRes::NONE;
@@ -17,7 +19,7 @@ ColRes CollisionRect(const GameObject& a, const GameObject& b)
 		aPos.y >= bPos.y + bSize.y ||    // aがbの下側
 		aPos.y + aSize.y <= bPos.y)      // aがbの上側
 	{
-		return colres; // 当たっていので早期リターン
+		return colres; // 当たっていないので早期リターン
 	}
 
 	//---- 当たっている場合の処理 -------------------------------//
@@ -54,10 +56,10 @@ ColRes CollisionRect(const GameObject& a, const DirectX::XMFLOAT2& bPos, const D
 		aPos.y >= bPos.y + bSize.y ||    // aがbの下側
 		aPos.y + aSize.y <= bPos.y)      // aがbの上側
 	{
-		return colres; // 当たっていので早期リターン
+		return colres; // 当たっていないので早期リターン
 	}
 
-	//---- 当たっている場合の処理 -------------------------------//
+//---- 当たっている場合の処理 -------------------------------//
 
 	// 接触方向の計算
 	// どれくらい重なっているかを計算
@@ -66,13 +68,27 @@ ColRes CollisionRect(const GameObject& a, const DirectX::XMFLOAT2& bPos, const D
 	float overlapTop = (aPos.y + aSize.y) - bPos.y;		// 上側に
 	float overlapBottom = (bPos.y + bSize.y) - aPos.y;	// 下側に
 
-	float minOverlap = (std::min)({ overlapLeft, overlapRight, overlapTop, overlapBottom });
+	// X方向, Y方向のそれぞれの重なりを比較
+	float minX = (std::min)(overlapLeft, overlapRight);
+	float minY = (std::min)(overlapTop, overlapBottom);
 
 
-	if (minOverlap == overlapLeft)			colres = ColRes::LEFT;		// 一番重なりが少ないのが左なら左
-	else if (minOverlap == overlapRight)	colres = ColRes::RIGHT;		// 一番重なりが少ないのが右なら右
-	else if (minOverlap == overlapTop)		colres = ColRes::TOP;		// 一番重なりが少ないのが上なら上
-	else if (minOverlap == overlapBottom)	colres = ColRes::BOTTOM;	// 一番重なりが少ないのが下なら下
+	// X方向の重なり度から左右を決める
+	if (minX == overlapLeft || overlapLeft <= overlapRight) {
+		colres = static_cast<ColRes>(static_cast<unsigned>(colres) | static_cast<unsigned>(ColRes::LEFT)); // 左側のビットを立てる
+	}
+	else {
+		colres = static_cast<ColRes>(static_cast<unsigned>(colres) | static_cast<unsigned>(ColRes::RIGHT)); // 左側のビットを立てる
+	}
+
+	// Y方向の重なり度から上下を決める
+	if (minY == overlapTop || overlapTop <= overlapBottom) {
+		colres = static_cast<ColRes>(static_cast<unsigned>(colres) | static_cast<unsigned>(ColRes::TOP)); // 上側のビットを立てる
+	}
+	else {
+		colres = static_cast<ColRes>(static_cast<unsigned>(colres) | static_cast<unsigned>(ColRes::BOTTOM)); // 下側のビットを立てる
+	}
+
 
 	return colres;  // 当たっている状態を返す
 }
@@ -87,7 +103,7 @@ ColRes CollisionRect(const DirectX::XMFLOAT2& aPos, const DirectX::XMFLOAT2& aSi
 		aPos.y >= bPos.y + bSize.y ||    // aがbの下側
 		aPos.y + aSize.y <= bPos.y)      // aがbの上側
 	{
-		return colres; // 当たっていので早期リターン
+		return colres; // 当たっていないので早期リターン
 	}
 
 	//---- 当たっている場合の処理 -------------------------------//
@@ -99,13 +115,27 @@ ColRes CollisionRect(const DirectX::XMFLOAT2& aPos, const DirectX::XMFLOAT2& aSi
 	float overlapTop = (aPos.y + aSize.y) - bPos.y;		// 上側に
 	float overlapBottom = (bPos.y + bSize.y) - aPos.y;	// 下側に
 
-	float minOverlap = (std::min)({ overlapLeft, overlapRight, overlapTop, overlapBottom });
+	// X方向, Y方向のそれぞれの重なりを比較
+	float minX = (std::min)(overlapLeft, overlapRight);
+	float minY = (std::min)(overlapTop, overlapBottom);
 
 
-	if (minOverlap == overlapLeft)			colres = ColRes::LEFT;		// 一番重なりが少ないのが左なら左
-	else if (minOverlap == overlapRight)	colres = ColRes::RIGHT;		// 一番重なりが少ないのが右なら右
-	else if (minOverlap == overlapTop)		colres = ColRes::TOP;		// 一番重なりが少ないのが上なら上
-	else if (minOverlap == overlapBottom)	colres = ColRes::BOTTOM;	// 一番重なりが少ないのが下なら下
+	// X方向の重なり度から左右を決める
+	if (minX == overlapLeft || overlapLeft <= overlapRight) {
+		colres = static_cast<ColRes>(static_cast<unsigned>(colres) | static_cast<unsigned>(ColRes::LEFT)); // 左側のビットを立てる
+	}
+	else {
+		colres = static_cast<ColRes>(static_cast<unsigned>(colres) | static_cast<unsigned>(ColRes::RIGHT)); // 左側のビットを立てる
+	}
+
+	// Y方向の重なり度から上下を決める
+	if (minY == overlapTop || overlapTop <= overlapBottom) {
+		colres = static_cast<ColRes>(static_cast<unsigned>(colres) | static_cast<unsigned>(ColRes::TOP)); // 上側のビットを立てる
+	}
+	else {
+		colres = static_cast<ColRes>(static_cast<unsigned>(colres) | static_cast<unsigned>(ColRes::BOTTOM)); // 下側のビットを立てる
+	}
+
 
 	return colres;  // 当たっている状態を返す
 }
