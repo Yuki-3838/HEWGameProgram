@@ -136,6 +136,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="DemoReelScene.cpp" />
     <ClCompile Include="Enemy.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -160,12 +161,14 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="VideoPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="DemoReelScene.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
@@ -187,6 +190,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="VideoPlayer.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
