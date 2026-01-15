@@ -38,7 +38,7 @@ public:
     virtual void Attack() = 0;
     virtual void Jump() = 0;
 
-    virtual void GetColState(const TileMap& tile) = 0;
+    virtual bool GetColState(const TileMap& tile,const ColRes direction) = 0;
 
     virtual void Update(TileMap& tile) = 0;
 

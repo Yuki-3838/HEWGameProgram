@@ -29,6 +29,7 @@ private:
     std::vector<std::vector<int>> m_MapData;
     int m_MapWidth = 0;
     int m_MapHeight = 0;
+    static constexpr float m_TileSize = 32.0f; // タイル1枚の表示サイズ
 public:
     // CSVファイルの読み込み
     bool LoadCSV(const std::string& fileName);
@@ -41,5 +42,6 @@ public:
 
     void Clear();
 
+    inline float GetTileSize() const { return m_TileSize; }
 };
 

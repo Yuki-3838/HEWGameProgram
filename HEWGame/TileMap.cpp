@@ -46,8 +46,9 @@ bool TileMap::LoadCSV(const std::string& fileName)
         }
     }
 
-    m_MapHeight = (int)m_MapData.size();
-    m_MapWidth = m_MapHeight > 0 ? (int)m_MapData[0].size() : 0;
+    m_MapHeight = (int)m_MapData.size();    // 34
+    m_MapWidth = m_MapHeight > 0 ? (int)m_MapData[0].size() : 0;    // 60
+
     return true;
 }
 

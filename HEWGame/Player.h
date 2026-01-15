@@ -57,7 +57,7 @@ public:
 
     // 毎フレームの更新処理（入力による移動など）
     void Update(TileMap& tile)override;
-    void GetColState(const TileMap& tile) override;
+    bool GetColState(const TileMap& tile,const ColRes direction) override;
 
     void UnInit()override;
 

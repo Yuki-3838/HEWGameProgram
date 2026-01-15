@@ -32,7 +32,7 @@ void Stage1Scene::Init()
 
     m_IsFinished = false;
     m_pCharaList[Kaneda::e_Player]->SetPosition(0.0f, 0.0f);    // 画面内に強制配置
-    m_pCharaList[Kaneda::e_Player]->SetSize(50.0f, 50.0f);    // 大きめに表示
+    m_pCharaList[Kaneda::e_Player]->SetSize(64.0f, 64.0f);    // 大きめに表示
 }
 
 void Stage1Scene::Update()
