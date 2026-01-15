@@ -18,7 +18,7 @@ public:
     virtual void Init(ID3D11ShaderResourceView* pTexture);
 
     // 更新処理（子クラスで中身を書く）
-    virtual void Update() = 0;
+    //virtual void Update() = 0;
 
     // 共通の描画処理
     virtual void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj);

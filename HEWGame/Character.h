@@ -4,6 +4,17 @@
 #include "MapRenderer.h"
 #include "TileMap.h"
 
+namespace State
+{
+    struct collisionState       // trueであれば衝突
+    {
+        bool isOnGround;    // 設置判定
+        bool isOnCeling;    // 天井判定
+        bool isOnWallLeft;  // 壁判定左
+        bool isOnWallRight; // 壁判定右
+    };
+}
+
 class Character : public GameObject
 {
 protected:
@@ -11,8 +22,10 @@ protected:
     int   m_HP;         // 体力
 
     float gravity = 0.5f;
-
+    float m_accelY = 0; // Y軸の加速度
     bool isGround = false;
+
+    State::collisionState m_colState{ false,false,false,false };
     // その他、ジャンプ力や向きなどキャラクター共通の変数をここに追加
 
 public:
@@ -25,7 +38,9 @@ public:
     virtual void Attack() = 0;
     virtual void Jump() = 0;
 
-    virtual void Collison(const TileMap& tile) = 0;
+    virtual void GetColState(const TileMap& tile) = 0;
+
+    virtual void Update(TileMap& tile) = 0;
 
     // キャラクター共通の初期化（必要であれば）
     virtual void Init(ID3D11ShaderResourceView* pTexture) override 

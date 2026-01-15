@@ -38,7 +38,7 @@ private:
 
     //入力
     //Input input;
-    GameObject* m_player = nullptr;
+    GameObject* m_player;
 
 
     bool isBlink = false;
@@ -56,8 +56,8 @@ public:
 
 
     // 毎フレームの更新処理（入力による移動など）
-    void Update()override;
-    void Collison(const TileMap& tile) override;
+    void Update(TileMap& tile)override;
+    void GetColState(const TileMap& tile) override;
 
     void UnInit()override;
 

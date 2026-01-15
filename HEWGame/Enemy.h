@@ -29,7 +29,7 @@ private:
 	GameObject* m_enemy = nullptr;
 
 public:
-	void Update()override;
+	void Update(TileMap& tile)override;
 	void UnInit()override;
 
 	void Move()override;

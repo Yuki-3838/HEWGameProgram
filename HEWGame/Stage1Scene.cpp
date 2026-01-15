@@ -32,7 +32,7 @@ void Stage1Scene::Init()
 
     m_IsFinished = false;
     m_pCharaList[Kaneda::e_Player]->SetPosition(0.0f, 0.0f);    // 画面内に強制配置
-    m_pCharaList[Kaneda::e_Player]->SetSize(200.0f, 200.0f);    // 大きめに表示
+    m_pCharaList[Kaneda::e_Player]->SetSize(50.0f, 50.0f);    // 大きめに表示
 }
 
 void Stage1Scene::Update()
@@ -42,13 +42,13 @@ void Stage1Scene::Update()
     {
         if (m_pCharaList[i])
         {
-            m_pCharaList[i]->Update();
+            m_pCharaList[i]->Update(*m_pTileMap);
             // 画面サイズ / マップサイズ　＝　1マスのサイズ
             // 画面サイズ / １マスのサイズ　＝　マスの量
             // プレイヤー座標＋表示サイズ/2　と　近くのマップの座標を計算する
             //float sizeX = m_pMapRenderer->GetSizex() / m_pTileMap->GetWidth();  // 横の１マス当たりの大きさ
             //float sizeY = m_pMapRenderer->GetSizey() / m_pTileMap->GetHeight(); // 縦の１マス当たりの大きさ
-            m_pCharaList[i]->Collison(*m_pTileMap);
+            //m_pCharaList[i]->GetCollison(*m_pTileMap);
         }
     }
     // シーン終了判定

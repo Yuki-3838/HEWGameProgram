@@ -51,10 +51,10 @@ ColRes CollisionRect(const GameObject& a, const DirectX::XMFLOAT2& bPos, const D
 	DirectX::XMFLOAT2 aSize = a.GetSize();
 
 	// AABB外側判定（衝突していない場合）
-	if (aPos.x >= bPos.x + bSize.x ||    // aがbの右側
-		aPos.x + aSize.x <= bPos.x ||    // aがbの左側
-		aPos.y >= bPos.y + bSize.y ||    // aがbの下側
-		aPos.y + aSize.y <= bPos.y)      // aがbの上側
+	if (aPos.x > bPos.x + bSize.x ||    // aがbの右側
+		aPos.x + aSize.x < bPos.x ||    // aがbの左側
+		aPos.y > bPos.y + bSize.y ||    // aがbの下側
+		aPos.y + aSize.y < bPos.y)      // aがbの上側
 	{
 		return colres; // 当たっていないので早期リターン
 	}

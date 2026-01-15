@@ -29,7 +29,6 @@ private:
     std::vector<std::vector<int>> m_MapData;
     int m_MapWidth = 0;
     int m_MapHeight = 0;
-
 public:
     // CSVƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
     bool LoadCSV(const std::string& fileName);
@@ -41,5 +40,6 @@ public:
     int GetHeight() const { return m_MapHeight; }
 
     void Clear();
+
 };
 
