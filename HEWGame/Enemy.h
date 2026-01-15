@@ -6,9 +6,9 @@ enum class EState
 {
 	STAY,
 	JUMP,
-	STAN,
+	STUN,
 	ATTACK,
-	CONTACT,
+	IsDetected
 };
 
 enum EDir
@@ -23,12 +23,16 @@ class Enemy :public Character
 private:
 	EState state;
 	EDir dir;
-	bool isContact;
+
 	bool isDead;
 
 	GameObject* m_enemy = nullptr;
 
 public:
+	// コンストラクタ・デストラクタ
+	Enemy();
+	~Enemy() override;
+
 	void Update()override;
 	void UnInit()override;
 
