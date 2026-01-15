@@ -1,6 +1,15 @@
 #include "Enemy.h"
 
-void Enemy::Update(TileMap& tile)
+Enemy::Enemy()
+{
+}
+
+Enemy::~Enemy()
+{
+}
+
+void Enemy::Update()
+
 {
     Move();
 }
