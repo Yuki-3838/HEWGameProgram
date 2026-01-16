@@ -13,20 +13,38 @@ namespace State
         bool isOnWallLeft;  // 壁判定左
         bool isOnWallRight; // 壁判定右
     };
+    enum class MoveState
+    {
+        NONE,
+        LEFT,   // 左
+        RIGHT,  // 右
+        TOP,
+        BOTTOM
+    };
+    enum class JumpState
+    {
+        NONE,
+        RISE,
+        DESC
+    };
 }
+struct Stats
+{
+    int m_HP;           // 体力
+    float m_Speed;      // X移動速度
+    float m_Gravity;    // 重力
+    float m_JumpPw;     // ジャンプ力
+    float m_AccelX = 0;     // X軸の加速度
+    float m_AccelY = 0;     // Y軸の加速度
+};
 
 class Character : public GameObject
 {
 protected:
-    float m_Speed;      // 移動速度
-    int   m_HP;         // 体力
-
-    float gravity = 0.5f;
-    float m_accelY = 0; // Y軸の加速度
-    bool isGround = false;
-
+    Stats m_Stats;
     State::collisionState m_colState{ false,false,false,false };
-    // その他、ジャンプ力や向きなどキャラクター共通の変数をここに追加
+    State::MoveState m_MoveState = State::MoveState::NONE;
+    State::JumpState m_JumpState = State::JumpState::NONE;
 
 public:
     Character();
@@ -34,11 +52,11 @@ public:
 
     virtual void UnInit() = 0;
 
-    virtual void Move() = 0;
+    virtual void Move(const TileMap& tile) = 0;
     virtual void Attack() = 0;
     virtual void Jump() = 0;
 
-    virtual bool GetColState(const TileMap& tile,const ColRes direction) = 0;
+    virtual bool StageCol(const TileMap& tile,const ColRes direction) = 0;
 
     virtual void Update(TileMap& tile) = 0;
 
