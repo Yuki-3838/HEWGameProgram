@@ -4,6 +4,7 @@
 #include "MapRenderer.h"
 #include "Player.h"
 #include "GameObject.h"
+#include "Enemy.h"
 
 class Stage1Scene : public Scene
 {
@@ -19,6 +20,8 @@ private:
 
     ID3D11ShaderResourceView* m_pMapTex;
     ID3D11ShaderResourceView* m_pPlayerTex;
+    ID3D11ShaderResourceView* m_pEnemyTex;
+
     bool m_IsFinished;
 
 public:

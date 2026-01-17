@@ -22,14 +22,17 @@ void Stage1Scene::Init()
 
     // 2. プレイヤーの生成と初期化
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
+    m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
     m_pPlayerTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
+    m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
+    
 
     // プレイヤーにテクスチャを渡す
     m_pCharaList[0]->Init(m_pPlayerTex);
-
+    m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;
 }
 
@@ -73,7 +76,7 @@ void Stage1Scene::Draw()
     {
         if (m_pCharaList[i])
         {
-            m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+             m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
         }
     }
     if (m_pPlayer)
@@ -131,7 +134,7 @@ Character* Stage1Scene::AddList(State::CharaType e_name)
         return new Player;
         break;
     case State::CharaType::t_Enemy:
-        //return new Enemy;
+        return new Enemy;
         break;
     };
     
