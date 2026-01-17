@@ -24,7 +24,7 @@ void Stage1Scene::Init()
     m_pCharaList[Kaneda::e_Player] = AddList(Kaneda::e_Player);
 
     // 3. テクスチャのロード
-    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
+    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
     m_pPlayerTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
 
     // プレイヤーにテクスチャを渡す

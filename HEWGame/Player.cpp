@@ -6,13 +6,13 @@ Player::Player()
 {
 	// プレイヤー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 5.0f;
-	m_Stats.m_Gravity = 1;
-	m_Stats.m_JumpPw = 12;
+	m_Stats.m_Speed = 15;
+	m_Stats.m_Gravity = 3;
+	m_Stats.m_JumpPw = 25;
 
 
-	m_Size.x = 64.0f;
-	m_Size.y = 128.0f;
+	m_Size.x = 128.0f;
+	m_Size.y = 256.0f;
 	m_Position.x = 0.0f;
 	m_Position.y = 0.0f;
 
@@ -100,22 +100,25 @@ void Player::Move(const TileMap& tile)
 		break;
 	case State::JumpState::DESC:
 		m_Position.y -= m_Stats.m_AccelY;
-		m_Stats.m_AccelY--;
+		m_Stats.m_AccelY -= m_Stats.m_Gravity;
 		if (!StageCol(tile, ColRes::BOTTOM))
 		{
-			m_Position.y += m_Stats.m_AccelY + 1;
+			do
+			{
+				m_Position.y -= 1;
+			} while (!StageCol(tile, ColRes::BOTTOM));
 			m_JumpState = State::JumpState::NONE;
 			m_Stats.m_AccelY = 0;
 		}
 		break;
 	case State::JumpState::NONE:
-		m_Position.y += m_Stats.m_Speed;
+		m_Position.y += m_Stats.m_Gravity;
 		if (StageCol(tile, ColRes::BOTTOM))
 		{
 			m_JumpState = State::JumpState::DESC;
 			m_Stats.m_AccelY++;
 		}
-		m_Position.y -= m_Stats.m_Speed;
+		m_Position.y -= m_Stats.m_Gravity;
 	}
 }
 
