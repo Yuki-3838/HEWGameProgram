@@ -20,6 +20,12 @@ private:
 
 public:
 	HRESULT Init(ID3D11Device* pDevice);
-	void Draw(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* pSRV, float x, float y, float w, float h, DirectX::XMMATRIX viewProj);
+	void Draw(ID3D11DeviceContext* pContext,
+		ID3D11ShaderResourceView* pSRV,
+		float x, float y, float w, float h,
+		DirectX::XMMATRIX viewProj,
+		float uvX = 0.0f,float uvY = 0.0f,//êÿÇËî≤Ç≠ç∂è„ÇÃç¿ïW
+		float uvW = 0.0f,float uvH = 0.0f //êÿÇËî≤Ç≠ïùÅEçÇÇ≥
+	);
 	void Uninit();
 };

@@ -10,6 +10,7 @@ struct SpriteConstantBufferData
 {
     DirectX::XMMATRIX World;
     DirectX::XMMATRIX ViewProjection;
+    DirectX::XMFLOAT4 UVTransform;
 };
 
 // 頂点データの構造
@@ -71,12 +72,46 @@ HRESULT SpriteRenderer::Init(ID3D11Device* pDevice)
     return S_OK;
 }
 
-void SpriteRenderer::Draw(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* pSRV, float x, float y, float w, float h, DirectX::XMMATRIX viewProj)
+void SpriteRenderer::Draw(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* pSRV, float x, float y, float w, float h, DirectX::XMMATRIX viewProj,float uvX,float uvY,float uvW,float uvH)
 {
+    //テクスチャサイズの取得
+    float texWidth = 1.0f;
+	float texHeight = 1.0f;
+    
+    if (pSRV)
+    {
+        ID3D11Resource* res = nullptr;
+		pSRV->GetResource(&res);
+		ID3D11Texture2D* tex = static_cast<ID3D11Texture2D*>(res);
+        if(tex)
+        {
+            D3D11_TEXTURE2D_DESC desc = {};
+            tex->GetDesc(&desc);
+            texWidth = static_cast<float>(desc.Width);
+            texHeight = static_cast<float>(desc.Height);
+        }
+		if (res) res->Release();
+    }
+	// UV変換パラメータの計算
+	//uvW、uvHが0の場合はテクスチャ全体を使う
+	if (uvW <= 0.0f) uvW = texWidth;
+	if (uvH <= 0.0f) uvH = texHeight;
 
-    // 行列計算（転置して送る）
-    DirectX::XMMATRIX world = DirectX::XMMatrixScaling(w, h, 1.0f) * DirectX::XMMatrixTranslation(x, y, 0.0f);
-    SpriteConstantBufferData cb = { DirectX::XMMatrixTranspose(world), DirectX::XMMatrixTranspose(viewProj) };
+	DirectX::XMFLOAT4 uvTransform;
+	uvTransform.x = uvX / texWidth;  //オフセットX(0.0～1.0)
+	uvTransform.y = uvY / texHeight; //オフセットY
+	uvTransform.z = uvW / texWidth;  //幅スケール
+	uvTransform.w = uvH / texHeight; //高さスケール
+
+	//定数バッファ更新
+	DirectX::XMMATRIX world = DirectX::XMMatrixScaling(w, h, 1.0f) * DirectX::XMMatrixTranslation(x, y, 0.0f);
+
+	//構造体にセットしてからまとめて転送
+    SpriteConstantBufferData cb;
+    cb.World = DirectX::XMMatrixTranspose(world);
+    cb.ViewProjection = DirectX::XMMatrixTranspose(viewProj);
+	cb.UVTransform = uvTransform;
+
     pContext->UpdateSubresource(m_pSpriteConstantBuffer, 0, nullptr, &cb, 0, 0);
 
     // パイプライン設定

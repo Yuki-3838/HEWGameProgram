@@ -1,16 +1,20 @@
 #include "TitleScene.h"
 #include <vector>
-
 void TitleScene::Init() 
 {
     m_pCamera = new Camera(1920,1080);
     // タイトル画像の読み込み
     m_pBackground = new BackGround(); // メンバ変数として保持
-    m_pTitleTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
+    m_pTitleTex = m_pResourceManager->LoadTexture("asset/texture/testSP.png", m_pRenderer->GetDevice());
 
     if (m_pTitleTex) 
     {
-        m_pBackground->Init(m_pTitleTex);
+		int animCount = 18;//何分割か
+		int xCount = 6;//横に何個並んでいるか
+		float frameWidth = 320.0f;
+		float frameHeight = 320.0f;
+		float speed = 0.2f; // 1コマあたりの表示時間（秒）
+        m_pBackground->Init(m_pTitleTex, animCount, xCount, frameWidth, frameHeight, speed);
         m_pBackground->SetSize(1280.0f, 720.0f); // 画面サイズに合わせる
         m_pBackground->SetPosition(0.0f, 0.0f);
     }
@@ -19,6 +23,10 @@ void TitleScene::Init()
 
 void TitleScene::Update() 
 {
+    if (m_pBackground)
+    {
+        m_pBackground->Update();
+    }
     // スペースキーが押されたら次のシーン（Stage1）へ
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
