@@ -21,14 +21,14 @@ void Stage1Scene::Init()
     m_pCamera = new Camera(1920,1080);
 
     // 2. プレイヤーの生成と初期化
-    m_pCharaList[Kaneda::e_Player] = AddList(Kaneda::e_Player);
+    m_pCharaList[0] = AddList(State::CharaType::t_Player);
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
     m_pPlayerTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
 
     // プレイヤーにテクスチャを渡す
-    m_pCharaList[Kaneda::e_Player]->Init(m_pPlayerTex);
+    m_pCharaList[0]->Init(m_pPlayerTex);
 
     m_IsFinished = false;
 }
@@ -122,15 +122,15 @@ void Stage1Scene::AllClearList(Character** list)
     }
 }
 
-Character* Stage1Scene::AddList(Kaneda::Chara e_name)
+Character* Stage1Scene::AddList(State::CharaType e_name)
 {
     m_currentCharaNum++;
     switch (e_name)
     {
-    case Kaneda::e_Player:
+    case State::CharaType::t_Player:
         return new Player;
         break;
-    case Kaneda::e_Enemy:
+    case State::CharaType::t_Enemy:
         //return new Enemy;
         break;
     };

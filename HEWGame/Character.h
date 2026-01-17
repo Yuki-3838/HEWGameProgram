@@ -27,6 +27,11 @@ namespace State
         RISE,
         DESC
     };
+    enum class CharaType
+    {
+        t_Player = 0,
+        t_Enemy = 1
+    };
 }
 struct Stats
 {
@@ -41,10 +46,13 @@ struct Stats
 class Character : public GameObject
 {
 protected:
-    Stats m_Stats;
-    State::collisionState m_colState{ false,false,false,false };
-    State::MoveState m_MoveState = State::MoveState::NONE;
-    State::JumpState m_JumpState = State::JumpState::NONE;
+    Stats m_Stats;  // ステータス    
+    State::collisionState m_colState{ false,false,false,false };    // 四方向の衝突状態
+    State::MoveState m_MoveState = State::MoveState::NONE;          // 四方向へのどこへ移動しているか
+    State::JumpState m_JumpState = State::JumpState::NONE;          // ジャンプや降下などの状態
+    State::CharaType m_charaType;                                   // キャラクターのタイプ
+
+    GameObject* object;
 
 public:
     Character();
@@ -56,9 +64,11 @@ public:
     virtual void Attack() = 0;
     virtual void Jump() = 0;
 
-    virtual bool StageCol(const TileMap& tile,const ColRes direction) = 0;
+    bool StageCol(const TileMap& tile, const ColRes direction);
 
-    virtual void Update(TileMap& tile) = 0;
+    virtual void Update(const TileMap& tile) = 0;
+
+    State::CharaType GetCharaType() { return m_charaType; }
 
     // キャラクター共通の初期化（必要であれば）
     virtual void Init(ID3D11ShaderResourceView* pTexture) override 

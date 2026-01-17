@@ -8,10 +8,10 @@ Enemy::~Enemy()
 {
 }
 
-void Enemy::Update()
+void Enemy::Update(const TileMap& tile)
 
 {
-    Move();
+    Move(tile);
 }
 
 void Enemy::UnInit()
@@ -19,7 +19,7 @@ void Enemy::UnInit()
   
 }
 
-void Enemy::Move()
+void Enemy::Move(const TileMap& tile)
 {
   
 

@@ -5,16 +5,6 @@
 #include "Player.h"
 #include "GameObject.h"
 
-namespace Kaneda
-{
-    enum Chara
-    {
-        e_Player,
-        e_Enemy
-    };
-
-}
-
 class Stage1Scene : public Scene
 {
 private:
@@ -43,7 +33,7 @@ public:
     void CreateList(int num);                   // リストを作成
     void ClearList(Character* list);            // リストの一部を解放
     void AllClearList(Character** list);        // リストを全て解放
-    Character* AddList(Kaneda::Chara e_name);   // リストにオブジェクトを追加
+    Character* AddList(State::CharaType e_name);   // リストにオブジェクトを追加
 
     // 当たり判定
     void TileCollision(int charaName);
