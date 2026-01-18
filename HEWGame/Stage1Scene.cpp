@@ -26,12 +26,22 @@ void Stage1Scene::Init()
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
-    m_pPlayerTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
+    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/T_Stand_B.png", m_pRenderer->GetDevice());
+    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/T_Dash_A.png", m_pRenderer->GetDevice());
+    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/testSP.png", m_pRenderer->GetDevice());
     m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
     
 
     // プレイヤーにテクスチャを渡す
-    m_pCharaList[0]->Init(m_pPlayerTex);
+    Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
+    if (player)
+    {
+        // ★ここで3枚セットで渡す
+        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk,m_pPlayerTexJump);
+
+        // 最初の初期化 (Init) も呼んでおく
+        player->Init(m_pPlayerTexIdle); //Idleを渡す
+    }
     m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;
 }

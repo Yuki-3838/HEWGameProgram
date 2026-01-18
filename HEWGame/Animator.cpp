@@ -5,7 +5,7 @@
 // xCount: 横に何個並んでいるか（列数）
 // w, h: 1コマあたりの幅と高さ
 // durationPerFrame: 1コマを表示する時間（秒）
-void Animator::Init(int count, int xCount, float w, float h, float durationPerFrame)
+void Animator::Init(int count, int xCount, float w, float h, float durationPerFrame,float offsetY)
 {
     // 前のアニメーション設定が残っているとバグの元になるのでクリア
     m_frames.clear();
@@ -20,6 +20,8 @@ void Animator::Init(int count, int xCount, float w, float h, float durationPerFr
         // 縦の位置（Y）: 「何番目か」を「横の個数」で割った【答え(整数)】を使う
         frame.y = (i / xCount) * h;
 
+        //二行目から開始などできるようにするためのもの
+		frame.y = ((i / xCount) * h) + offsetY;
         // サイズと表示時間をセット
         frame.w = w;
         frame.h = h;

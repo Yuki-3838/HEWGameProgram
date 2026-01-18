@@ -17,7 +17,7 @@ private:
 
 public:
 	// count: コマ数, xCount: 横に何個並んでいるか, w/h: 1コマのサイズ 毎フレーム呼び出してアニメーションを進める
-	void Init(int count, int xCount, float w, float h, float durationPerFrame = 0.1f);
+	void Init(int count, int xCount, float w, float h, float durationPerFrame = 0.1f,float offsetY = 0.0f);
 	void Update(float deltaTime);
 
 	AnimFrame GetCurrentFrame() const;

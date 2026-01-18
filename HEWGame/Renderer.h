@@ -16,6 +16,8 @@ private:
 	ID3D11RenderTargetView* m_pRenderTargetView;
 	//表示領域の設定データ
 	D3D11_VIEWPORT m_viewPort;
+
+	ID3D11BlendState* m_pBlendState = nullptr;
 public:
 	//DirectXの初期化
 	HRESULT Init(HWND hWnd, int width, int height);

@@ -25,7 +25,9 @@ public:
 		float x, float y, float w, float h,
 		DirectX::XMMATRIX viewProj,
 		float uvX = 0.0f,float uvY = 0.0f,//切り抜く左上の座標
-		float uvW = 0.0f,float uvH = 0.0f //切り抜く幅・高さ
+		float uvW = 0.0f,float uvH = 0.0f, //切り抜く幅・高さ
+		float angle = 0.0f,//回転角度
+		bool flipX = false//左右反転するかどうか
 	);
 	void Uninit();
 };

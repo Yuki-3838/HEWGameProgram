@@ -62,6 +62,23 @@ HRESULT Renderer::Init(HWND hWnd, int width, int height)
     hr = g_pDevice->CreateBuffer(&bd, nullptr, &g_pConstantBuffer);
     if (FAILED(hr)) return hr;
 
+    D3D11_BLEND_DESC blendDesc = {};
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;
+    blendDesc.RenderTarget[0].BlendEnable = TRUE; // —LŒø‰»
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    hr = g_pDevice->CreateBlendState(&blendDesc, &m_pBlendState);
+    if (FAILED(hr)) return hr;
+
+    float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    g_pDeviceContext->OMSetBlendState(m_pBlendState, blendFactor, 0xFFFFFFFF);
     return S_OK;
 }
 
@@ -100,6 +117,11 @@ void Renderer::Uninit()
     {
         g_pDevice->Release();
         g_pDevice = nullptr;
+    }
+    if (m_pBlendState)
+    {   
+        m_pBlendState->Release();
+        m_pBlendState = nullptr;
     }
 }
 void Renderer::StartFrame(const float clearColor[4]) 

@@ -22,6 +22,10 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTex;
     ID3D11ShaderResourceView* m_pEnemyTex;
 
+    ID3D11ShaderResourceView* m_pPlayerTexIdle;
+    ID3D11ShaderResourceView* m_pPlayerTexWalk;
+    ID3D11ShaderResourceView* m_pPlayerTexJump;
+
     bool m_IsFinished;
 
 public:

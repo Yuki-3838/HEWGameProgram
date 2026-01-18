@@ -72,7 +72,7 @@ HRESULT SpriteRenderer::Init(ID3D11Device* pDevice)
     return S_OK;
 }
 
-void SpriteRenderer::Draw(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* pSRV, float x, float y, float w, float h, DirectX::XMMATRIX viewProj,float uvX,float uvY,float uvW,float uvH)
+void SpriteRenderer::Draw(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* pSRV, float x, float y, float w, float h, DirectX::XMMATRIX viewProj,float uvX,float uvY,float uvW,float uvH, float angle, bool flipX)
 {
     //テクスチャサイズの取得
     float texWidth = 1.0f;
@@ -97,6 +97,12 @@ void SpriteRenderer::Draw(ID3D11DeviceContext* pContext, ID3D11ShaderResourceVie
 	if (uvW <= 0.0f) uvW = texWidth;
 	if (uvH <= 0.0f) uvH = texHeight;
 
+    //反転処理
+    if (flipX)
+    {
+		uvX += uvW;//右端
+		uvW = -uvW;//逆方向に読む
+    }
 	DirectX::XMFLOAT4 uvTransform;
 	uvTransform.x = uvX / texWidth;  //オフセットX(0.0～1.0)
 	uvTransform.y = uvY / texHeight; //オフセットY
@@ -106,9 +112,23 @@ void SpriteRenderer::Draw(ID3D11DeviceContext* pContext, ID3D11ShaderResourceVie
 	//定数バッファ更新
 	DirectX::XMMATRIX world = DirectX::XMMatrixScaling(w, h, 1.0f) * DirectX::XMMatrixTranslation(x, y, 0.0f);
 
+    //行列計算(回転対応)
+	float centerX = x + w * 0.5f;
+	float centerY = y + h * 0.5f;
+
+	DirectX::XMMATRIX mScale = DirectX::XMMatrixScaling(w, h, 1.0f);
+    //中心を原点(0,0)に合わせる
+	DirectX::XMMATRIX mTransOrigin = DirectX::XMMatrixTranslation(-w * 0.5f, -h * 0.5f, 0.0f);
+    //回転(Z軸回転)
+	DirectX::XMMATRIX mRotate = DirectX::XMMatrixRotationZ(angle);
+    //指定の位置に移動
+	DirectX::XMMATRIX mTransPos = DirectX::XMMatrixTranslation(centerX, centerY, 0.0f);
+
+    //行列を合成
+	DirectX::XMMATRIX rotWorld = mScale * mTransOrigin * mRotate * mTransPos;
 	//構造体にセットしてからまとめて転送
     SpriteConstantBufferData cb;
-    cb.World = DirectX::XMMatrixTranspose(world);
+    cb.World = DirectX::XMMatrixTranspose(rotWorld);
     cb.ViewProjection = DirectX::XMMatrixTranspose(viewProj);
 	cb.UVTransform = uvTransform;
 
