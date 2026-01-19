@@ -21,6 +21,8 @@ Player::Player()
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
+
+	isDead = false;
 }
 
 Player::~Player()
@@ -182,8 +184,14 @@ void Player::Attack()
 	
 }
 
-void Player::TakeDamage(int)
+void Player::TakeDamage(int damage)
 {
+	m_Stats.m_HP - damage;
+	if (m_Stats.m_HP <= 0)
+	{
+		m_Stats.m_HP = 0;
+		isDead = true;
+	}
 }
 
 void Player::WallJump()
