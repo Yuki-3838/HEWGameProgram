@@ -129,6 +129,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Downloads\DemoReelScene.cpp" />
+    <ClCompile Include="..\..\..\..\Downloads\VideoPlayer.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -165,6 +167,8 @@
     <ClCompile Include="VideoPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Downloads\DemoReelScene.h" />
+    <ClInclude Include="..\..\..\..\Downloads\VideoPlayer.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="Camera.h" />
