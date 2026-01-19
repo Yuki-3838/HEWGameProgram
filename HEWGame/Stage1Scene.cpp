@@ -54,12 +54,6 @@ void Stage1Scene::Update()
         if (m_pCharaList[i])
         {
             m_pCharaList[i]->Update(*m_pTileMap);
-            // 画面サイズ / マップサイズ　＝　1マスのサイズ
-            // 画面サイズ / １マスのサイズ　＝　マスの量
-            // プレイヤー座標＋表示サイズ/2　と　近くのマップの座標を計算する
-            //float sizeX = m_pMapRenderer->GetSizex() / m_pTileMap->GetWidth();  // 横の１マス当たりの大きさ
-            //float sizeY = m_pMapRenderer->GetSizey() / m_pTileMap->GetHeight(); // 縦の１マス当たりの大きさ
-            //m_pCharaList[i]->GetCollison(*m_pTileMap);
         }
     }
     // シーン終了判定
@@ -76,6 +70,7 @@ void Stage1Scene::Draw()
     m_pRenderer->StartFrame(clearColor);
 
     // カメラ行列の取得
+    //m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540);
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
 
     //1. マップの描画

@@ -13,10 +13,10 @@ Player::Player()
 	m_Stats.m_JumpPw = 25;
 
 
-	m_Size.x = 128.0f;
-	m_Size.y = 256.0f;
+	m_Size.x = 320.0f;
+	m_Size.y = 320.0f;
 	m_Position.x = 0.0f;
-	m_Position.y = 0.0f;
+	m_Position.y = 640.0f;
 
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
