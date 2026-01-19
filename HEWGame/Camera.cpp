@@ -1,7 +1,6 @@
 #include "Camera.h"
 
 using namespace DirectX;
-// あああああああああああああああああああああああああ
 
 // コンストラクタ
 Camera::Camera(int screenWidth, int screenHeight)
