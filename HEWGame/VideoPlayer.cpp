@@ -20,6 +20,9 @@ VideoPlayer::VideoPlayer()
 
 VideoPlayer::~VideoPlayer()
 {
+    if (m_pReader) m_pReader.Reset();
+    if (m_pTexture) m_pTexture.Reset();
+    if (m_pTextureSRV) m_pTextureSRV.Reset();
     // クラス破棄時にMFを終了
     MFShutdown();
     CoUninitialize();
@@ -29,11 +32,27 @@ bool VideoPlayer::Init(const wchar_t* filename, ID3D11Device* device)
 {
     HRESULT hr;
 
-    // 1. ソースリーダー（動画読み込み機）の作成
-    hr = MFCreateSourceReaderFromURL(filename, NULL, &m_pReader);
+    // ----------------------------------------------------------------
+     // MP4を読み込むための魔法の設定（ビデオ処理の有効化）
+     // ----------------------------------------------------------------
+    Microsoft::WRL::ComPtr<IMFAttributes> pAttributes;
+    hr = MFCreateAttributes(&pAttributes, 1);
     if (FAILED(hr)) return false;
 
-    // 2. メディアタイプの設定（強制的にRGB32形式に変換させる設定）
+    // 「色変換（YUV→RGB）をソフト側でやっていいよ」という許可を出す
+    hr = pAttributes->SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING, TRUE);
+    if (FAILED(hr)) return false;
+
+    // ----------------------------------------------------------------
+    // 1. ソースリーダーの作成（第2引数に設定を渡す！）
+    // ----------------------------------------------------------------
+    // 変更前: hr = MFCreateSourceReaderFromURL(filename, NULL, &m_pReader);
+    hr = MFCreateSourceReaderFromURL(filename, pAttributes.Get(), &m_pReader);
+
+    if (FAILED(hr)) return false;
+
+
+    // 2. メディアタイプの設定（ここはそのまま）
     Microsoft::WRL::ComPtr<IMFMediaType> pMediaType = nullptr;
     hr = MFCreateMediaType(&pMediaType);
     hr = pMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
@@ -42,32 +61,33 @@ bool VideoPlayer::Init(const wchar_t* filename, ID3D11Device* device)
     hr = m_pReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, NULL, pMediaType.Get());
     if (FAILED(hr)) return false;
 
-    // 3. 動画情報の取得（サイズとフレームレート）
+    // 3. サイズ取得（そのまま）
     Microsoft::WRL::ComPtr<IMFMediaType> pCurrentType = nullptr;
     hr = m_pReader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, &pCurrentType);
     if (FAILED(hr)) return false;
 
     MFGetAttributeSize(pCurrentType.Get(), MF_MT_FRAME_SIZE, &m_width, &m_height);
 
-    // フレームレート取得 (分子/分母 で返ってくる)
+    // フレームレート取得など（そのまま）
     UINT32 num = 0, den = 1;
     MFGetAttributeRatio(pCurrentType.Get(), MF_MT_FRAME_RATE, &num, &den);
-    m_frameDuration = (float)den / (float)num; // 1フレームあたりの秒数
-
-    // ストライド（1行のバイト数）の計算（基本は 幅 * 4バイト）
+    m_frameDuration = (float)den / (float)num;
     m_stride = m_width * 4;
 
-    // 4. 書き換え可能な動的テクスチャの作成
+    // 4. テクスチャ作成
     D3D11_TEXTURE2D_DESC desc = {};
     desc.Width = m_width;
     desc.Height = m_height;
     desc.MipLevels = 1;
     desc.ArraySize = 1;
-    desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+
+    // ★重要: MP4は透明情報を持っていないので、ここも X8 に変更しておくのが安全です
+    desc.Format = DXGI_FORMAT_B8G8R8X8_UNORM;
+
     desc.SampleDesc.Count = 1;
-    desc.Usage = D3D11_USAGE_DYNAMIC;        // CPUから書き込む設定
+    desc.Usage = D3D11_USAGE_DYNAMIC;
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // 書き込み権限
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
     hr = device->CreateTexture2D(&desc, nullptr, &m_pTexture);
     if (FAILED(hr)) return false;
@@ -80,7 +100,7 @@ bool VideoPlayer::Init(const wchar_t* filename, ID3D11Device* device)
 
 void VideoPlayer::Update(float deltaTime, ID3D11DeviceContext* context)
 {
-    if (!m_pReader || m_isFinished) return;
+    if (!m_pReader || m_isFinished|| !m_pTexture) return;
 
     m_timer += deltaTime;
 

@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Stage1Scene.h"
 #include "ResultScene.h"
+#include "DemoReelScene.h"
 
 Game::Game()
 {
@@ -63,6 +64,10 @@ void Game::Update()
 
         // TitleScene ‚Ìê‡ -> Stage1Scene ‚Ö
         if (dynamic_cast<TitleScene*>(current))
+        {
+            m_pSceneManager->ChangeScene(new DemoReelScene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
+        }
+        else if (dynamic_cast<DemoReelScene*>(current))
         {
             m_pSceneManager->ChangeScene(new Stage1Scene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
         }
