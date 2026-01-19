@@ -31,7 +31,7 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile)
 {
-	m_MoveState = State::MoveState::RIGHT;  //Å‰‚Í‰EŒü‚«
+	m_MoveState = State::MoveState::NONE;  //Å‰‚Í‰EŒü‚«
 	// ˆÚ“®“ü—Íˆ—
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
@@ -177,7 +177,7 @@ void Player::Jump()
 	}
 }
 
-int Player::Attack()
+void Player::Attack()
 {
 	
 }

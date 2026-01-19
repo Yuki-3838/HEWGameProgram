@@ -25,8 +25,11 @@ namespace State
 
     enum class MoveState
     {
+        NONE,
         LEFT,   // ç∂
         RIGHT,  // âE
+        TOP,
+        BOTTOM
     };
 
     enum class JumpState
@@ -74,7 +77,7 @@ public:
     virtual void UnInit() = 0;
 
     virtual void Move(const TileMap& tile) = 0;
-    virtual int Attack() = 0;
+    virtual void  Attack() = 0;
     virtual void Jump() = 0;
     virtual void TakeDamage(int) = 0;
 

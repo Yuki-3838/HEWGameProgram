@@ -22,7 +22,7 @@ void Stage1Scene::Init()
 
     // 2. プレイヤーの生成と初期化
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
-    m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
+   /* m_pCharaList[1] = AddList(State::CharaType::t_Enemy);*/
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
@@ -42,7 +42,7 @@ void Stage1Scene::Init()
         // 最初の初期化 (Init) も呼んでおく
         player->Init(m_pPlayerTexIdle); //Idleを渡す
     }
-    m_pCharaList[1]->Init(m_pEnemyTex);
+  /*  m_pCharaList[1]->Init(m_pEnemyTex);*/
     m_IsFinished = false;
 }
 
@@ -143,9 +143,9 @@ Character* Stage1Scene::AddList(State::CharaType e_name)
     case State::CharaType::t_Player:
         return new Player;
         break;
-    case State::CharaType::t_Enemy:
+   /* case State::CharaType::t_Enemy:
         return new Enemy;
-        break;
+        break;*/
     };
     
 }
