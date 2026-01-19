@@ -27,7 +27,7 @@ Player::Player()
 
 Player::~Player()
 {
-
+	//aaaaaaaaaaa
 }
 
 
