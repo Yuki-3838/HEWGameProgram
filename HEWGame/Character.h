@@ -3,36 +3,46 @@
 #include "Collision.h"
 #include "MapRenderer.h"
 #include "TileMap.h"
+#include"Input.h"
 
 namespace State
 {
-    struct collisionState       // trueであれば衝突
+    struct collisionState   // trueであれば衝突
     {
         bool isOnGround;    // 設置判定
         bool isOnCeling;    // 天井判定
         bool isOnWallLeft;  // 壁判定左
         bool isOnWallRight; // 壁判定右
     };
+
+    struct AttackFrame
+    {
+        int TotalFrame;      //全体フレーム数
+        int StartUpFrame;    //発生
+        int ActiveFrame;     //持続
+        int RecorveryFrame;  //後隙
+    };
+
     enum class MoveState
     {
-        NONE,
         LEFT,   // 左
         RIGHT,  // 右
-        TOP,
-        BOTTOM
     };
+
     enum class JumpState
     {
         NONE,
         RISE,
         DESC
     };
+
     enum class CharaType
     {
         t_Player = 0,
         t_Enemy = 1
     };
 }
+
 struct Stats
 {
     int m_HP;           // 体力
@@ -41,6 +51,7 @@ struct Stats
     float m_JumpPw;     // ジャンプ力
     float m_AccelX = 0;     // X軸の加速度
     float m_AccelY = 0;     // Y軸の加速度
+    float m_AttackDamage;  //攻撃用メンバ変数
 };
 
 class Character : public GameObject
@@ -48,11 +59,13 @@ class Character : public GameObject
 protected:
     Stats m_Stats;  // ステータス    
     State::collisionState m_colState{ false,false,false,false };    // 四方向の衝突状態
-    State::MoveState m_MoveState = State::MoveState::NONE;          // 四方向へのどこへ移動しているか
+    State::MoveState m_MoveState = State::MoveState::RIGHT;          // 四方向へのどこへ移動しているか
     State::JumpState m_JumpState = State::JumpState::NONE;          // ジャンプや降下などの状態
     State::CharaType m_charaType;                                   // キャラクターのタイプ
 
     GameObject* object;
+
+    bool isDead;  //死亡したかどうか
 
 public:
     Character();
@@ -61,8 +74,9 @@ public:
     virtual void UnInit() = 0;
 
     virtual void Move(const TileMap& tile) = 0;
-    virtual void Attack() = 0;
+    virtual int Attack() = 0;
     virtual void Jump() = 0;
+    virtual void TakeDamage(int) = 0;
 
     bool StageCol(const TileMap& tile, const ColRes direction);
 

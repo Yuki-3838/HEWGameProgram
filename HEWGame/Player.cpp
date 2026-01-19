@@ -31,16 +31,8 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile)
 {
-	m_MoveState = State::MoveState::NONE;
+	m_MoveState = State::MoveState::RIGHT;  //ç≈èâÇÕâEå¸Ç´
 	// à⁄ìÆì¸óÕèàóù
-	if (GetAsyncKeyState(VK_UP) & 0x8000)
-	{
-		m_MoveState = State::MoveState::TOP;
-	}
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-	{
-		m_MoveState = State::MoveState::BOTTOM;
-	}
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
@@ -81,6 +73,11 @@ void Player::Update(const TileMap& tile)
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
 		Jump();
+	}
+
+	if (GetAsyncKeyState(VK_Z) & 0x8000)
+	{
+		Attack();
 	}
 
 	Move(tile);
@@ -125,14 +122,6 @@ void Player::Move(const TileMap& tile)
 	case State::MoveState::RIGHT:
 		m_Position.x += m_Stats.m_Speed;
 		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
-		break;
-	case State::MoveState::TOP:
-		m_Position.y -= m_Stats.m_Speed;
-		if(StageCol(tile,ColRes::TOP))m_Position.y += m_Stats.m_Speed;
-		break;
-	case State::MoveState::BOTTOM:
-		m_Position.y += m_Stats.m_Speed;
-		if(StageCol(tile,ColRes::BOTTOM))m_Position.y -= m_Stats.m_Speed;
 		break;
 	}
 	switch (m_JumpState)
@@ -188,7 +177,12 @@ void Player::Jump()
 	}
 }
 
-void Player::Attack()
+int Player::Attack()
+{
+	
+}
+
+void Player::TakeDamage(int)
 {
 }
 

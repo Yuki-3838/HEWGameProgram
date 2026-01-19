@@ -1,6 +1,5 @@
 #pragma once
 #include "Character.h"
-#include"Input.h"
 #include"Animator.h"
 
 class Player :public Character
@@ -35,7 +34,8 @@ public:
 
     void Move(const TileMap& tile)override;
     void Jump()override;
-    void Attack()override;
+    int Attack()override;
+    void TakeDamage(int)override;
 
     void WallJump();
     void Blink();

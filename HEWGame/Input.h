@@ -44,7 +44,7 @@
 #define VK_R 0x52
 #define VK_S 0x53
 #define VK_T 0x54
-#define VK_U 0x45
+#define VK_U 0x55
 #define VK_V 0x56
 #define VK_W 0x57
 #define VK_X 0x58
