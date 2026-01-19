@@ -181,7 +181,7 @@ void Player::Jump()
 
 void Player::Attack()
 {
-	
+	ApplyDamage();
 }
 
 void Player::TakeDamage(int damage)
@@ -192,6 +192,11 @@ void Player::TakeDamage(int damage)
 		m_Stats.m_HP = 0;
 		isDead = true;
 	}
+}
+
+int Player::ApplyDamage()
+{
+	return 0;
 }
 
 void Player::WallJump()

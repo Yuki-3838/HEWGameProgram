@@ -36,6 +36,7 @@ public:
     void Jump()override;
     void Attack()override;
     void TakeDamage(int)override;
+    int ApplyDamage();
 
     void WallJump();
     void Blink();
