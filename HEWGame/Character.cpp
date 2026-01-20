@@ -14,10 +14,10 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	float top = GetPosition().y;
 	float bottom = GetPosition().y + GetSize().y;
 
-	int tileX_L = static_cast<int>(left / 32);
-	int tileX_R = static_cast<int>(right / 32);
-	int tileY_T = static_cast<int>(top / 32);
-	int tileY_B = static_cast<int>(bottom / 32);
+	int tileX_L = static_cast<int>(left / 64);
+	int tileX_R = static_cast<int>(right / 64);
+	int tileY_T = static_cast<int>(top / 64);
+	int tileY_B = static_cast<int>(bottom / 64);
 	ColRes res;
 	// à¯Ç´ìnÇ≥ÇÍÇΩï˚å¸Ç…ëŒÇµÇƒÅAìñÇΩÇ¡ÇƒÇ¢ÇÍÇŒtrue ìñÇΩÇ¡ÇƒÇ¢Ç»ÇØÇÍÇŒfalseÇï‘Ç∑
 	switch (direction)
@@ -27,7 +27,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 		{
 			if (tile.GetTileID(x, tileY_T) == Kaneda::TILE_WALL)
 			{
-				DirectX::XMFLOAT2 XMPos(x * 32, tileY_T * 32);
+				DirectX::XMFLOAT2 XMPos(x * 64, tileY_T * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
 				res = CollisionRect(*this, XMPos, XMSize);
 				if (res & ColRes::BOTTOM)
@@ -44,7 +44,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 		{
 			if (tile.GetTileID(x, tileY_B) == Kaneda::TILE_WALL)
 			{
-				DirectX::XMFLOAT2 XMPos(x * 32, tileY_B * 32);
+				DirectX::XMFLOAT2 XMPos(x * 64, tileY_B * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
 				res = CollisionRect(*this, XMPos, XMSize);
 				if (res & ColRes::TOP)
@@ -61,7 +61,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 		{
 			if (tile.GetTileID(tileX_L, y) == Kaneda::TILE_WALL)
 			{
-				DirectX::XMFLOAT2 XMPos(tileX_L * 32, y * 32);
+				DirectX::XMFLOAT2 XMPos(tileX_L * 64, y * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
 				res = CollisionRect(*this, XMPos, XMSize);
 				if (res & ColRes::RIGHT)
@@ -78,7 +78,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 		{
 			if (tile.GetTileID(tileX_R, y) == Kaneda::TILE_WALL)
 			{
-				DirectX::XMFLOAT2 XMPos(tileX_R * 32, y * 32);
+				DirectX::XMFLOAT2 XMPos(tileX_R * 64, y * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
 				res = CollisionRect(*this, XMPos, XMSize);
 				if (res & ColRes::LEFT)

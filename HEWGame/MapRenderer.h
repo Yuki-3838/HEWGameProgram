@@ -7,7 +7,7 @@
 class MapRenderer
 {
 private:
-    static constexpr float m_TileSize = 32.0f; // タイル1枚の表示サイズ
+    static constexpr float m_TileSize = 64.0f; // タイル1枚の表示サイズ
 
 public:
     // マップ全体の描画

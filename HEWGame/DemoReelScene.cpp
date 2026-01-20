@@ -4,7 +4,7 @@ void DemoReelScene::Init()
 {
 	m_pCamera = new Camera(1280, 720);
 	m_pVideo = new VideoPlayer();
-	m_pVideo->Init(L"asset/movie/op.mp4", m_pRenderer->GetDevice());
+	m_pVideo->Init(L"asset/movie/op_1.mp4", m_pRenderer->GetDevice());
 	m_pVideo->SetLoop(true); // ƒ‹[ƒvÄ¶Ý’è
 	m_IsFinished = false;
 }
@@ -21,14 +21,19 @@ void DemoReelScene::Update()
 
 void DemoReelScene::Draw()
 {
-	Camera movieCamera(1280, 720);
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // •F
+	m_pRenderer->StartFrame(clearColor);
 
+	// --- “®‰æ‚Ì•`‰æ ---
+	Camera movieCamera(1280, 720);
 	m_pSpriteRenderer->Draw(
 		m_pRenderer->GetContext(),
 		m_pVideo->GetSRV(),
 		0.0f, 0.0f, 1280.0f, 720.0f,
 		movieCamera.GetViewProjection()
 	);
+
+	m_pRenderer->EndFrame();
 }
 
 void DemoReelScene::Uninit()
