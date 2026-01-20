@@ -178,7 +178,7 @@ void Player::Jump()
 		m_JumpState = State::JumpState::RISE;
 		if (m_pSound)
 		{
-			m_pSound->Play(SOUND_LABEL_SE000);
+			m_pSound->Play(SOUND_LABEL_SE_JUMP);
 		}
 	}
 }

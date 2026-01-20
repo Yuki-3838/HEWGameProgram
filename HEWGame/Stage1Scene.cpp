@@ -21,7 +21,7 @@ void Stage1Scene::Init()
     m_pCamera = new Camera(1920,1080);
     m_pSound = new Sound();
     m_pSound->Init();
-
+    m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
     // 2. ƒvƒŒƒCƒ„[‚Ì¶¬‚Æ‰Šú‰»
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
    /* m_pCharaList[1] = AddList(State::CharaType::t_Enemy);*/

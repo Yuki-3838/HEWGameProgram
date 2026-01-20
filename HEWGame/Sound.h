@@ -1,65 +1,55 @@
 #pragma once
 
 #include <xaudio2.h>
+#include <wrl/client.h> // スマートポインタ
+#include <vector>       // 音声データ管理
 
-// サウンドファイル
-typedef enum
+#pragma comment(lib, "xaudio2.lib")
+
+// サウンドのラベル（増やしたいときはここに追加）
+enum SOUND_LABEL
 {
-	SOUND_LABEL_BGM000,		// サンプルBGM
-	SOUND_LABEL_BGM001,			// サンプルBGM
-	SOUND_LABEL_SE000,			// サンプルSE
-	SOUND_LABEL_SE001,			// サンプルSE
+    SOUND_LABEL_BGM_SAMPLE = 0,
 
+    // ★使いたいラベルをここに追加していく
+    SOUND_LABEL_SE_JUMP,
+    SOUND_LABEL_SE_ATTACK,
 
+    SOUND_LABEL_MAX,
+};
 
-	SOUND_LABEL_MAX,
-} SOUND_LABEL;
-
-class Sound 
+class Sound
 {
 private:
-	// パラメータ構造体
-	typedef struct
-	{
-		LPCSTR filename;	// 音声ファイルまでのパスを設定
-		bool bLoop;			// trueでループ。通常BGMはture、SEはfalse。
-	} PARAM;
+    // XAudio2 本体
+    Microsoft::WRL::ComPtr<IXAudio2> m_pXAudio2;
+    IXAudio2MasteringVoice* m_pMasteringVoice = nullptr; // マスターはComPtr非対応の場合がある
 
-	PARAM m_param[SOUND_LABEL_MAX] =
-	{
-		{"asset/tetoris.wav", true},			// サンプルBGM（ループさせるのでtrue設定）
-		{"asset/BGM.wav", true},		// サンプルBGM
-		{"asset/sound/SE/jump.wav", false},  	// サンプルSE（ループしないのでfalse設定）
-		{"asset/LEN.wav", false},		// サンプルSE
+    // 1つの音声を管理する構造体
+    struct AudioData
+    {
+        IXAudio2SourceVoice* pSourceVoice = nullptr; // 再生する人
+        std::vector<BYTE> soundData;                 // 音声データの実体
+        XAUDIO2_BUFFER buffer = {};                  // バッファ情報
+        WAVEFORMATEX wfx = {};                       // フォーマット情報
+    };
 
-
-
-	};
-
-	IXAudio2* m_pXAudio2 = NULL;
-	IXAudio2MasteringVoice* m_pMasteringVoice = NULL;
-	IXAudio2SourceVoice* m_pSourceVoice[SOUND_LABEL_MAX];
-	WAVEFORMATEXTENSIBLE m_wfx[SOUND_LABEL_MAX]; // WAVフォーマット
-	XAUDIO2_BUFFER m_buffer[SOUND_LABEL_MAX];
-	BYTE* m_DataBuffer[SOUND_LABEL_MAX];
-
-	HRESULT FindChunk(HANDLE, DWORD, DWORD&, DWORD&);
-	HRESULT ReadChunkData(HANDLE, void*, DWORD, DWORD);
+    // 全ての音データを配列で管理
+    AudioData m_AudioList[SOUND_LABEL_MAX];
 
 public:
-	// ゲームループ開始前に呼び出すサウンドの初期化処理
-	HRESULT Init(void);
+    Sound() {}
+    ~Sound() { Uninit(); }
 
-	// ゲームループ終了後に呼び出すサウンドの解放処理
-	void Uninit(void);
+    // 初期化・終了
+    HRESULT Init();
+    void Uninit();
 
-	// 引数で指定したサウンドを再生する
-	void Play(SOUND_LABEL label);
+    //読み込み関数 (ラベル, ファイルパス, ループするか)
+    HRESULT Load(SOUND_LABEL label, const char* filename, bool loop = false);
 
-	// 引数で指定したサウンドを停止する
-	void Stop(SOUND_LABEL label);
-
-	// 引数で指定したサウンドの再生を再開する
-	void Resume(SOUND_LABEL label);
-
+    // 再生・停止・音量
+    void Play(SOUND_LABEL label);
+    void Stop(SOUND_LABEL label);
+    void SetVolume(SOUND_LABEL label, float volume); // 1.0fが基準
 };
