@@ -156,6 +156,7 @@
     <ClCompile Include="ResultScene.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Stage1Scene.cpp" />
     <ClCompile Include="stb_image.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="ResultScene.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="Stage1Scene.h" />
     <ClInclude Include="stb_image.h" />

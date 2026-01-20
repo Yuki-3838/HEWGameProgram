@@ -19,6 +19,8 @@ void Stage1Scene::Init()
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(1920,1080);
+    m_pSound = new Sound();
+    m_pSound->Init();
 
     // 2. ƒvƒŒƒCƒ„[‚Ì¶¬‚Æ‰Šú‰»
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
@@ -41,6 +43,8 @@ void Stage1Scene::Init()
 
         // Å‰‚Ì‰Šú‰» (Init) ‚àŒÄ‚ñ‚Å‚¨‚­
         player->Init(m_pPlayerTexIdle); //Idle‚ð“n‚·
+
+        player->SetSound(m_pSound);
     }
   /*  m_pCharaList[1]->Init(m_pEnemyTex);*/
     m_IsFinished = false;
@@ -99,6 +103,7 @@ void Stage1Scene::Uninit()
     if (m_pTileMap) { delete m_pTileMap; m_pTileMap = nullptr; }
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
+    if (m_pSound){m_pSound->Uninit();delete m_pSound;m_pSound = nullptr;}
     AllClearList(m_pCharaList);
 }
 
