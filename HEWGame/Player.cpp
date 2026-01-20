@@ -12,8 +12,8 @@ Player::Player()
 	m_Stats.m_JumpPw = 25;
 
 
-	m_Size.x = 320.0f;
-	m_Size.y = 320.0f;
+	m_Size.x = 192.0f;
+	m_Size.y = 192.0f;
 	m_Position.x = 0.0f;
 	m_Position.y = 640.0f;
 
@@ -37,12 +37,12 @@ void Player::Update(const TileMap& tile)
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = false;
+		m_FlipX = true;
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = true;
+		m_FlipX = false;
 	}
 	//アニメーションの切り替え判定(優先度はジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
@@ -257,7 +257,7 @@ void Player::SetAnimation(int stateIndex)
 	m_CurrentAnimState = stateIndex;
 	//画像の構成に合わせて数値を変更してね
 	float w = 320.0f;
-	float h = 320.0f;
+	float h = 240.0f;
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
@@ -268,7 +268,7 @@ void Player::SetAnimation(int stateIndex)
 			break; 
 		case 1: //移動
 			m_pTexture = m_pTexWalk;
-			m_Animator.Init(18, 6, w, h, 0.2f,0.0f);
+			m_Animator.Init(18, 6, w, h, 0.5f,0.0f);
 			break;
 		case 2:
 			m_pTexture = m_pTexJump;

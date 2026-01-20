@@ -52,7 +52,7 @@ void EffectManager::Play(EffectType type, float x, float y)
             if (!tex) return;
 
             // î≠ê∂Ç≥ÇπÇÈ (Texture, x, y, speedX, speedY, lifeTime, scale)
-            m_Effects[i].Init(m_TextureMap[type], x, y, 1.0f, 18, 6, 320.0f, 320.0f, 100.f);
+            m_Effects[i].Init(m_TextureMap[type], x, y, 100.0f, 18, 6, 320.0f, 320.0f, 0.05f);
             break;
         }
     }

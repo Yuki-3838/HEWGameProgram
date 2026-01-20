@@ -18,7 +18,7 @@ void Stage1Scene::Init()
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
-    m_pCamera = new Camera(3840,2160);
+    m_pCamera = new Camera(1920,1080);
 
     m_pSound = new Sound();
     m_pSound->Init();
@@ -26,7 +26,7 @@ void Stage1Scene::Init()
 
     m_pEffectManager = new EffectManager();
     m_pEffectManager->Init();
-    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice());
+    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/testSP.png", m_pRenderer->GetDevice());
     // 2. �v���C���[�̐����Ə�����
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
@@ -34,7 +34,7 @@ void Stage1Scene::Init()
     // 3. �e�N�X�`���̃��[�h
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
     m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/T_Stand_B.png", m_pRenderer->GetDevice());
-    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/T_Dash_A.png", m_pRenderer->GetDevice());
+    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
     m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/testSP.png", m_pRenderer->GetDevice());
     m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
     
@@ -76,7 +76,7 @@ void Stage1Scene::Update()
 void Stage1Scene::Draw()
 {
     // �w�i�F�N���A�i��̐F�j
-    float clearColor[4] = { 0.f, 1.f, 0.f, 1.0f };
+    float clearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
     // �J�����s��̎擾
@@ -110,6 +110,7 @@ void Stage1Scene::Uninit()
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
     if (m_pSound){m_pSound->Uninit();delete m_pSound;m_pSound = nullptr;}
+    if(m_pEffectManager) { m_pEffectManager->Uninit(); delete m_pEffectManager; m_pEffectManager = nullptr; }
     AllClearList(m_pCharaList);
 }
 
