@@ -16,5 +16,7 @@ public:
 
 	void Move(const TileMap& tile)override;
 	void Attack()override;
+	void TakeDamage(int) override;
+	int ApplyDamage() override;
 	void Jump()override;
 };
