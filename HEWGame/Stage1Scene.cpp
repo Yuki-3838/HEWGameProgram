@@ -44,6 +44,12 @@ void Stage1Scene::Init()
     }
     m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;
+
+    //エネミーにプレイヤーの位置情報を渡す
+    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
+    enemy->SetTarget(*player);
+
+
 }
 
 void Stage1Scene::Update()

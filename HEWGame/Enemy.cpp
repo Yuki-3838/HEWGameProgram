@@ -15,6 +15,8 @@ Enemy::Enemy()
 	m_Position.y = 0.0f;
 
 	m_charaType = State::CharaType::t_Enemy;
+
+	isDetection = true; //プレイヤーの発見状態
 }
 
 Enemy::~Enemy()
@@ -38,6 +40,31 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		Jump();
 	}
 
+	//非発見状態
+	if (isDetection == false)
+	{
+		//左右移動にする予定
+	}
+
+	//発見状態時
+	if (isDetection == true)
+	{
+		m_MoveState = State::MoveState::NONE;
+		if (m_pTarget)
+		{
+			DirectX::XMFLOAT2 targetPos = m_pTarget->GetPosition();
+			DirectX::XMFLOAT2 enemyPos = GetPosition();
+
+			targetPos.x += m_pTarget->GetSize().x * 0.5f;
+			enemyPos.x += GetSize().x * 0.5f;
+
+			if (targetPos.x < enemyPos.x)
+				m_MoveState = State::MoveState::LEFT;
+			else
+				m_MoveState = State::MoveState::RIGHT;
+
+		}
+	}
 	Move(tile);
 }
 
@@ -71,4 +98,9 @@ void Enemy::Jump()
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;
 		m_JumpState = State::JumpState::RISE;
 	}
+}
+
+void Enemy::SetTarget(const Character& target)
+{
+	m_pTarget = &target;
 }
