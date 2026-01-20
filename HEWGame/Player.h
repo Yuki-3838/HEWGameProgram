@@ -32,7 +32,6 @@ public:
 
     void UnInit()override;
 
-    void Move(const TileMap& tile)override;
     void Jump()override;
     void Attack()override;
     void TakeDamage(int)override;

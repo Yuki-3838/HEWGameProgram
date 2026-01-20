@@ -77,7 +77,7 @@ public:
 
     virtual void UnInit() = 0;
 
-    virtual void Move(const TileMap& tile) = 0;
+    void Move(const TileMap& tile);
     virtual void  Attack() = 0;
     virtual int ApplyDamage() = 0;
     virtual void TakeDamage(int) = 0;
@@ -88,6 +88,8 @@ public:
     virtual void Update(const TileMap& tile) = 0;
 
     State::CharaType GetCharaType() { return m_charaType; }
+    State::JumpState GetJumpState() { return m_JumpState; }
+    float GetAcceleY() { return m_Stats.m_AccelY; }
 
     // キャラクター共通の初期化（必要であれば）
     virtual void Init(ID3D11ShaderResourceView* pTexture) override 

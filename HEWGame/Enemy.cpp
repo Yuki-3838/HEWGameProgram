@@ -47,68 +47,6 @@ void Enemy::UnInit()
   
 }
 
-void Enemy::Move(const TileMap& tile)
-{
-  
-	switch (m_MoveState)
-	{
-	case State::MoveState::LEFT:
-		m_Position.x -= m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_Stats.m_Speed;
-		break;
-	case State::MoveState::RIGHT:
-		m_Position.x += m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
-		break;
-	case State::MoveState::TOP:
-		m_Position.y -= m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::TOP))m_Position.y += m_Stats.m_Speed;
-		break;
-	case State::MoveState::BOTTOM:
-		m_Position.y += m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_Stats.m_Speed;
-		break;
-	}
-	switch (m_JumpState)
-	{
-	case State::JumpState::RISE:
-		m_Position.y -= m_Stats.m_AccelY;
-		m_Stats.m_AccelY--;
-		if (StageCol(tile, ColRes::TOP))
-		{
-			m_Position.y += m_Stats.m_AccelY + 1;
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY = -1;
-		}
-		if (m_Stats.m_AccelY == 0)
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY = -1;
-		}
-		break;
-	case State::JumpState::DESC:
-		m_Position.y -= m_Stats.m_AccelY;
-		m_Stats.m_AccelY -= m_Stats.m_Gravity;
-		if (StageCol(tile, ColRes::BOTTOM))
-		{
-			do
-			{
-				m_Position.y -= 1;
-			} while (StageCol(tile, ColRes::BOTTOM));
-			m_JumpState = State::JumpState::NONE;
-			m_Stats.m_AccelY = 0;
-		}
-		break;
-	case State::JumpState::NONE:
-		m_Position.y += m_Stats.m_Gravity;
-		if (!StageCol(tile, ColRes::BOTTOM))
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY++;
-		}
-		m_Position.y -= m_Stats.m_Gravity;
-	}
-}
 
 void Enemy::Attack()
 {
