@@ -54,6 +54,7 @@ struct Stats
     float m_JumpPw;     // ジャンプ力
     float m_AccelX = 0;     // X軸の加速度
     float m_AccelY = 0;     // Y軸の加速度
+    float m_AccelYMax = 63; // Y軸の最大加速度
     float m_AttackDamage;  //攻撃用メンバ変数
 };
 

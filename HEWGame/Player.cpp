@@ -70,7 +70,7 @@ void Player::Update(const TileMap& tile)
 	}
 
 	//アニメーション更新
-	m_Animator.Update(1.0f / 60.0f);
+	m_Animator.Update(1.0f / 2.0f);
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
@@ -91,7 +91,7 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
 	//絵をどれくらい下にずらすか
-	float drawOffsetY = 60.0f;
+	float drawOffsetY = 0;
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
 	{
@@ -126,26 +126,38 @@ void Player::Move(const TileMap& tile)
 		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
 		break;
 	}
+
+	// 高度に関する処理
 	switch (m_JumpState)
 	{
+		// 上昇処理
 	case State::JumpState::RISE:
+		//　上昇し、１ｆずつ上昇加速度を１減速する
 		m_Position.y -= m_Stats.m_AccelY;
 		m_Stats.m_AccelY--;
+		// 天井に衝突した場合、下降に移行する
 		if (StageCol(tile, ColRes::TOP))
 		{
-			m_Position.y += m_Stats.m_AccelY + 1;
 			m_JumpState = State::JumpState::DESC;
 			m_Stats.m_AccelY = -1;
 		}
+		// 上昇加速度が０になった場合、下降に移行する
 		if (m_Stats.m_AccelY == 0)
 		{
 			m_JumpState = State::JumpState::DESC;
 			m_Stats.m_AccelY = -1;
 		}
 		break;
+
+		// 下降処理
 	case State::JumpState::DESC:
+		// 下降する
 		m_Position.y -= m_Stats.m_AccelY;
-		m_Stats.m_AccelY -= m_Stats.m_Gravity;
+		// 最大下降加速度出ない場合、下降加速度を１加速
+		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
+		{
+			m_Stats.m_AccelY -= m_Stats.m_Gravity;
+		}
 		if (StageCol(tile, ColRes::BOTTOM))
 		{
 			do
@@ -156,7 +168,10 @@ void Player::Move(const TileMap& tile)
 			m_Stats.m_AccelY = 0;
 		}
 		break;
+
+		// 通常時処理
 	case State::JumpState::NONE:
+		// 重力を与え、地面に着地していなければ下降に移行
 		m_Position.y += m_Stats.m_Gravity;
 		if (!StageCol(tile, ColRes::BOTTOM))
 		{

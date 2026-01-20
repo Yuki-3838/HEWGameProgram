@@ -18,7 +18,7 @@ void Stage1Scene::Init()
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
-    m_pCamera = new Camera(1920,1080);
+    m_pCamera = new Camera(3840,2160);
 
     // 2. プレイヤーの生成と初期化
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
@@ -70,7 +70,7 @@ void Stage1Scene::Draw()
     m_pRenderer->StartFrame(clearColor);
 
     // カメラ行列の取得
-    //m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540);
+    m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540);
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
 
     //1. マップの描画
