@@ -14,7 +14,6 @@ public:
 	void Update(const TileMap& tile, Character** charaList)override;
 	void UnInit()override;
 
-	void Move(const TileMap& tile)override;
 	void Attack(Character** charaList)override;
 	void TakeDamage(int) override;
 	int ApplyDamage() override;

@@ -77,7 +77,7 @@ public:
 
     virtual void UnInit() = 0;
 
-    virtual void Move(const TileMap& tile) = 0;
+     void Move(const TileMap& tile) ;
     virtual void  Attack(Character** charaList) = 0;
     virtual int ApplyDamage() = 0;
     virtual void TakeDamage(int) = 0;
