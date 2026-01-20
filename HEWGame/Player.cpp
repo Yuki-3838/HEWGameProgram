@@ -1,7 +1,8 @@
 #include "Player.h"
 #include <Windows.h>
+#include<vector>
 
-
+ std::vector<GameObject*> g_GameObjects;
 
 // プレイヤーのコンストラクタ
 Player::Player()
@@ -27,20 +28,19 @@ Player::Player()
 
 Player::~Player()
 {
-	//aaaaaaaaaaa
 }
 
 
-void Player::Update(const TileMap& tile)
+void Player::Update(const TileMap& tile, Character** charaList)
 {
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
 	// 移動入力処理
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	if (GetAsyncKeyState(VK_A) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
 		m_FlipX = false;
 	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	if (GetAsyncKeyState(VK_D) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
 		m_FlipX = true;
@@ -70,7 +70,7 @@ void Player::Update(const TileMap& tile)
 	}
 
 	//アニメーション更新
-	m_Animator.Update(1.0f / 2.0f);
+	m_Animator.Update(1.0f / 60.0f);
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
@@ -79,7 +79,7 @@ void Player::Update(const TileMap& tile)
 
 	if (GetAsyncKeyState(VK_Z) & 0x8000)
 	{
-		Attack();
+		Attack(charaList);
 	}
 
 	Move(tile);
@@ -91,7 +91,7 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
 	//絵をどれくらい下にずらすか
-	float drawOffsetY = 0;
+	float drawOffsetY = 60.0f;
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
 	{
@@ -125,9 +125,41 @@ void Player::Jump()
 	}
 }
 
-void Player::Attack()
+void Player::Attack(Character** charaList)
 {
-	ApplyDamage();
+	//攻撃範囲設定
+	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
+	DirectX::XMFLOAT2 attackPos;
+	if (m_FlipX)//右向き
+	{
+		//attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
+		attackPos.x = GetPosition().x + GetSize().x;
+	}
+	else//左向き
+	{
+		attackPos.x = GetPosition().x - attackSize.x;
+	}
+	//attackPos.y += m_Size.y / 4;
+	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y /4 ;
+
+	for (int i = 0; charaList[i] != nullptr; ++i)
+	{
+	    auto obj = charaList[i];
+		//オブジェクトじゃなかったらスキップする
+		if (!obj)continue;
+
+		//Character* chara = dynamic_cast<Character*>(obj);
+		//if (!chara)continue;
+		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
+
+		//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
+		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
+		
+		if (Col::Any(hit))
+		{
+			obj->ApplyDamage();
+		}
+	}
 }
 
 void Player::TakeDamage(int damage)
@@ -142,7 +174,7 @@ void Player::TakeDamage(int damage)
 
 int Player::ApplyDamage()
 {
-	return 0;
+	return 1;
 }
 
 void Player::WallJump()
@@ -179,18 +211,18 @@ void Player::SetAnimation(int stateIndex)
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
-		case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
-			//テクスチャの入れ替え
-			m_pTexture = m_pTexIdle;
-			m_Animator.Init(18, 6, w, h, 0.01f,0.0f);
-			break; 
-		case 1: //移動
-			m_pTexture = m_pTexWalk;
-			m_Animator.Init(18, 6, w, h, 0.2f,0.0f);
-			break;
-		case 2:
-			m_pTexture = m_pTexJump;
-			m_Animator.Init(1, 4, w, h, 0.2f, 0.0f);
-			break;
+	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
+		//テクスチャの入れ替え
+		m_pTexture = m_pTexIdle;
+		m_Animator.Init(18, 6, w, h, 0.01f, 0.0f);
+		break;
+	case 1: //移動
+		m_pTexture = m_pTexWalk;
+		m_Animator.Init(18, 6, w, h, 0.2f, 0.0f);
+		break;
+	case 2:
+		m_pTexture = m_pTexJump;
+		m_Animator.Init(1, 4, w, h, 0.2f, 0.0f);
+		break;
 	}
 }

@@ -21,8 +21,7 @@ Enemy::~Enemy()
 {
 }
 
-void Enemy::Update(const TileMap& tile)
-
+void Enemy::Update(const TileMap& tile, Character** charaList)
 {
 	m_MoveState = State::MoveState::NONE;
 	// ˆÚ“®“ü—Íˆ—
@@ -48,7 +47,7 @@ void Enemy::UnInit()
 }
 
 
-void Enemy::Attack()
+void Enemy::Attack(Character** charaList)
 {
 
 }

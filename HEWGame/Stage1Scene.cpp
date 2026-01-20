@@ -54,7 +54,7 @@ void Stage1Scene::Update()
     {
         if (m_pCharaList[i])
         {
-            m_pCharaList[i]->Update(*m_pTileMap);
+            m_pCharaList[i]->Update(*m_pTileMap,m_pCharaList);
         }
     }
     // ƒV[ƒ“I—¹”»’è
@@ -109,7 +109,10 @@ void Stage1Scene::CreateList(int num)
     if (m_pCharaList == nullptr)
     {
         m_pCharaList = new Character * [num];
-        
+    }
+    for (int i = 0; i < maxChara; i++)
+    {
+		m_pCharaList[i] = nullptr;
     }
 }
 

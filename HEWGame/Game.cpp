@@ -3,6 +3,11 @@
 #include "ResultScene.h"
 #include "DemoReelScene.h"
 
+#include<vector>
+#include"GameObject.h"
+
+std::vector<GameObject*> g_GameOjects;
+
 Game::Game()
 {
     m_pRenderer = nullptr;
