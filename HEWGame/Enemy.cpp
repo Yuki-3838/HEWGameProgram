@@ -16,7 +16,7 @@ Enemy::Enemy()
 
 	m_charaType = State::CharaType::t_Enemy;
 
-	isDetection = true; //プレイヤーの発見状態
+	isDetection = false; //プレイヤーの発見状態
 }
 
 Enemy::~Enemy()
@@ -78,14 +78,16 @@ void Enemy::Attack(Character** charaList)
 {
 
 }
-
-void Enemy::TakeDamage(int)
+int Enemy::TakeDamage(Character** charaList)
 {
-}
-
-int Enemy::ApplyDamage()
-{
-	return 0;
+	int damage = 1;
+	m_Stats.m_HP -= damage;
+	if (m_Stats.m_HP <= 0)
+	{
+		m_Stats.m_HP = 0;
+		isDead = true;
+	}
+	return m_Stats.m_HP;
 }
 
 void Enemy::Jump()

@@ -79,8 +79,7 @@ public:
 
      void Move(const TileMap& tile) ;
     virtual void  Attack(Character** charaList) = 0;
-    virtual int ApplyDamage() = 0;
-    virtual void TakeDamage(int) = 0;
+    virtual int TakeDamage(Character**charaList) = 0;
     virtual void Jump() = 0;
 
     bool StageCol(const TileMap& tile, const ColRes direction);

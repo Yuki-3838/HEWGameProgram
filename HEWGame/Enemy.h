@@ -18,8 +18,7 @@ public:
 
 	
 	void Attack(Character** charaList)override;
-	void TakeDamage(int) override;
-	int ApplyDamage() override;
+	int TakeDamage(Character** charaList) override;
 	void Jump()override;
 	void SetTarget(const Character& target);
 };

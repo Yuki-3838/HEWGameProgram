@@ -157,24 +157,20 @@ void Player::Attack(Character** charaList)
 		
 		if (Col::Any(hit))
 		{
-			obj->ApplyDamage();
+			int remainingHP = obj->TakeDamage(charaList);
+			if (remainingHP <= 0)
+			{
+				charaList[i] = nullptr; 
+			}
 		}
 	}
 }
 
-void Player::TakeDamage(int damage)
+int Player::TakeDamage(Character**charaList)
 {
-	m_Stats.m_HP - damage;
-	if (m_Stats.m_HP <= 0)
-	{
-		m_Stats.m_HP = 0;
-		isDead = true;
-	}
-}
-
-int Player::ApplyDamage()
-{
-	return 1;
+	int damage = 1;
+	m_Stats.m_HP -= damage;
+	return m_Stats.m_HP;
 }
 
 void Player::WallJump()
