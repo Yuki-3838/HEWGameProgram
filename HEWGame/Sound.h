@@ -11,7 +11,7 @@ enum SOUND_LABEL
 {
     SOUND_LABEL_BGM_SAMPLE = 0,
 
-    // ★使いたいラベルをここに追加していく
+    //使いたいラベルをここに追加していく
     SOUND_LABEL_SE_JUMP,
     SOUND_LABEL_SE_ATTACK,
 

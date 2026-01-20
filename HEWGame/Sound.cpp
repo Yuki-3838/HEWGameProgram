@@ -28,7 +28,7 @@ HRESULT Sound::Init()
 
     // COM‰Šú‰»
     hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-    // Šù‚É‰Šú‰»Ï‚İ‚È‚çOK
+  
     if (FAILED(hr) && hr != RPC_E_CHANGED_MODE) return hr;
 
     // XAudio2ì¬
