@@ -1,7 +1,7 @@
 #pragma once
 #include "Character.h"
 #include"Animator.h"
-
+#include"Sound.h"
 class Player :public Character
 {
 private:
@@ -18,6 +18,8 @@ private:
 
     //アニメーション切り替え関数
 	void SetAnimation(int stateIndex);
+
+    Sound* m_pSound = nullptr;
 public:
     // コンストラクタ・デストラクタ
     Player();
@@ -42,5 +44,5 @@ public:
     void Blink();
     void GetBlink();
     void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
-
+    void SetSound(Sound* pSound) { m_pSound = pSound; }
 };

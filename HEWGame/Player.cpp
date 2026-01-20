@@ -1,6 +1,6 @@
 #include "Player.h"
 #include <Windows.h>
-
+#include"Sound.h"
 
 
 // プレイヤーのコンストラクタ
@@ -191,6 +191,10 @@ void Player::Jump()
 	{
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;
 		m_JumpState = State::JumpState::RISE;
+		if (m_pSound)
+		{
+			m_pSound->Play(SOUND_LABEL_SE_JUMP);
+		}
 	}
 }
 

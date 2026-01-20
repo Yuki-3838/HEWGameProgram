@@ -4,27 +4,30 @@
 
 void Stage1Scene::Init()
 {
-    // ƒ^ƒCƒ‹‚Ìî•ñ
+    // ï¿½^ï¿½Cï¿½ï¿½ï¿½Ìï¿½ï¿½
     Kaneda::s_TileInfo tileTable[] =
     {
-        {false,false,false},    // ‹ó
-        {true,false,false},     // •Ç
-        {false,false,true}      // ƒS[ƒ‹
+        {false,false,false},    // ï¿½ï¿½
+        {true,false,false},     // ï¿½ï¿½
+        {false,false,true}      // ï¿½Sï¿½[ï¿½ï¿½
     };
-    // ƒŠƒXƒgì¬
+    // ï¿½ï¿½ï¿½Xï¿½gï¿½ì¬
     CreateList(maxChara);
 
-    // 1. Šeíƒ}ƒl[ƒWƒƒ[Eƒ}ƒbƒv‚Ì¶¬
+    // 1. ï¿½eï¿½ï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½Eï¿½}ï¿½bï¿½vï¿½Ìï¿½ï¿½ï¿½
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(3840,2160);
 
-    // 2. ƒvƒŒƒCƒ„[‚Ì¶¬‚Æ‰Šú‰»
+    m_pSound = new Sound();
+    m_pSound->Init();
+    m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
+    // 2. ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½ï¿½Æï¿½ï¿½ï¿½ï¿½ï¿½
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
-    // 3. ƒeƒNƒXƒ`ƒƒ‚Ìƒ[ƒh
+    // 3. ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½h
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
     m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/T_Stand_B.png", m_pRenderer->GetDevice());
     m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/T_Dash_A.png", m_pRenderer->GetDevice());
@@ -32,15 +35,17 @@ void Stage1Scene::Init()
     m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
     
 
-    // ƒvƒŒƒCƒ„[‚ÉƒeƒNƒXƒ`ƒƒ‚ğ“n‚·
+    // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Éƒeï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½nï¿½ï¿½
     Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
     if (player)
     {
-        // š‚±‚±‚Å3–‡ƒZƒbƒg‚Å“n‚·
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½3ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½Å“nï¿½ï¿½
         player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk,m_pPlayerTexJump);
 
-        // Å‰‚Ì‰Šú‰» (Init) ‚àŒÄ‚ñ‚Å‚¨‚­
-        player->Init(m_pPlayerTexIdle); //Idle‚ğ“n‚·
+        // ï¿½Åï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ (Init) ï¿½ï¿½ï¿½Ä‚ï¿½Å‚ï¿½ï¿½ï¿½
+        player->Init(m_pPlayerTexIdle); //Idleï¿½ï¿½nï¿½ï¿½
+
+        player->SetSound(m_pSound);
     }
     m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;
@@ -48,7 +53,7 @@ void Stage1Scene::Init()
 
 void Stage1Scene::Update()
 {
-    // Œ»İ‚ÌƒLƒƒƒ‰ƒNƒ^[‚Ì”‚¾‚¯XV
+    // ï¿½ï¿½ï¿½İ‚ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
     for (int i = 0; i < m_currentCharaNum; i++)
     {
         if (m_pCharaList[i])
@@ -56,7 +61,7 @@ void Stage1Scene::Update()
             m_pCharaList[i]->Update(*m_pTileMap);
         }
     }
-    // ƒV[ƒ“I—¹”»’è
+    // ï¿½Vï¿½[ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
         m_IsFinished = true;
@@ -65,18 +70,18 @@ void Stage1Scene::Update()
 
 void Stage1Scene::Draw()
 {
-    // ”wŒiFƒNƒŠƒAi‹ó‚ÌFj
+    // ï¿½wï¿½iï¿½Fï¿½Nï¿½ï¿½ï¿½Aï¿½iï¿½ï¿½ÌFï¿½j
     float clearColor[4] = { 0.f, 1.f, 0.f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
-    // ƒJƒƒ‰s—ñ‚Ìæ“¾
+    // ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½Ìæ“¾
     m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540);
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
 
-    //1. ƒ}ƒbƒv‚Ì•`‰æ
+    //1. ï¿½}ï¿½bï¿½vï¿½Ì•`ï¿½ï¿½
     m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
 
-    // 2. ƒvƒŒƒCƒ„[‚Ì•`‰æ
+    // 2. ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ì•`ï¿½ï¿½
     for (int i = 0; i < m_currentCharaNum; i++)
     {
         if (m_pCharaList[i])
@@ -94,11 +99,12 @@ void Stage1Scene::Draw()
 
 void Stage1Scene::Uninit()
 {
-    // ƒƒ‚ƒŠ‰ğ•ú
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     if (m_pPlayer) { delete m_pPlayer; m_pPlayer = nullptr; }
     if (m_pTileMap) { delete m_pTileMap; m_pTileMap = nullptr; }
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
+    if (m_pSound){m_pSound->Uninit();delete m_pSound;m_pSound = nullptr;}
     AllClearList(m_pCharaList);
 }
 
