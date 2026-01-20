@@ -78,14 +78,14 @@ void Enemy::Attack(Character** charaList)
 {
 
 }
-int Enemy::TakeDamage(Character** charaList)
+int Enemy::TakeDamage()
 {
 	int damage = 1;
 	m_Stats.m_HP -= damage;
 	if (m_Stats.m_HP <= 0)
 	{
 		m_Stats.m_HP = 0;
-		isDead = true;
+		m_IsDead = true;
 	}
 	return m_Stats.m_HP;
 }

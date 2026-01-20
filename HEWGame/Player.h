@@ -34,7 +34,7 @@ public:
 
     void Jump()override;
     void Attack(Character** charaList)override;
-    int TakeDamage(Character** charaList)override;
+    int TakeDamage()override;
 
     void WallJump();
     void Blink();

@@ -69,7 +69,7 @@ protected:
 
     GameObject* object;
 
-    bool isDead;  //Ž€–S‚µ‚½‚©‚Ç‚¤‚©
+    bool m_IsDead;  //Ž€–S‚µ‚½‚©‚Ç‚¤‚©
 
 public:
     Character();
@@ -79,7 +79,7 @@ public:
 
      void Move(const TileMap& tile) ;
     virtual void  Attack(Character** charaList) = 0;
-    virtual int TakeDamage(Character**charaList) = 0;
+    virtual int TakeDamage() = 0;
     virtual void Jump() = 0;
 
     bool StageCol(const TileMap& tile, const ColRes direction);
@@ -95,4 +95,7 @@ public:
     {
         GameObject::Init(pTexture);
     }
+
+	// Ž€–S‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©Žæ“¾
+    bool IsDead() const { return m_IsDead; }
 };

@@ -58,7 +58,7 @@ void Stage1Scene::Update()
     // 現在のキャラクターの数だけ更新
     for (int i = 0; i < m_currentCharaNum; i++)
     {
-        if (m_pCharaList[i])
+		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
         {
             m_pCharaList[i]->Update(*m_pTileMap,m_pCharaList);
         }
@@ -87,7 +87,7 @@ void Stage1Scene::Draw()
     // 2. プレイヤーの描画
     for (int i = 0; i < m_currentCharaNum; i++)
     {
-        if (m_pCharaList[i])
+		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ描画
         {
              m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
         }

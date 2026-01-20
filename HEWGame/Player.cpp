@@ -23,7 +23,7 @@ Player::Player()
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
 
-	isDead = false;
+	m_IsDead = false;
 }
 
 Player::~Player()
@@ -157,16 +157,14 @@ void Player::Attack(Character** charaList)
 		
 		if (Col::Any(hit))
 		{
-			int remainingHP = obj->TakeDamage(charaList);
-			if (remainingHP <= 0)
-			{
-				charaList[i] = nullptr; 
-			}
+			//敵にダメージを与える
+			obj->TakeDamage();
+			//ここではenemyをdeleteしない！
 		}
 	}
 }
 
-int Player::TakeDamage(Character**charaList)
+int Player::TakeDamage()
 {
 	int damage = 1;
 	m_Stats.m_HP -= damage;
