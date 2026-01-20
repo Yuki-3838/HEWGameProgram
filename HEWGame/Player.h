@@ -2,6 +2,7 @@
 #include "Character.h"
 #include"Animator.h"
 #include"Sound.h"
+#include "EffectManager.h"
 class Player :public Character
 {
 private:
@@ -20,6 +21,7 @@ private:
 	void SetAnimation(int stateIndex);
 
     Sound* m_pSound = nullptr;
+    EffectManager* m_pEffectManager = nullptr;
 public:
     // コンストラクタ・デストラクタ
     Player();
@@ -45,4 +47,5 @@ public:
     void GetBlink();
     void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
     void SetSound(Sound* pSound) { m_pSound = pSound; }
+    void SetEffectManager(EffectManager* em) { m_pEffectManager = em; }
 };

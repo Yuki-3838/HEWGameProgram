@@ -23,6 +23,10 @@ void Stage1Scene::Init()
     m_pSound = new Sound();
     m_pSound->Init();
     m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
+
+    m_pEffectManager = new EffectManager();
+    m_pEffectManager->Init();
+    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice());
     // 2. �v���C���[�̐����Ə�����
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
@@ -46,6 +50,7 @@ void Stage1Scene::Init()
         player->Init(m_pPlayerTexIdle); //Idle��n��
 
         player->SetSound(m_pSound);
+        player->SetEffectManager(m_pEffectManager);
     }
     m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;

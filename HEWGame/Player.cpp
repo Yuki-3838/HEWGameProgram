@@ -1,6 +1,5 @@
 #include "Player.h"
 #include <Windows.h>
-#include"Sound.h"
 
 
 // プレイヤーのコンストラクタ
@@ -120,10 +119,20 @@ void Player::Move(const TileMap& tile)
 	case State::MoveState::LEFT:
 		m_Position.x -= m_Stats.m_Speed;
 		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_Stats.m_Speed;
+		if (m_pEffectManager)
+		{
+			// 足元に出したいので Y座標を調整
+			m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y+64);
+		}
 		break;
 	case State::MoveState::RIGHT:
 		m_Position.x += m_Stats.m_Speed;
 		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
+		if (m_pEffectManager)
+		{
+			// 足元に出したいので Y座標を調整
+			m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y+64);
+		}
 		break;
 	}
 
