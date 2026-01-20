@@ -2,7 +2,7 @@
 
 Enemy::Enemy()
 {
-	// プレイヤー固有の初期設定
+	// エネミー固有の初期設定
 	m_Stats.m_HP = 1;
 	m_Stats.m_Speed = 15;
 	m_Stats.m_Gravity = 5;
@@ -26,14 +26,6 @@ void Enemy::Update(const TileMap& tile)
 {
 	m_MoveState = State::MoveState::NONE;
 	// 移動入力処理
-	if (GetAsyncKeyState(VK_UP) & 0x8000)
-	{
-		m_MoveState = State::MoveState::TOP;
-	}
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-	{
-		m_MoveState = State::MoveState::BOTTOM;
-	}
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
@@ -42,7 +34,7 @@ void Enemy::Update(const TileMap& tile)
 	{
 		m_MoveState = State::MoveState::RIGHT;
 	}
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
 		Jump();
 	}
@@ -121,6 +113,15 @@ void Enemy::Move(const TileMap& tile)
 void Enemy::Attack()
 {
 
+}
+
+void Enemy::TakeDamage(int)
+{
+}
+
+int Enemy::ApplyDamage()
+{
+	return 0;
 }
 
 void Enemy::Jump()

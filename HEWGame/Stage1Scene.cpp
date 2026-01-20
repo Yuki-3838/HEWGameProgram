@@ -22,7 +22,7 @@ void Stage1Scene::Init()
 
     // 2. プレイヤーの生成と初期化
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
-   /* m_pCharaList[1] = AddList(State::CharaType::t_Enemy);*/
+    m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
@@ -42,7 +42,7 @@ void Stage1Scene::Init()
         // 最初の初期化 (Init) も呼んでおく
         player->Init(m_pPlayerTexIdle); //Idleを渡す
     }
-  /*  m_pCharaList[1]->Init(m_pEnemyTex);*/
+    m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;
 }
 
@@ -70,7 +70,7 @@ void Stage1Scene::Draw()
     m_pRenderer->StartFrame(clearColor);
 
     // カメラ行列の取得
-    //m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540);
+    m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540);
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
 
     //1. マップの描画
@@ -86,7 +86,7 @@ void Stage1Scene::Draw()
     }
     if (m_pPlayer)
     {
-        //m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+        m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
     }
 
     m_pRenderer->EndFrame();
@@ -138,9 +138,9 @@ Character* Stage1Scene::AddList(State::CharaType e_name)
     case State::CharaType::t_Player:
         return new Player;
         break;
-   /* case State::CharaType::t_Enemy:
+    case State::CharaType::t_Enemy:
         return new Enemy;
-        break;*/
+        break;
     };
     
 }
