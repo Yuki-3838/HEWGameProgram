@@ -21,6 +21,7 @@ Enemy::Enemy()
 
 Enemy::~Enemy()
 {
+
 }
 
 void Enemy::Update(const TileMap& tile, Character** charaList)
@@ -40,10 +41,17 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		Jump();
 	}
 
+
+
 	//”ñ”­Œ©ó‘Ô
 	if (isDetection == false)
 	{
+
 		//¶‰EˆÚ“®‚É‚·‚é—\’è
+		
+
+		
+
 	}
 
 	//”­Œ©ó‘ÔŽž
@@ -55,13 +63,21 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 			DirectX::XMFLOAT2 targetPos = m_pTarget->GetPosition();
 			DirectX::XMFLOAT2 enemyPos = GetPosition();
 
-			targetPos.x += m_pTarget->GetSize().x * 0.5f;
-			enemyPos.x += GetSize().x * 0.5f;
+			targetPos.x += m_pTarget->GetSize().x * 0.5f ;
+			enemyPos.x += GetSize().x * 0.5f ;
 
-			if (targetPos.x < enemyPos.x)
+
+
+			if (targetPos.x +250.0f< enemyPos.x )
+			{
 				m_MoveState = State::MoveState::LEFT;
-			else
+			}
+
+			else if(targetPos.x -250.0f > enemyPos.x )
+			{
 				m_MoveState = State::MoveState::RIGHT;
+			}
+				
 
 		}
 	}
