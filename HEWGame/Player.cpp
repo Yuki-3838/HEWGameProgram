@@ -132,14 +132,12 @@ void Player::Attack(Character** charaList)
 	DirectX::XMFLOAT2 attackPos;
 	if (m_FlipX)//右向き
 	{
-		//attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
 		attackPos.x = GetPosition().x + GetSize().x;
 	}
 	else//左向き
 	{
 		attackPos.x = GetPosition().x - attackSize.x;
 	}
-	//attackPos.y += m_Size.y / 4;
 	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y /4 ;
 
 	for (int i = 0; charaList[i] != nullptr; ++i)
@@ -148,11 +146,8 @@ void Player::Attack(Character** charaList)
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
-		//Character* chara = dynamic_cast<Character*>(obj);
-		//if (!chara)continue;
 		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
 
-		//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
 		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
 		
 		if (Col::Any(hit))
@@ -173,7 +168,7 @@ int Player::TakeDamage()
 
 void Player::WallJump()
 {
-	//aaaaaaaa
+
 }
 
 void Player::Blink()
