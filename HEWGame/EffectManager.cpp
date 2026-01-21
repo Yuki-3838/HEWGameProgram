@@ -1,6 +1,4 @@
 #include "EffectManager.h"
-#include "Texture.h" // Texture読み込み関数があるヘッダー
-
 void EffectManager::Init()
 {
     // 必要ならここで配列のクリアなど
@@ -18,10 +16,8 @@ void EffectManager::Uninit()
 
 void EffectManager::LoadEffectTexture(EffectType type, const char* filename, ID3D11Device* device)
 {
-    // ResourceManager または Texture::LoadTexture を使って読み込む
-    // ここでは仮に Texture::LoadTexture を呼ぶ想定
-    // ID3D11ShaderResourceView* tex = Texture::LoadTexture(filename, device);
-    // m_TextureMap[type] = tex;
+    ID3D11ShaderResourceView* tex = m_pResourceManager->LoadTexture(filename, m_pRenderer->GetDevice());
+    m_TextureMap[type] = tex;
 }
 
 void EffectManager::Update()

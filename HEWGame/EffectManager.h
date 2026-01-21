@@ -2,7 +2,8 @@
 #include "Effect.h"
 #include <vector>
 #include <map>
-
+#include "Renderer.h"
+#include "ResourceManager.h"
 // エフェクトの最大数
 #define MAX_EFFECTS 100
 
@@ -14,6 +15,8 @@ private:
 
     // 読み込んだテクスチャリスト (種類 -> テクスチャ)
     std::map<EffectType, ID3D11ShaderResourceView*> m_TextureMap;
+    Renderer* m_pRenderer;
+    ResourceManager* m_pResourceManager;
 
 public:
     EffectManager() {}
