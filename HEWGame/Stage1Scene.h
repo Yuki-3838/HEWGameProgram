@@ -13,10 +13,10 @@ private:
     MapRenderer* m_pMapRenderer;
     Player* m_pPlayer;
 
-    // ƒLƒƒƒ‰ƒNƒ^[‚ÉŠÖ‚·‚é•Ï”
-    Character** m_pCharaList = nullptr; // ƒLƒƒƒ‰ƒNƒ^[ƒŠƒXƒg
-    int m_currentCharaNum = 0;          // Œ»İ‚ÌƒLƒƒƒ‰ƒNƒ^[”
-    static constexpr int maxChara = 10; // Å‘åƒLƒƒƒ‰”
+    // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã«é–¢ã™ã‚‹å¤‰æ•°
+    Character** m_pCharaList = nullptr; // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãƒªã‚¹ãƒˆ
+    int m_currentCharaNum = 0;          // ç¾åœ¨ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼æ•°
+    static constexpr int maxChara = 10; // æœ€å¤§ã‚­ãƒ£ãƒ©æ•°
 
     ID3D11ShaderResourceView* m_pMapTex;
     ID3D11ShaderResourceView* m_pPlayerTex;
@@ -25,6 +25,8 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexIdle;
     ID3D11ShaderResourceView* m_pPlayerTexWalk;
     ID3D11ShaderResourceView* m_pPlayerTexJump;
+
+    // testetstest kesite iiyo
 
     bool m_IsFinished;
     Sound* m_pSound = nullptr;
@@ -37,12 +39,12 @@ public:
     bool ShouldChangeScene() const override { return m_IsFinished; }
     void CameraSeting();
 
-    // ƒŠƒXƒg‚ÉŠÖŒW‚·‚é
-    void CreateList(int num);                   // ƒŠƒXƒg‚ğì¬
-    void ClearList(Character* list);            // ƒŠƒXƒg‚Ìˆê•”‚ğ‰ğ•ú
-    void AllClearList(Character** list);        // ƒŠƒXƒg‚ğ‘S‚Ä‰ğ•ú
-    Character* AddList(State::CharaType e_name);   // ƒŠƒXƒg‚ÉƒIƒuƒWƒFƒNƒg‚ğ’Ç‰Á
+    // ãƒªã‚¹ãƒˆã«é–¢ä¿‚ã™ã‚‹
+    void CreateList(int num);                   // ãƒªã‚¹ãƒˆã‚’ä½œæˆ
+    void ClearList(Character* list);            // ãƒªã‚¹ãƒˆã®ä¸€éƒ¨ã‚’è§£æ”¾
+    void AllClearList(Character** list);        // ãƒªã‚¹ãƒˆã‚’å…¨ã¦è§£æ”¾
+    Character* AddList(State::CharaType e_name);   // ãƒªã‚¹ãƒˆã«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿½åŠ 
 
-    // “–‚½‚è”»’è
+    // å½“ãŸã‚Šåˆ¤å®š
     void TileCollision(int charaName);
 };
