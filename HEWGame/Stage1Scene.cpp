@@ -26,7 +26,7 @@ void Stage1Scene::Init()
 
     m_pEffectManager = new EffectManager();
     m_pEffectManager->Init();
-    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/testSP.png", m_pRenderer->GetDevice());
+    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/testSP.png", m_pRenderer->GetDevice(),m_pResourceManager);
     // 2. �v���C���[�̐����Ə�����
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
@@ -80,7 +80,7 @@ void Stage1Scene::Update()
 void Stage1Scene::Draw()
 {
     // �w�i�F�N���A�i��̐F�j
-    float clearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
+    float clearColor[4] = { 0.f, 1.f, 0.f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
     // �J�����s��̎擾

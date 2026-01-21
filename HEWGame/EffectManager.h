@@ -28,7 +28,7 @@ public:
     void Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer, DirectX::XMMATRIX viewProj);
 
     // テクスチャ読み込み
-    void LoadEffectTexture(EffectType type, const char* filename, ID3D11Device* device);
+    void LoadEffectTexture(EffectType type, const char* filename, ID3D11Device* device, ResourceManager* mgr);
 
     // エフェクト発生（種類, 場所）
     void Play(EffectType type, float x, float y);

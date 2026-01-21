@@ -14,10 +14,13 @@ void EffectManager::Uninit()
     m_TextureMap.clear();
 }
 
-void EffectManager::LoadEffectTexture(EffectType type, const char* filename, ID3D11Device* device)
+void EffectManager::LoadEffectTexture(EffectType type, const char* filename, ID3D11Device* device, ResourceManager* mgr)
 {
-    ID3D11ShaderResourceView* tex = m_pResourceManager->LoadTexture(filename, m_pRenderer->GetDevice());
-    m_TextureMap[type] = tex;
+    if (mgr)
+    {
+        ID3D11ShaderResourceView* tex = mgr->LoadTexture(filename, device);
+        m_TextureMap[type] = tex;
+    }
 }
 
 void EffectManager::Update()
@@ -36,6 +39,7 @@ void EffectManager::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRen
     }
 }
 
+
 void EffectManager::Play(EffectType type, float x, float y)
 {
     // 空いているエフェクトを探す
@@ -47,8 +51,8 @@ void EffectManager::Play(EffectType type, float x, float y)
             ID3D11ShaderResourceView* tex = m_TextureMap[type];
             if (!tex) return;
 
-            // 発生させる (Texture, x, y, speedX, speedY, lifeTime, scale)
-            m_Effects[i].Init(m_TextureMap[type], x, y, 100.0f, 18, 6, 320.0f, 320.0f, 0.05f);
+            // 発生させる (Texture, x, y, scale,総コマ数,横のコマ数,w,h,再生スピード)
+            m_Effects[i].Init(m_TextureMap[type], x, y, 1.0f, 18, 6, 320.0f, 320.0f, 0.05f);
             break;
         }
     }
