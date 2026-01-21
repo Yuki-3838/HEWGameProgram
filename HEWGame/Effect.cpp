@@ -1,14 +1,15 @@
 #include "Effect.h"
 
 // Spawnの実装
-void Effect::Init(ID3D11ShaderResourceView* tex, float x, float y, float scale,
-    int frameCount, int divX, float texW, float texH, float speed)
-{
+void Effect::Init(ID3D11ShaderResourceView* tex, float x, float y, float scale, int frameCount, int divX, float texW, float texH, float speed, bool flipX, float angle) {
     m_pTexture = tex;
     m_Position = { x, y };
     m_Scale = scale;
     m_Active = true;
     m_LifeTimer = frameCount * speed;
+
+    m_FlipX = flipX;
+    m_Angle = angle;
     //Animatorの初期化
     // 1コマの幅と高さを計算
     float cellW = texW / divX;
@@ -17,6 +18,7 @@ void Effect::Init(ID3D11ShaderResourceView* tex, float x, float y, float scale,
     // Animator::Init(総コマ数, 横列数, 1コマW, 1コマH, 1コマの時間)
     m_Animator.Init(frameCount, divX, cellW, cellH, speed);
 }
+
 
 void Effect::Update(float deltaTime)
 {
@@ -47,6 +49,8 @@ void Effect::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer, 
         frame.w * m_Scale, frame.h * m_Scale, // 表示サイズ (コマサイズ × スケール)
         viewProj,
         frame.x, frame.y, // 切り抜き左上
-        frame.w, frame.h  // 切り抜きサイズ
+        frame.w, frame.h,  // 切り抜きサイズ
+        m_Angle,//回転
+        m_FlipX//反転
     );
 }
