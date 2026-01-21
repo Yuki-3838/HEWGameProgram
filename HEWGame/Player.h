@@ -27,7 +27,7 @@ private:
     bool m_IsAttack;
     int m_AttackFrame;
     static const int AttackTotalFrame = 30;  //攻撃アニメの総フレーム数
-    static const int AttackHitStart = 29;     //攻撃判定が発生する開始フレーム
+    static const int AttackHitStart = 1;     //攻撃判定が発生する開始フレーム
     static const int AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
     CharDir m_charDir; //キャラクターの向き
 
