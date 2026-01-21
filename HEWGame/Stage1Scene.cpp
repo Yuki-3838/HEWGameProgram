@@ -184,7 +184,7 @@ void Stage1Scene::CameraSeting()
 {
     DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 540 - 99);
     // プレイヤーのｘ座標が壁から一定距離でなければカメラを固定
-    if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
+    if (m_pCharaList[0]->GetPosition().x <= 240)
     {
         // ジャンプ中
         if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
