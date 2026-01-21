@@ -69,7 +69,7 @@ protected:
 
     GameObject* object;
 
-    bool isDead;  //死亡したかどうか
+    bool m_IsDead;  //死亡したかどうか
 
 public:
     Character();
@@ -77,21 +77,25 @@ public:
 
     virtual void UnInit() = 0;
 
-    virtual void Move(const TileMap& tile) = 0;
-    virtual void  Attack() = 0;
-    virtual int ApplyDamage() = 0;
-    virtual void TakeDamage(int) = 0;
+     void Move(const TileMap& tile) ;
+    virtual void  Attack(Character** charaList) = 0;
+    virtual int TakeDamage() = 0;
     virtual void Jump() = 0;
 
     bool StageCol(const TileMap& tile, const ColRes direction);
 
-    virtual void Update(const TileMap& tile) = 0;
+    virtual void Update(const TileMap& tile, Character** charaList) = 0;
 
     State::CharaType GetCharaType() { return m_charaType; }
+    State::JumpState GetJumpState() { return m_JumpState; }
+    float GetAcceleY() { return m_Stats.m_AccelY; }
 
     // キャラクター共通の初期化（必要であれば）
     virtual void Init(ID3D11ShaderResourceView* pTexture) override 
     {
         GameObject::Init(pTexture);
     }
+
+	// 死亡しているかどうか取得
+    bool IsDead() const { return m_IsDead; }
 };

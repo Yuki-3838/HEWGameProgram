@@ -26,7 +26,7 @@ public:
     ~Player() override;
 
     // 毎フレームの更新処理（入力による移動など）
-    void Update(const TileMap& tile)override;
+    void Update(const TileMap& tile, Character** charaList)override;
 
     //アニメーションさせるための描画
     void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
@@ -34,11 +34,9 @@ public:
 
     void UnInit()override;
 
-    void Move(const TileMap& tile)override;
     void Jump()override;
-    void Attack()override;
-    void TakeDamage(int)override;
-    int ApplyDamage();
+    void Attack(Character** charaList)override;
+    int TakeDamage()override;
 
     void WallJump();
     void Blink();

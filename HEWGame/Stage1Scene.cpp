@@ -18,7 +18,7 @@ void Stage1Scene::Init()
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
-    m_pCamera = new Camera(3840,2160);
+    m_pCamera = new Camera(1920,1080);
 
     m_pSound = new Sound();
     m_pSound->Init();
@@ -49,19 +49,26 @@ void Stage1Scene::Init()
     }
     m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;
+
+    //エネミーにプレイヤーの位置情報を渡す
+    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
+    enemy->SetTarget(*player);
+
+
 }
 
 void Stage1Scene::Update()
 {
-    // ���݂̃L�����N�^�[�̐������X�V
+    CameraSeting();
+    // 現在のキャラクターの数だけ更新
     for (int i = 0; i < m_currentCharaNum; i++)
     {
-        if (m_pCharaList[i])
+		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
         {
-            m_pCharaList[i]->Update(*m_pTileMap);
+            m_pCharaList[i]->Update(*m_pTileMap,m_pCharaList);
         }
     }
-    // �V�[���I������
+    // シーン終了判定
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
         m_IsFinished = true;
@@ -70,21 +77,22 @@ void Stage1Scene::Update()
 
 void Stage1Scene::Draw()
 {
-    // �w�i�F�N���A�i��̐F�j
+    // 背景色クリア（空の色）
     float clearColor[4] = { 0.f, 1.f, 0.f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
-    // �J�����s��̎擾
-    m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540);
+    // カメラ行列の取得
+    CameraSeting();
+    
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
 
-    //1. �}�b�v�̕`��
+    //1. マップの描画
     m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
 
-    // 2. �v���C���[�̕`��
+    // 2. プレイヤーの描画
     for (int i = 0; i < m_currentCharaNum; i++)
     {
-        if (m_pCharaList[i])
+		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ描画
         {
              m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
         }
@@ -99,7 +107,7 @@ void Stage1Scene::Draw()
 
 void Stage1Scene::Uninit()
 {
-    // ���������
+    // メモリ解放
     if (m_pPlayer) { delete m_pPlayer; m_pPlayer = nullptr; }
     if (m_pTileMap) { delete m_pTileMap; m_pTileMap = nullptr; }
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
@@ -113,7 +121,10 @@ void Stage1Scene::CreateList(int num)
     if (m_pCharaList == nullptr)
     {
         m_pCharaList = new Character * [num];
-        
+    }
+    for (int i = 0; i < maxChara; i++)
+    {
+		m_pCharaList[i] = nullptr;
     }
 }
 
@@ -172,5 +183,27 @@ void Stage1Scene::TileCollision(int charaName)
                 
             }
         }
+    }
+}
+
+void Stage1Scene::CameraSeting()
+{
+    DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x, m_pCharaList[0]->GetPosition().y - 540 - 99);
+    // プレイヤーのｘ座標が壁から一定距離でなければカメラを固定
+    /*if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
+    {
+        m_pCamera->SetPosition(0, defCameraPos.y );
+    }
+    else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
+    {
+        m_pCamera->SetPosition(0, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99 + m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetAcceleY());
+    }
+    else if(m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
+    {
+        m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99);
+    }*/
+    
+    {
+        m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240,0);
     }
 }

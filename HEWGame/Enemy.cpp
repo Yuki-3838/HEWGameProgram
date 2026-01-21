@@ -15,14 +15,15 @@ Enemy::Enemy()
 	m_Position.y = 0.0f;
 
 	m_charaType = State::CharaType::t_Enemy;
+
+	isDetection = false; //プレイヤーの発見状態
 }
 
 Enemy::~Enemy()
 {
 }
 
-void Enemy::Update(const TileMap& tile)
-
+void Enemy::Update(const TileMap& tile, Character** charaList)
 {
 	m_MoveState = State::MoveState::NONE;
 	// 移動入力処理
@@ -39,6 +40,31 @@ void Enemy::Update(const TileMap& tile)
 		Jump();
 	}
 
+	//非発見状態
+	if (isDetection == false)
+	{
+		//左右移動にする予定
+	}
+
+	//発見状態時
+	if (isDetection == true)
+	{
+		m_MoveState = State::MoveState::NONE;
+		if (m_pTarget)
+		{
+			DirectX::XMFLOAT2 targetPos = m_pTarget->GetPosition();
+			DirectX::XMFLOAT2 enemyPos = GetPosition();
+
+			targetPos.x += m_pTarget->GetSize().x * 0.5f;
+			enemyPos.x += GetSize().x * 0.5f;
+
+			if (targetPos.x < enemyPos.x)
+				m_MoveState = State::MoveState::LEFT;
+			else
+				m_MoveState = State::MoveState::RIGHT;
+
+		}
+	}
 	Move(tile);
 }
 
@@ -47,81 +73,21 @@ void Enemy::UnInit()
   
 }
 
-void Enemy::Move(const TileMap& tile)
+
+void Enemy::Attack(Character** charaList)
 {
-  
-	switch (m_MoveState)
+
+}
+int Enemy::TakeDamage()
+{
+	int damage = 1;
+	m_Stats.m_HP -= damage;
+	if (m_Stats.m_HP <= 0)
 	{
-	case State::MoveState::LEFT:
-		m_Position.x -= m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_Stats.m_Speed;
-		break;
-	case State::MoveState::RIGHT:
-		m_Position.x += m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
-		break;
-	case State::MoveState::TOP:
-		m_Position.y -= m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::TOP))m_Position.y += m_Stats.m_Speed;
-		break;
-	case State::MoveState::BOTTOM:
-		m_Position.y += m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_Stats.m_Speed;
-		break;
+		m_Stats.m_HP = 0;
+		m_IsDead = true;
 	}
-	switch (m_JumpState)
-	{
-	case State::JumpState::RISE:
-		m_Position.y -= m_Stats.m_AccelY;
-		m_Stats.m_AccelY--;
-		if (StageCol(tile, ColRes::TOP))
-		{
-			m_Position.y += m_Stats.m_AccelY + 1;
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY = -1;
-		}
-		if (m_Stats.m_AccelY == 0)
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY = -1;
-		}
-		break;
-	case State::JumpState::DESC:
-		m_Position.y -= m_Stats.m_AccelY;
-		m_Stats.m_AccelY -= m_Stats.m_Gravity;
-		if (StageCol(tile, ColRes::BOTTOM))
-		{
-			do
-			{
-				m_Position.y -= 1;
-			} while (StageCol(tile, ColRes::BOTTOM));
-			m_JumpState = State::JumpState::NONE;
-			m_Stats.m_AccelY = 0;
-		}
-		break;
-	case State::JumpState::NONE:
-		m_Position.y += m_Stats.m_Gravity;
-		if (!StageCol(tile, ColRes::BOTTOM))
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY++;
-		}
-		m_Position.y -= m_Stats.m_Gravity;
-	}
-}
-
-void Enemy::Attack()
-{
-
-}
-
-void Enemy::TakeDamage(int)
-{
-}
-
-int Enemy::ApplyDamage()
-{
-	return 0;
+	return m_Stats.m_HP;
 }
 
 void Enemy::Jump()
@@ -134,4 +100,9 @@ void Enemy::Jump()
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;
 		m_JumpState = State::JumpState::RISE;
 	}
+}
+
+void Enemy::SetTarget(const Character& target)
+{
+	m_pTarget = &target;
 }

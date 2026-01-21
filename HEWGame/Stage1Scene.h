@@ -35,6 +35,7 @@ public:
     void Draw() override;
     void Uninit() override;
     bool ShouldChangeScene() const override { return m_IsFinished; }
+    void CameraSeting();
 
     // リストに関係する
     void CreateList(int num);                   // リストを作成

@@ -1,7 +1,8 @@
 #include "Player.h"
 #include <Windows.h>
-#include"Sound.h"
+#include<vector>
 
+ std::vector<GameObject*> g_GameObjects;
 
 // プレイヤーのコンストラクタ
 Player::Player()
@@ -16,31 +17,30 @@ Player::Player()
 	m_Size.x = 320.0f;
 	m_Size.y = 320.0f;
 	m_Position.x = 0.0f;
-	m_Position.y = 640.0f;
+	m_Position.y = 100.0f;
 
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
 
-	isDead = false;
+	m_IsDead = false;
 }
 
 Player::~Player()
 {
-	//aaaaaaaaaaa
 }
 
 
-void Player::Update(const TileMap& tile)
+void Player::Update(const TileMap& tile, Character** charaList)
 {
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
 	// 移動入力処理
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	if (GetAsyncKeyState(VK_A) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
 		m_FlipX = false;
 	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	if (GetAsyncKeyState(VK_D) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
 		m_FlipX = true;
@@ -70,7 +70,7 @@ void Player::Update(const TileMap& tile)
 	}
 
 	//アニメーション更新
-	m_Animator.Update(1.0f / 2.0f);
+	m_Animator.Update(1.0f / 60.0f);
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
@@ -79,7 +79,7 @@ void Player::Update(const TileMap& tile)
 
 	if (GetAsyncKeyState(VK_Z) & 0x8000)
 	{
-		Attack();
+		Attack(charaList);
 	}
 
 	Move(tile);
@@ -91,7 +91,7 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
 	//絵をどれくらい下にずらすか
-	float drawOffsetY = 0;
+	float drawOffsetY = 60.0f;
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
 	{
@@ -113,75 +113,6 @@ void Player::UnInit()
 {
 }
 
-void Player::Move(const TileMap& tile)
-{
-	switch (m_MoveState)
-	{
-	case State::MoveState::LEFT:
-		m_Position.x -= m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_Stats.m_Speed;
-		break;
-	case State::MoveState::RIGHT:
-		m_Position.x += m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
-		break;
-	}
-
-	// 高度に関する処理
-	switch (m_JumpState)
-	{
-		// 上昇処理
-	case State::JumpState::RISE:
-		//　上昇し、１ｆずつ上昇加速度を１減速する
-		m_Position.y -= m_Stats.m_AccelY;
-		m_Stats.m_AccelY--;
-		// 天井に衝突した場合、下降に移行する
-		if (StageCol(tile, ColRes::TOP))
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY = -1;
-		}
-		// 上昇加速度が０になった場合、下降に移行する
-		if (m_Stats.m_AccelY == 0)
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY = -1;
-		}
-		break;
-
-		// 下降処理
-	case State::JumpState::DESC:
-		// 下降する
-		m_Position.y -= m_Stats.m_AccelY;
-		// 最大下降加速度出ない場合、下降加速度を１加速
-		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
-		{
-			m_Stats.m_AccelY -= m_Stats.m_Gravity;
-		}
-		if (StageCol(tile, ColRes::BOTTOM))
-		{
-			do
-			{
-				m_Position.y -= 1;
-			} while (StageCol(tile, ColRes::BOTTOM));
-			m_JumpState = State::JumpState::NONE;
-			m_Stats.m_AccelY = 0;
-		}
-		break;
-
-		// 通常時処理
-	case State::JumpState::NONE:
-		// 重力を与え、地面に着地していなければ下降に移行
-		m_Position.y += m_Stats.m_Gravity;
-		if (!StageCol(tile, ColRes::BOTTOM))
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY++;
-		}
-		m_Position.y -= m_Stats.m_Gravity;
-	}
-}
-
 void Player::Jump()
 {
 	//Y軸の加速度がなければ追加
@@ -191,31 +122,53 @@ void Player::Jump()
 	{
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;
 		m_JumpState = State::JumpState::RISE;
-		if (m_pSound)
+	}
+}
+
+void Player::Attack(Character** charaList)
+{
+	//攻撃範囲設定
+	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
+	DirectX::XMFLOAT2 attackPos;
+	if (m_FlipX)//右向き
+	{
+		//attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
+		attackPos.x = GetPosition().x + GetSize().x;
+	}
+	else//左向き
+	{
+		attackPos.x = GetPosition().x - attackSize.x;
+	}
+	//attackPos.y += m_Size.y / 4;
+	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y /4 ;
+
+	for (int i = 0; charaList[i] != nullptr; ++i)
+	{
+	    auto obj = charaList[i];
+		//オブジェクトじゃなかったらスキップする
+		if (!obj)continue;
+
+		//Character* chara = dynamic_cast<Character*>(obj);
+		//if (!chara)continue;
+		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
+
+		//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
+		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
+		
+		if (Col::Any(hit))
 		{
-			m_pSound->Play(SOUND_LABEL_SE_JUMP);
+			//敵にダメージを与える
+			obj->TakeDamage();
+			//ここではenemyをdeleteしない！
 		}
 	}
 }
 
-void Player::Attack()
+int Player::TakeDamage()
 {
-	ApplyDamage();
-}
-
-void Player::TakeDamage(int damage)
-{
-	m_Stats.m_HP - damage;
-	if (m_Stats.m_HP <= 0)
-	{
-		m_Stats.m_HP = 0;
-		isDead = true;
-	}
-}
-
-int Player::ApplyDamage()
-{
-	return 0;
+	int damage = 1;
+	m_Stats.m_HP -= damage;
+	return m_Stats.m_HP;
 }
 
 void Player::WallJump()
@@ -252,18 +205,18 @@ void Player::SetAnimation(int stateIndex)
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
-		case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
-			//テクスチャの入れ替え
-			m_pTexture = m_pTexIdle;
-			m_Animator.Init(18, 6, w, h, 0.01f,0.0f);
-			break; 
-		case 1: //移動
-			m_pTexture = m_pTexWalk;
-			m_Animator.Init(18, 6, w, h, 0.2f,0.0f);
-			break;
-		case 2:
-			m_pTexture = m_pTexJump;
-			m_Animator.Init(1, 4, w, h, 0.2f, 0.0f);
-			break;
+	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
+		//テクスチャの入れ替え
+		m_pTexture = m_pTexIdle;
+		m_Animator.Init(18, 6, w, h, 0.01f, 0.0f);
+		break;
+	case 1: //移動
+		m_pTexture = m_pTexWalk;
+		m_Animator.Init(18, 6, w, h, 0.2f, 0.0f);
+		break;
+	case 2:
+		m_pTexture = m_pTexJump;
+		m_Animator.Init(1, 4, w, h, 0.2f, 0.0f);
+		break;
 	}
 }
