@@ -71,6 +71,10 @@ void Stage1Scene::Update()
     {
         m_IsFinished = true;
     }
+    if (m_pEffectManager)
+    {
+        m_pEffectManager->Update();
+    }
 }
 
 void Stage1Scene::Draw()
@@ -98,7 +102,10 @@ void Stage1Scene::Draw()
     {
         m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
     }
-
+    if (m_pEffectManager)
+    {
+        m_pEffectManager->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+    }
     m_pRenderer->EndFrame();
 }
 
