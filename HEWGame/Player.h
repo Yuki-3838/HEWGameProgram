@@ -2,36 +2,50 @@
 #include "Character.h"
 #include"Animator.h"
 #include"Sound.h"
+
+enum class CharDir
+{
+    LEFT,
+    RIGHT
+};
+
 class Player :public Character
 {
 private:
-    
-    // Šeó‘Ô‚ÌƒeƒNƒXƒ`ƒƒ‚ğ•Û‚µ‚Ä‚¨‚­•Ï”
-    ID3D11ShaderResourceView* m_pTexIdle = nullptr; // ‘Ò‹@—p
-    ID3D11ShaderResourceView* m_pTexWalk = nullptr; // ˆÚ“®—p
-    ID3D11ShaderResourceView* m_pTexJump = nullptr; // ƒWƒƒƒ“ƒv—p
+    // å„çŠ¶æ…‹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä¿æŒã—ã¦ãŠãå¤‰æ•°
+    ID3D11ShaderResourceView* m_pTexIdle = nullptr; // å¾…æ©Ÿç”¨
+    ID3D11ShaderResourceView* m_pTexWalk = nullptr; // ç§»å‹•ç”¨
+    ID3D11ShaderResourceView* m_pTexJump = nullptr; // ã‚¸ãƒ£ãƒ³ãƒ—ç”¨
 
-	Animator m_Animator;//ƒAƒjƒ[ƒVƒ‡ƒ“ŠÇ—
-	bool m_FlipX = false; // ¶‰E”½“]ƒtƒ‰ƒO
+    Animator m_Animator;//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç®¡ç†
+    bool m_FlipX = false; // å·¦å³åè»¢ãƒ•ãƒ©ã‚°
 
-	//Œ»İÄ¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ó‘Ô
-	int m_CurrentAnimState = -1;
+    //ç¾åœ¨å†ç”Ÿä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çŠ¶æ…‹
+    int m_CurrentAnimState = -1;
 
-    //ƒAƒjƒ[ƒVƒ‡ƒ“Ø‚è‘Ö‚¦ŠÖ”
-	void SetAnimation(int stateIndex);
+    //æ”»æ’ƒåˆ¤å®šç”¨å¤‰æ•°
+    bool m_IsAttack;
+    int m_AttackFrame;
+    static const int AttackTotalFrame = 30;  //æ”»æ’ƒã‚¢ãƒ‹ãƒ¡ã®ç·ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+    static const int AttackHitStart = 29;     //æ”»æ’ƒåˆ¤å®šãŒç™ºç”Ÿã™ã‚‹é–‹å§‹ãƒ•ãƒ¬ãƒ¼ãƒ 
+    static const int AttackHitEnd = 30;      //æ”»æ’ƒåˆ¤å®šãŒç™ºç”Ÿã™ã‚‹çµ‚äº†ãƒ•ãƒ¬ãƒ¼ãƒ 
+    CharDir m_charDir; //ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®å‘ã
+
+    //ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åˆ‡ã‚Šæ›¿ãˆé–¢æ•°
+    void SetAnimation(int stateIndex);
 
     Sound* m_pSound = nullptr;
 public:
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^EƒfƒXƒgƒ‰ƒNƒ^
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ»ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     Player();
     ~Player() override;
 
-    // –ˆƒtƒŒ[ƒ€‚ÌXVˆ—i“ü—Í‚É‚æ‚éˆÚ“®‚È‚Çj
+    // æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ›´æ–°å‡¦ç†ï¼ˆå…¥åŠ›ã«ã‚ˆã‚‹ç§»å‹•ãªã©ï¼‰
     void Update(const TileMap& tile, Character** charaList)override;
 
-    //ƒAƒjƒ[ƒVƒ‡ƒ“‚³‚¹‚é‚½‚ß‚Ì•`‰æ
+    //ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã•ã›ã‚‹ãŸã‚ã®æç”»
     void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
-    // ƒXƒe[ƒW‚Æ‚Ì“–‚½‚è”»’èæ“¾
+    // ã‚¹ãƒ†ãƒ¼ã‚¸ã¨ã®å½“ãŸã‚Šåˆ¤å®šå–å¾—
 
     void UnInit()override;
 
