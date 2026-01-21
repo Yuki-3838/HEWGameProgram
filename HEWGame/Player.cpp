@@ -196,6 +196,7 @@ void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceVie
 
 void Player::SetAnimation(int stateIndex)
 {
+	// sakagami love kouyou
 	m_CurrentAnimState = stateIndex;
 	// 初期状態として待機画像をセットしておく
 	m_pTexture = m_pTexIdle;
