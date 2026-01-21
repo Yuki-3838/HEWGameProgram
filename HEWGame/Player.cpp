@@ -173,7 +173,7 @@ int Player::TakeDamage()
 
 void Player::WallJump()
 {
-	//aaaaaaaa
+	// test wll
 }
 
 void Player::Blink()
