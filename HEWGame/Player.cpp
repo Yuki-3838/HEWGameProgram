@@ -9,13 +9,13 @@ Player::Player()
 {
 	// プレイヤー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 15;
+	m_Stats.m_Speed = 20;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
 
-	m_Size.x = 320.0f;
-	m_Size.y = 320.0f;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
 	m_Position.x = 0.0f;
 	m_Position.y = 100.0f;
 
@@ -70,7 +70,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	}
 
 	//アニメーション更新
-	m_Animator.Update(1.0f / 60.0f);
+	m_Animator.Update(1.0f / 1.0f);
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{

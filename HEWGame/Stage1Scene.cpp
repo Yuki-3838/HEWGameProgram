@@ -28,7 +28,7 @@ void Stage1Scene::Init()
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
     // 3. テクスチャのロード
-    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
+    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/object.png", m_pRenderer->GetDevice());
     m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/T_Stand_B.png", m_pRenderer->GetDevice());
     m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
     m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/testSP.png", m_pRenderer->GetDevice());
@@ -188,14 +188,14 @@ void Stage1Scene::TileCollision(int charaName)
 
 void Stage1Scene::CameraSeting()
 {
-    DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 540 - 99);
+    DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 696);
     // プレイヤーのｘ座標が壁から一定距離でなければカメラを固定
     if (m_pCharaList[0]->GetPosition().x <= 240)
     {
-        // ジャンプ中
+         //ジャンプ中
         if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
         {
-            m_pCamera->SetPosition(0, m_pCharaList[0]->GetDefPosY() - 540 - 99);
+            //m_pCamera->SetPosition(0, m_pCharaList[0]->GetDefPosY() - 696);
         }
         // 着地中
         else
@@ -207,7 +207,7 @@ void Stage1Scene::CameraSeting()
     // ジャンプ上昇、降下のカメラ処理
     else if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
     {
-        m_pCamera->SetPosition(defCameraPos.x, m_pCharaList[0]->GetDefPosY() - 540 - 99);
+       m_pCamera->SetPosition(defCameraPos.x, m_pCharaList[0]->GetDefPosY() - 696);
     }
     else
     {
