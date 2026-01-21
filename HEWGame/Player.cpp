@@ -173,6 +173,7 @@ void Player::WallJump()
 
 void Player::Blink()
 {
+
 }
 
 void Player::GetBlink()
