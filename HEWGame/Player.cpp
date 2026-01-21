@@ -4,10 +4,10 @@
 
  std::vector<GameObject*> g_GameObjects;
 
-// ƒvƒŒƒCƒ„[‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 Player::Player()
 {
-	// ƒvƒŒƒCƒ„[ŒÅ—L‚Ì‰Šúİ’è
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å›ºæœ‰ã®åˆæœŸè¨­å®š
 	m_Stats.m_HP = 1;
 	m_Stats.m_Speed = 15;
 	m_Stats.m_Gravity = 5;
@@ -20,7 +20,7 @@ Player::Player()
 	m_Position.y = 100.0f;
 
 	m_charaType = State::CharaType::t_Player;
-	//—á‚¦‚Î0 ‚È‚ç‘Ò‹@A1‚È‚ç‘–‚éA2‚È‚çƒWƒƒƒ“ƒv‚È‚Ç
+	//ä¾‹ãˆã°0 ãªã‚‰å¾…æ©Ÿã€1ãªã‚‰èµ°ã‚‹ã€2ãªã‚‰ã‚¸ãƒ£ãƒ³ãƒ—ãªã©
 	SetAnimation(0);
 
 	m_IsDead = false;
@@ -33,43 +33,43 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile, Character** charaList)
 {
-	m_MoveState = State::MoveState::NONE;  //Å‰‚Í‰EŒü‚«
-	// ˆÚ“®“ü—Íˆ—
+	m_MoveState = State::MoveState::NONE;  //æœ€åˆã¯å³å‘ã
+	// ç§»å‹•å…¥åŠ›å‡¦ç†
 	if (GetAsyncKeyState(VK_A) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = false;
+		m_FlipX = true;
 	}
 	if (GetAsyncKeyState(VK_D) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = true;
+		m_FlipX = false;
 	}
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦”»’è(—Dæ“x‚ÍƒWƒƒƒ“ƒv„ˆÚ“®„‘Ò‹@)
-	int nextAnim = 0; // 0:‘Ò‹@ (ƒfƒtƒHƒ‹ƒg)
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆåˆ¤å®š(å„ªå…ˆåº¦ã¯ã‚¸ãƒ£ãƒ³ãƒ—ï¼ç§»å‹•ï¼å¾…æ©Ÿ)
+	int nextAnim = 0; // 0:å¾…æ©Ÿ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ)
 
-	// ƒWƒƒƒ“ƒv’†‚©
+	// ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã‹
 	if (m_JumpState == State::JumpState::RISE || m_JumpState == State::JumpState::DESC)
 	{
-		nextAnim = 2; // ƒWƒƒƒ“ƒv—pƒAƒjƒ
+		nextAnim = 2; // ã‚¸ãƒ£ãƒ³ãƒ—ç”¨ã‚¢ãƒ‹ãƒ¡
 	}
-	// ˆÚ“®’†‚©
+	// ç§»å‹•ä¸­ã‹
 	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
 	{
-		nextAnim = 1; // ˆÚ“®—pƒAƒjƒ
+		nextAnim = 1; // ç§»å‹•ç”¨ã‚¢ãƒ‹ãƒ¡
 	}
 	else
 	{
-		nextAnim = 0; // ‘Ò‹@ƒAƒjƒ
+		nextAnim = 0; // å¾…æ©Ÿã‚¢ãƒ‹ãƒ¡
 	}
 
-	// ó‘Ô‚ª•Ï‚í‚Á‚½‚¾‚¯ƒZƒbƒg‚·‚é
+	// çŠ¶æ…‹ãŒå¤‰ã‚ã£ãŸæ™‚ã ã‘ã‚»ãƒƒãƒˆã™ã‚‹
 	if (nextAnim != m_CurrentAnimState)
 	{
 		SetAnimation(nextAnim);
 	}
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“XV
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°
 	m_Animator.Update(1.0f / 60.0f);
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
@@ -87,12 +87,12 @@ void Player::Update(const TileMap& tile, Character** charaList)
 
 void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
 {
-	// ƒAƒjƒ[ƒ^[‚©‚ç¡‚ÌƒRƒ}î•ñ‚ğæ“¾
+	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‹ã‚‰ä»Šã®ã‚³ãƒæƒ…å ±ã‚’å–å¾—
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
-	//ŠG‚ğ‚Ç‚ê‚­‚ç‚¢‰º‚É‚¸‚ç‚·‚©
-	float drawOffsetY = 60.0f;
-	// SpriteRenderer‚Å•`‰æ
+	//çµµã‚’ã©ã‚Œãã‚‰ã„ä¸‹ã«ãšã‚‰ã™ã‹
+	float drawOffsetY = 0.0f;
+	// SpriteRendererã§æç”»
 	if (m_pTexture && pSR)
 	{
 		pSR->Draw(
@@ -101,9 +101,9 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 			m_Position.x, m_Position.y + drawOffsetY,
 			m_Size.x, m_Size.y,
 			viewProj,
-			f.x, f.y, f.w, f.h, // UVÀ•W
-			0.0f,    // ‰ñ“]‚È‚µ
-			m_FlipX  // ”½“]ƒtƒ‰ƒO
+			f.x, f.y, f.w, f.h, // UVåº§æ¨™
+			0.0f,    // å›è»¢ãªã—
+			m_FlipX  // åè»¢ãƒ•ãƒ©ã‚°
 		);
 	}
 }
@@ -115,9 +115,9 @@ void Player::UnInit()
 
 void Player::Jump()
 {
-	//Y²‚Ì‰Á‘¬“x‚ª‚È‚¯‚ê‚Î’Ç‰Á
-	// ƒWƒƒƒ“ƒv@¨@’n–Ê‚É‚Â‚¢‚Ä‚¢‚½‚ç‰Â”\
-	// ˆ—@@
+	//Yè»¸ã®åŠ é€Ÿåº¦ãŒãªã‘ã‚Œã°è¿½åŠ 
+	// ã‚¸ãƒ£ãƒ³ãƒ—ã€€â†’ã€€åœ°é¢ã«ã¤ã„ã¦ã„ãŸã‚‰å¯èƒ½
+	// å‡¦ç†ã€€ã€€
 	if (m_JumpState == State::JumpState::NONE)
 	{
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;
@@ -127,15 +127,15 @@ void Player::Jump()
 
 void Player::Attack(Character** charaList)
 {
-	//UŒ‚”ÍˆÍİ’è
+	//æ”»æ’ƒç¯„å›²è¨­å®š
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
 	DirectX::XMFLOAT2 attackPos;
-	if (m_FlipX)//‰EŒü‚«
+	if (m_FlipX)//å³å‘ã
 	{
 		//attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
 		attackPos.x = GetPosition().x + GetSize().x;
 	}
-	else//¶Œü‚«
+	else//å·¦å‘ã
 	{
 		attackPos.x = GetPosition().x - attackSize.x;
 	}
@@ -145,21 +145,21 @@ void Player::Attack(Character** charaList)
 	for (int i = 0; charaList[i] != nullptr; ++i)
 	{
 	    auto obj = charaList[i];
-		//ƒIƒuƒWƒFƒNƒg‚¶‚á‚È‚©‚Á‚½‚çƒXƒLƒbƒv‚·‚é
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã˜ã‚ƒãªã‹ã£ãŸã‚‰ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 		if (!obj)continue;
 
 		//Character* chara = dynamic_cast<Character*>(obj);
 		//if (!chara)continue;
-		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemyˆÈŠO‚¾‚Á‚½‚çƒXƒLƒbƒv‚·‚é
+		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemyä»¥å¤–ã ã£ãŸã‚‰ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 
 		//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
 		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
 		
 		if (Col::Any(hit))
 		{
-			//“G‚Éƒ_ƒ[ƒW‚ğ—^‚¦‚é
+			//æ•µã«ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹
 			obj->TakeDamage();
-			//‚±‚±‚Å‚Íenemy‚ğdelete‚µ‚È‚¢I
+			//ã“ã“ã§ã¯enemyã‚’deleteã—ãªã„ï¼
 		}
 	}
 }
@@ -189,30 +189,30 @@ void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceVie
 	m_pTexWalk = walk;
 	m_pTexJump = jump;
 
-	// ‰Šúó‘Ô‚Æ‚µ‚Ä‘Ò‹@‰æ‘œ‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// åˆæœŸçŠ¶æ…‹ã¨ã—ã¦å¾…æ©Ÿç”»åƒã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	SetAnimation(m_CurrentAnimState);
 }
 
 void Player::SetAnimation(int stateIndex)
 {
 	m_CurrentAnimState = stateIndex;
-	// ‰Šúó‘Ô‚Æ‚µ‚Ä‘Ò‹@‰æ‘œ‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// åˆæœŸçŠ¶æ…‹ã¨ã—ã¦å¾…æ©Ÿç”»åƒã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	m_pTexture = m_pTexIdle;
 	m_CurrentAnimState = stateIndex;
-	//‰æ‘œ‚Ì\¬‚É‡‚í‚¹‚Ä”’l‚ğ•ÏX‚µ‚Ä‚Ë
+	//ç”»åƒã®æ§‹æˆã«åˆã‚ã›ã¦æ•°å€¤ã‚’å¤‰æ›´ã—ã¦ã­
 	float w = 320.0f;
-	float h = 320.0f;
-	// ó‘Ô‚É‡‚í‚¹‚ÄƒeƒNƒXƒ`ƒƒ‚ÆƒAƒjƒİ’è‚ğØ‚è‘Ö‚¦‚é
+	float h = 240.0f;
+	// çŠ¶æ…‹ã«åˆã‚ã›ã¦ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¨ã‚¢ãƒ‹ãƒ¡è¨­å®šã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
 	switch (stateIndex)
 	{
-	case 0://‘Ò‹@      ‘SƒRƒ}”, ‰¡‚Ì—ñ”, •, ‚‚³, 1ƒRƒ}‚ÌŠÔ, YÀ•W‚ÌŠJnˆÊ’u)
-		//ƒeƒNƒXƒ`ƒƒ‚Ì“ü‚ê‘Ö‚¦
+	case 0://å¾…æ©Ÿ      å…¨ã‚³ãƒæ•°, æ¨ªã®åˆ—æ•°, å¹…, é«˜ã•, 1ã‚³ãƒã®æ™‚é–“, Yåº§æ¨™ã®é–‹å§‹ä½ç½®)
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å…¥ã‚Œæ›¿ãˆ
 		m_pTexture = m_pTexIdle;
 		m_Animator.Init(18, 6, w, h, 0.01f, 0.0f);
 		break;
-	case 1: //ˆÚ“®
+	case 1: //ç§»å‹•
 		m_pTexture = m_pTexWalk;
-		m_Animator.Init(18, 6, w, h, 0.2f, 0.0f);
+		m_Animator.Init(18, 6, w, h, 0.5f, 0.0f);
 		break;
 	case 2:
 		m_pTexture = m_pTexJump;
