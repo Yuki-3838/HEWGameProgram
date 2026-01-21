@@ -27,7 +27,7 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexJump;
 
     bool m_IsFinished;
-
+    Sound* m_pSound = nullptr;
 public:
     using Scene::Scene;
     void Init() override;
