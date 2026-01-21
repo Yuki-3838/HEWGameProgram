@@ -36,7 +36,8 @@ namespace State
     {
         NONE,
         RISE,
-        DESC
+        DESC,
+        FALLING
     };
 
     enum class CharaType
@@ -56,6 +57,7 @@ struct Stats
     float m_AccelY = 0;     // Y軸の加速度
     float m_AccelYMax = 63; // Y軸の最大加速度
     float m_AttackDamage;  //攻撃用メンバ変数
+    float m_DefPosY;        // ジャンプしていない時のY軸
 };
 
 class Character : public GameObject
@@ -88,7 +90,10 @@ public:
 
     State::CharaType GetCharaType() { return m_charaType; }
     State::JumpState GetJumpState() { return m_JumpState; }
+
+    // ゲッター
     float GetAcceleY() { return m_Stats.m_AccelY; }
+    float GetDefPosY() { return m_Stats.m_DefPosY; }
 
     // キャラクター共通の初期化（必要であれば）
     virtual void Init(ID3D11ShaderResourceView* pTexture) override 

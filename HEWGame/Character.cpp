@@ -150,15 +150,36 @@ void Character::Move(const TileMap& tile)
 		}
 		break;
 
+		// 落下処理
+	case State::JumpState::FALLING:
+		// 下降する
+		m_Position.y -= m_Stats.m_AccelY;
+		// 最大下降加速度出ない場合、下降加速度を１加速
+		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
+		{
+			m_Stats.m_AccelY -= m_Stats.m_Gravity;
+		}
+		if (StageCol(tile, ColRes::BOTTOM))
+		{
+			do
+			{
+				m_Position.y -= 1;
+			} while (StageCol(tile, ColRes::BOTTOM));
+			m_JumpState = State::JumpState::NONE;
+			m_Stats.m_AccelY = 0;
+		}
+		break;
+
 		// 通常時処理
 	case State::JumpState::NONE:
 		// 重力を与え、地面に着地していなければ下降に移行
 		m_Position.y += m_Stats.m_Gravity;
 		if (!StageCol(tile, ColRes::BOTTOM))
 		{
-			m_JumpState = State::JumpState::DESC;
+			m_JumpState = State::JumpState::FALLING;
 			m_Stats.m_AccelY++;
 		}
 		m_Position.y -= m_Stats.m_Gravity;
+		m_Stats.m_DefPosY = m_Position.y;
 	}
 }

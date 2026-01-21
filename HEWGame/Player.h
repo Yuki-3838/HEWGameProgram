@@ -5,6 +5,7 @@
 class Player :public Character
 {
 private:
+    
     // 各状態のテクスチャを保持しておく変数
     ID3D11ShaderResourceView* m_pTexIdle = nullptr; // 待機用
     ID3D11ShaderResourceView* m_pTexWalk = nullptr; // 移動用

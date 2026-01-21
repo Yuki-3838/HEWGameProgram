@@ -182,22 +182,42 @@ void Stage1Scene::TileCollision(int charaName)
 
 void Stage1Scene::CameraSeting()
 {
-    DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x, m_pCharaList[0]->GetPosition().y - 540 - 99);
+    DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 540 - 99);
     // プレイヤーのｘ座標が壁から一定距離でなければカメラを固定
-    /*if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
+    if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
     {
-        m_pCamera->SetPosition(0, defCameraPos.y );
+        // ジャンプ中
+        if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
+        {
+            m_pCamera->SetPosition(0, m_pCharaList[0]->GetDefPosY() - 540 - 99);
+        }
+        // 着地中
+        else
+        {
+            m_pCamera->SetPosition(0, defCameraPos.y);
+        }
     }
-    else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
+    //else if(// 左壁に近い処理)
+    // ジャンプ上昇、降下のカメラ処理
+    else if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
+    {
+        m_pCamera->SetPosition(defCameraPos.x, m_pCharaList[0]->GetDefPosY() - 540 - 99);
+    }
+    else
+    {
+        m_pCamera->SetPosition(defCameraPos.x, defCameraPos.y);
+    }
+    
+    /*else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
     {
         m_pCamera->SetPosition(0, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99 + m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetAcceleY());
     }
     else if(m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
     {
         m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99);
-    }*/
-    
+    }
+    else
     {
         m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240,0);
-    }
+    }*/
 }
