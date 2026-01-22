@@ -13,8 +13,8 @@ void Effect::Init(ID3D11ShaderResourceView* tex, float x, float y, float scale, 
     m_Angle = angle;
     //Animatorの初期化
     // 1コマの幅と高さを計算
-    float cellW = texW / divX;
-    float cellH = texH / (frameCount / divX + (frameCount % divX > 0 ? 1 : 0)); // 簡易的な行数計算
+    float cellW = texW;
+    float cellH = texH;
     m_StartTexX = startTexX;
     m_StartTexY = startTexY;
     // Animator::Init(総コマ数, 横列数, 1コマW, 1コマH, 1コマの時間)
@@ -29,10 +29,13 @@ void Effect::Update(float deltaTime)
     //Animatorの更新
     m_Animator.Update(deltaTime);
 
-    m_LifeTimer -= deltaTime;
-    if (m_LifeTimer <= 0.0f)
+    if (!m_IsLoop)
     {
-        m_Active = false;
+        m_LifeTimer -= deltaTime;
+        if (m_LifeTimer <= 0.0f)
+        {
+            m_Active = false;
+        }
     }
 }
 
@@ -57,13 +60,13 @@ void Effect::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer, 
     spriteRenderer->Draw(
         context,
         m_pTexture,
-        drawX, drawY,   // ★補正した「中心基準」の座標
+        drawX, drawY,   //補正した「中心基準」の座標
         drawW, drawH,   // 描画サイズ
         viewProj,
         frame.x + m_StartTexX,
         frame.y + m_StartTexY,
         frame.w, frame.h, // 切り取りサイズ
-        m_Angle,          // ★回転角度を渡す（ここが抜けていました！）
-        m_FlipX           // ★反転フラグを渡す（ここも抜けていました！）
+        m_Angle,          //回転角度を渡す
+        m_FlipX           //反転フラグを渡す
     );
 }

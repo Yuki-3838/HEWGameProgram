@@ -28,6 +28,7 @@ private:
     float m_Angle = 0.0f;
     float m_StartTexX;
     float m_StartTexY;
+    bool m_IsLoop = false; // ループ設定用フラグ
 public:
     Effect() {}
     ~Effect() {}
@@ -41,4 +42,13 @@ public:
     void Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer, DirectX::XMMATRIX viewProj);
 
     bool IsActive() const { return m_Active; }
+
+    //S後から位置を変える関数
+    void SetPosition(float x, float y) { m_Position = { x, y }; }
+
+    // ループ設定をオンにする関数
+    void SetLoop(bool loop) { m_IsLoop = loop; }
+
+    //強制的に消す関数（キーを離したとき用）
+    void Stop() { m_Active = false; }
 };

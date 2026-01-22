@@ -26,7 +26,7 @@ void Stage1Scene::Init()
 
     m_pEffectManager = new EffectManager();
     m_pEffectManager->Init();
-    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/testSP.png", m_pRenderer->GetDevice(),m_pResourceManager);
+    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(),m_pResourceManager);
     // 2. �v���C���[�̐����Ə�����
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);

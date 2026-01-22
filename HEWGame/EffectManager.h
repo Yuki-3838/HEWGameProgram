@@ -45,5 +45,5 @@ public:
     void LoadEffectTexture(EffectType type, const char* filename, ID3D11Device* device, ResourceManager* mgr);
 
     // エフェクト発生（種類, 場所）
-    void Play(EffectType type, float x, float y,bool flipX = false,float angle = 0.0f);
+    Effect* Play(EffectType type, float parentX, float parentY, bool isFlip = false, float angle = 0.0f);
 };
