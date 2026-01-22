@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include<vector>
 
- std::vector<GameObject*> g_GameObjects;
+std::vector<GameObject*> g_GameObjects;
 
 // プレイヤーのコンストラクタ
 Player::Player()
@@ -34,16 +34,19 @@ Player::~Player()
 void Player::Update(const TileMap& tile, Character** charaList)
 {
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
+
 	// 移動入力処理
 	if (GetAsyncKeyState(VK_A) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
 		m_FlipX = true;
+		m_charDir = CharDir::LEFT;
 	}
 	if (GetAsyncKeyState(VK_D) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
 		m_FlipX = false;
+		m_charDir = CharDir::RIGHT;
 	}
 	//アニメーションの切り替え判定(優先度はジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
@@ -77,9 +80,26 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		Jump();
 	}
 
-	if (GetAsyncKeyState(VK_Z) & 0x8000)
+	if (m_IsAttack == false && GetAsyncKeyState(VK_F) & 0x8000)
 	{
-		Attack(charaList);
+		m_IsAttack = true;
+		m_AttackFrame = 0;
+	}
+	//攻撃処理
+	if (m_IsAttack)
+	{
+		m_AttackFrame++;
+		//攻撃判定のあるフレームならAttack関数を呼び出す
+		if (m_AttackFrame >= AttackHitStart && m_AttackFrame <= AttackHitEnd)
+		{
+			Attack(charaList);
+		}
+		//攻撃アニメ終了判定
+		if (m_AttackFrame >= AttackTotalFrame)
+		{
+			m_IsAttack = false;
+			m_AttackFrame = 0;
+		}
 	}
 
 	Move(tile);
@@ -130,31 +150,25 @@ void Player::Attack(Character** charaList)
 	//攻撃範囲設定
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
 	DirectX::XMFLOAT2 attackPos;
-	if (m_FlipX)//右向き
+	if (m_charDir == CharDir::RIGHT)//右向き
 	{
-		//attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
 		attackPos.x = GetPosition().x + GetSize().x;
 	}
-	else//左向き
+	if (m_charDir == CharDir::LEFT)//左向き
 	{
 		attackPos.x = GetPosition().x - attackSize.x;
 	}
-	//attackPos.y += m_Size.y / 4;
-	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y /4 ;
+	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
 
 	for (int i = 0; charaList[i] != nullptr; ++i)
 	{
-	    auto obj = charaList[i];
+		auto obj = charaList[i];
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
-		//Character* chara = dynamic_cast<Character*>(obj);
-		//if (!chara)continue;
 		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
 
-		//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
-		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
-		
+		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
 		if (Col::Any(hit))
 		{
 			//敵にダメージを与える
