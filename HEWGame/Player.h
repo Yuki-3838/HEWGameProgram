@@ -2,46 +2,78 @@
 #include "Character.h"
 #include"Animator.h"
 #include"Sound.h"
+
+
+enum class DashDirection
+{
+	NONE,
+	TOP,
+	BOTTOM,
+	RIGHT,
+	LEFT
+};
+enum class DashState
+{
+	NONE,
+	STAY,
+	DASH
+};
+
 class Player :public Character
 {
 private:
-    
-    // Šeó‘Ô‚ÌƒeƒNƒXƒ`ƒƒ‚ğ•Û‚µ‚Ä‚¨‚­•Ï”
-    ID3D11ShaderResourceView* m_pTexIdle = nullptr; // ‘Ò‹@—p
-    ID3D11ShaderResourceView* m_pTexWalk = nullptr; // ˆÚ“®—p
-    ID3D11ShaderResourceView* m_pTexJump = nullptr; // ƒWƒƒƒ“ƒv—p
+	// å„çŠ¶æ…‹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä¿æŒã—ã¦ãŠãå¤‰æ•°
+	ID3D11ShaderResourceView* m_pTexIdle = nullptr; // å¾…æ©Ÿç”¨
+	ID3D11ShaderResourceView* m_pTexWalk = nullptr; // ç§»å‹•ç”¨
+	ID3D11ShaderResourceView* m_pTexJump = nullptr; // ã‚¸ãƒ£ãƒ³ãƒ—ç”¨
 
-	Animator m_Animator;//ƒAƒjƒ[ƒVƒ‡ƒ“ŠÇ—
-	bool m_FlipX = false; // ¶‰E”½“]ƒtƒ‰ƒO
+	Animator m_Animator;//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç®¡ç†
+	bool m_FlipX = false; // å·¦å³åè»¢ãƒ•ãƒ©ã‚°
 
-	//Œ»İÄ¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ó‘Ô
+	//ç¾åœ¨å†ç”Ÿä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çŠ¶æ…‹
 	int m_CurrentAnimState = -1;
 
-    //ƒAƒjƒ[ƒVƒ‡ƒ“Ø‚è‘Ö‚¦ŠÖ”
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åˆ‡ã‚Šæ›¿ãˆé–¢æ•°
 	void SetAnimation(int stateIndex);
 
-    Sound* m_pSound = nullptr;
+	Sound* m_pSound = nullptr;
+
+	// ãƒ€ãƒƒã‚·ãƒ¥ã«é–¢ã™ã‚‹å¤‰æ•°
+	DashState m_dState;
+	DashDirection m_dDire[2];// ãƒ€ãƒƒã‚·ãƒ¥æ–¹å‘
+	
+	static constexpr int m_dStayMax = 120;     // ãƒ€ãƒƒã‚·ãƒ¥å¾…æ©Ÿæ™‚é–“ä¸Šé™
+	int m_dStayCount = 0;           // ãƒ€ãƒƒã‚·ãƒ¥å¾…æ©Ÿæ™‚é–“ã‚«ã‚¦ãƒ³ãƒˆ
+	static constexpr int m_dDistanceMax =500;   // ãƒ€ãƒƒã‚·ãƒ¥è·é›¢ä¸Šé™
+	int m_dDistandeCount = 0;       // ãƒ€ãƒƒã‚·ãƒ¥è·é›¢ã‚«ã‚¦ãƒ³ãƒˆ
+
 public:
-    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^EƒfƒXƒgƒ‰ƒNƒ^
-    Player();
-    ~Player() override;
+	int testValue = 123;
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ»ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	Player();
+	~Player() override;
 
-    // –ˆƒtƒŒ[ƒ€‚ÌXVˆ—i“ü—Í‚É‚æ‚éˆÚ“®‚È‚Çj
-    void Update(const TileMap& tile, Character** charaList)override;
+	// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ›´æ–°å‡¦ç†ï¼ˆå…¥åŠ›ã«ã‚ˆã‚‹ç§»å‹•ãªã©ï¼‰
+	void Update(const TileMap& tile, Character** charaList)override;
 
-    //ƒAƒjƒ[ƒVƒ‡ƒ“‚³‚¹‚é‚½‚ß‚Ì•`‰æ
-    void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
-    // ƒXƒe[ƒW‚Æ‚Ì“–‚½‚è”»’èæ“¾
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã•ã›ã‚‹ãŸã‚ã®æç”»
+	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
+	// ã‚¹ãƒ†ãƒ¼ã‚¸ã¨ã®å½“ãŸã‚Šåˆ¤å®šå–å¾—
 
-    void UnInit()override;
+	void UnInit()override;
 
-    void Jump()override;
-    void Attack(Character** charaList)override;
-    int TakeDamage()override;
+	void Jump()override;
+	void Attack(Character** charaList)override;
+	int TakeDamage()override;
 
-    void WallJump();
-    void Blink();
-    void GetBlink();
-    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
-    void SetSound(Sound* pSound) { m_pSound = pSound; }
+	// ãƒ€ãƒƒã‚·ãƒ¥å‡¦ç†
+	//void SkillMove();
+
+	void WallJump();
+	void Blink();
+	void GetBlink();
+	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
+	void SetSound(Sound* pSound) { m_pSound = pSound; }
+
+	
 };

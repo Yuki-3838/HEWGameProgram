@@ -3,7 +3,6 @@
 #include<vector>
 
  std::vector<GameObject*> g_GameObjects;
-
 // プレイヤーのコンストラクタ
 Player::Player()
 {
@@ -19,7 +18,14 @@ Player::Player()
 	m_Position.x = 0.0f;
 	m_Position.y = 100.0f;
 
+	// ダッシュに関する初期化
 	m_charaType = State::CharaType::t_Player;
+	m_dDire[0] = DashDirection::NONE;
+	m_dDire[1] = DashDirection::NONE;
+
+	
+	m_dState = DashState::NONE;
+
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
 
@@ -33,17 +39,79 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile, Character** charaList)
 {
+	//アニメーション更新
+	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
-	// 移動入力処理
-	if (GetAsyncKeyState(VK_A) & 0x8000)
+	if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH)
 	{
-		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = true;
+		m_dState = DashState::STAY;
+		m_dStayCount++;
+		if (m_dStayCount < m_dStayMax)
+		{
+			
+			// 上下の処理
+			if (GetAsyncKeyState(VK_W) & 0x8000)
+			{
+				m_dDire[0] = DashDirection::TOP;
+			}
+			if (GetAsyncKeyState(VK_S) & 0x8000)
+			{
+				m_dDire[0] = DashDirection::BOTTOM;
+			}
+			else
+			{
+				m_dDire[0] = DashDirection::NONE;
+			}
+			// 左右の処理
+			if (GetAsyncKeyState(VK_A) & 0x8000)
+			{
+				m_dDire[1] = DashDirection::LEFT;
+			}
+			if (GetAsyncKeyState(VK_D) & 0x8000)
+			{
+				m_dDire[1] = DashDirection::RIGHT;
+			}
+			else
+			{
+				m_dDire[1] = DashDirection::NONE;
+			}
+			
+		}
+		// 待機時間経過で強制発動
+		else
+		{
+			m_dState = DashState::DASH;
+		}
 	}
-	if (GetAsyncKeyState(VK_D) & 0x8000)
+	else if (m_dState == DashState::STAY)
 	{
-		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = false;
+		m_dState = DashState::DASH;
+	}
+	else
+	{
+		m_dState = DashState::NONE;
+		m_dStayCount = 0;
+
+		// 移動入力処理
+		if (GetAsyncKeyState(VK_A) & 0x8000)
+		{
+			m_MoveState = State::MoveState::LEFT;
+			m_FlipX = true;
+		}
+		if (GetAsyncKeyState(VK_D) & 0x8000)
+		{
+			m_MoveState = State::MoveState::RIGHT;
+			m_FlipX = false;
+		}
+		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+		{
+			Jump();
+		}
+
+		if (GetAsyncKeyState(VK_Z) & 0x8000)
+		{
+			Attack(charaList);
+		}
 	}
 	//アニメーションの切り替え判定(優先度はジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
@@ -69,18 +137,9 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		SetAnimation(nextAnim);
 	}
 
-	//アニメーション更新
-	m_Animator.Update(1.0f / 1.0f);
+	
 
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-	{
-		Jump();
-	}
 
-	if (GetAsyncKeyState(VK_Z) & 0x8000)
-	{
-		Attack(charaList);
-	}
 
 	Move(tile);
 }
@@ -220,3 +279,15 @@ void Player::SetAnimation(int stateIndex)
 		break;
 	}
 }
+
+/*void Player::SkillMove()
+{
+	// 上下左右どちらも入力されているとき
+// 上下か左右どちらかにしか入力されているとき
+	if (m_dDire[0] == DashDirection::NONE || m_dDire[1] == DashDirection::NONE)
+	{
+
+	}
+}*/
+
+
