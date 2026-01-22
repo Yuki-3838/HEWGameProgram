@@ -10,7 +10,7 @@ void EffectManager::Init()
     320.0f,                         // 5. 1コマの幅 (TexW)
     320.0f,                         // 6. 1コマの高さ (TexH)
     0.05f,                          // 7. アニメーション速度 (1コマの秒数)
-    0.0f,                          // 8. 発生位置の横ズレ (OffsetX: プレイヤー中心から横にどれだけずらすか)
+    .0f,                          // 8. 発生位置の横ズレ (OffsetX: プレイヤー中心から横にどれだけずらすか)
     0.0f,                          // 9. 発生位置の縦ズレ (OffsetY: 足元に合わせるための調整)
     0.5f,                           // 10. サイズ倍率 
     320.0f,                         // 11. 画像の読み取り開始位置X (StartTexX: 画像の右側を使うため320から開始)
@@ -20,11 +20,6 @@ void EffectManager::Init()
 
 void EffectManager::Uninit()
 {
-    // テクスチャの解放
-    for (auto& pair : m_TextureMap)
-    {
-        if (pair.second) pair.second->Release();
-    }
     m_TextureMap.clear();
 }
 

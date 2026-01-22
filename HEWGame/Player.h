@@ -22,7 +22,6 @@ private:
 
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
-    float m_EffectTimer;
     Effect* m_pRunningEffect = nullptr;
 public:
     // コンストラクタ・デストラクタ

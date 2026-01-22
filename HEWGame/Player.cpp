@@ -22,7 +22,6 @@ Player::Player()
 	SetAnimation(0);
 
 	isDead = false;
-	m_EffectTimer = 0.0f;
 }
 
 Player::~Player()
@@ -36,10 +35,6 @@ void Player::Update(const TileMap& tile)
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
 	// 移動キーが押されているかチェック (左右どちらか)
 	bool isMoving = false;
-	if (m_EffectTimer > 0.0f)
-	{
-		m_EffectTimer -= 1.0f / 60.0f;
-	}
 	// 移動入力処理
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
@@ -110,7 +105,6 @@ void Player::Update(const TileMap& tile)
 		{
 			// プレイヤーの足元(の少し後ろ)に合わせる計算
 			// (Play関数内の計算と同じロジックを手動で行うか、Playを呼ぶ代わりにSetPositionを使う)
-			// ここでは簡易的に「プレイヤー座標 + オフセット」を再設定します
 
 			float offsetX = m_FlipX ? 192.0f : 40.0f;
 			float offsetY = 150.0f;                    // 足元
