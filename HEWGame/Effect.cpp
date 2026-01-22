@@ -1,7 +1,8 @@
 #include "Effect.h"
 
-// Spawnの実装
-void Effect::Init(ID3D11ShaderResourceView* tex, float x, float y, float scale, int frameCount, int divX, float texW, float texH, float speed, bool flipX, float angle) {
+//Initの実装
+void Effect::Init(ID3D11ShaderResourceView* tex, float x, float y, float scale, int frameCount, int divX, float texW, float texH, float speed, bool flipX, float angle,float startTexX, float startTexY)
+{
     m_pTexture = tex;
     m_Position = { x, y };
     m_Scale = scale;
@@ -14,7 +15,8 @@ void Effect::Init(ID3D11ShaderResourceView* tex, float x, float y, float scale, 
     // 1コマの幅と高さを計算
     float cellW = texW / divX;
     float cellH = texH / (frameCount / divX + (frameCount % divX > 0 ? 1 : 0)); // 簡易的な行数計算
-
+    m_StartTexX = startTexX;
+    m_StartTexY = startTexY;
     // Animator::Init(総コマ数, 横列数, 1コマW, 1コマH, 1コマの時間)
     m_Animator.Init(frameCount, divX, cellW, cellH, speed);
 }
@@ -38,19 +40,30 @@ void Effect::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer, 
 {
     if (!m_Active || !m_pTexture) return;
 
-    //Animatorから「今どの部分を表示すべきか」をもらう
+    // 1. Animatorから「今のコマの切り取り範囲」をもらう（これがユーザーさんの気に入っている機能）
     AnimFrame frame = m_Animator.GetCurrentFrame();
 
-    //SpriteRenderer::Draw に渡す
+    // 2. 描画するサイズを計算（元のサイズ × スケール）
+    float drawW = frame.w * m_Scale;
+    float drawH = frame.h * m_Scale;
+
+    // ★重要！座標を中心基準に補正する
+    // そのままだと (x, y) が「左上」になってしまうので、
+    // サイズの半分を引くことで (x, y) を「画像のど真ん中」に合わせます。
+    float drawX = m_Position.x - (drawW * 0.5f);
+    float drawY = m_Position.y - (drawH * 0.5f);
+
+    // 3. SpriteRendererで描画
     spriteRenderer->Draw(
         context,
         m_pTexture,
-        m_Position.x, m_Position.y, // 表示位置
-        frame.w * m_Scale, frame.h * m_Scale, // 表示サイズ (コマサイズ × スケール)
+        drawX, drawY,   // ★補正した「中心基準」の座標
+        drawW, drawH,   // 描画サイズ
         viewProj,
-        frame.x, frame.y, // 切り抜き左上
-        frame.w, frame.h,  // 切り抜きサイズ
-        m_Angle,//回転
-        m_FlipX//反転
+        frame.x + m_StartTexX,
+        frame.y + m_StartTexY,
+        frame.w, frame.h, // 切り取りサイズ
+        m_Angle,          // ★回転角度を渡す（ここが抜けていました！）
+        m_FlipX           // ★反転フラグを渡す（ここも抜けていました！）
     );
 }

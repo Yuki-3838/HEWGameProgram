@@ -19,6 +19,8 @@ struct EffectDef
     float offsetX;          // 中心からのズレX (右向き基準)
     float offsetY;          // 中心からのズレY (足元ならプラス)
     float scale;            // サイズ倍率
+    float startTexX;
+    float startTexY;
 };
 class EffectManager
 {

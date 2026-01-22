@@ -41,7 +41,7 @@ void Player::Update(const TileMap& tile)
 		if (m_pEffectManager)
 		{
 			// ‘«Œ³‚Éo‚µ‚½‚¢‚Ì‚Å YÀ•W‚ð’²®
-			m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y, m_FlipX);
+			m_pEffectManager->Play(EffectType::Smoke, m_Position.x + 192, m_Position.y, m_FlipX);
 		}
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)

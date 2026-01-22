@@ -3,8 +3,8 @@ void EffectManager::Init()
 {
     m_EffectDefs[EffectType::Smoke] = {
         EffectType::Smoke, "asset/texture/testSP.png",
-        18, 6, 320.0f, 320.0f, 0.05f,
-        40.0f, 64.0f, 1.0f  // ★右に40、下に64ずらす
+        18, 6, 320.0f, 320.0f, 0.5f,
+        60.0f, 64.0f, 1.0f  // ★右に40、下に64ずらす
     };
 }
 
@@ -68,7 +68,7 @@ void EffectManager::Play(EffectType type, float x, float y, bool flipX, float an
             m_Effects[i].Init(
                 tex, finalX, finalY, def.scale,
                 def.frameCount, def.divX, def.texW, def.texH, def.speed,
-                flipX, angle
+                flipX, angle, def.startTexX, def.startTexY
             );
             break;
         }
