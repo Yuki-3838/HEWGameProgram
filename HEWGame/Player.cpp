@@ -14,8 +14,8 @@ Player::Player()
 	m_Stats.m_JumpPw = 25;
 
 
-	m_Size.x = 320.0f;
-	m_Size.y = 320.0f;
+	m_Size.x = 192.0f;
+	m_Size.y = 192.0f;
 	m_Position.x = 0.0f;
 	m_Position.y = 100.0f;
 
@@ -34,11 +34,20 @@ Player::~Player()
 void Player::Update(const TileMap& tile, Character** charaList)
 {
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
+	// 移動キーが押されているかチェック (左右どちらか)
+	bool isMoving = false;
 	// 移動入力処理
-	if (GetAsyncKeyState(VK_A) & 0x8000)
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
 		m_FlipX = true;
+		isMoving = true;
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	{
+		m_MoveState = State::MoveState::RIGHT;
+		m_FlipX = false;
+		isMoving = true;
 	}
 	if (GetAsyncKeyState(VK_D) & 0x8000)
 	{
@@ -81,7 +90,43 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	{
 		Attack(charaList);
 	}
+	// --- エフェクトの制御 ---
+	if (isMoving)
+	{
+		/// 1. まだエフェクトが出ていなければ、新しく出す
+		if (m_pEffectManager && m_pRunningEffect == nullptr)
+		{
+			// エフェクトを発生させ、そのポインタを受け取る
+			m_pRunningEffect = m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y, m_FlipX);
 
+			// ループ設定をONにする（これで勝手に消えない）
+			if (m_pRunningEffect)
+			{
+				m_pRunningEffect->SetLoop(true);
+			}
+		}
+
+		/ 2. エフェクトが出ているなら、プレイヤーについてくるように位置を更新
+		if (m_pRunningEffect)
+		{
+			// プレイヤーの足元(の少し後ろ)に合わせる計算
+			// (Play関数内の計算と同じロジックを手動で行うか、Playを呼ぶ代わりにSetPositionを使う)
+			float offsetX = m_FlipX ? 192.0f : 40.0f;
+			float offsetY = 150.0f;                    // ����
+
+			m_pRunningEffect->SetPosition(m_Position.x + offsetX, m_Position.y + offsetY);
+		}
+	}
+	else
+	{
+		// キーを離して止まったら、エフェクトを消す
+		if (m_pRunningEffect)
+		{
+			m_pRunningEffect->Stop();  // エフェクトを停止
+			m_pRunningEffect = nullptr; 
+			m_pRunningEffect = nullptr; 
+		}
+	}
 	Move(tile);
 }
 

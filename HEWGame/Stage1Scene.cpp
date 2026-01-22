@@ -23,6 +23,10 @@ void Stage1Scene::Init()
     m_pSound = new Sound();
     m_pSound->Init();
     m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
+
+    m_pEffectManager = new EffectManager();
+    m_pEffectManager->Init();
+    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(),m_pResourceManager);
     // 2. �v���C���[�̐����Ə�����
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
@@ -46,6 +50,7 @@ void Stage1Scene::Init()
         player->Init(m_pPlayerTexIdle); //Idle��n��
 
         player->SetSound(m_pSound);
+        player->SetEffectManager(m_pEffectManager);
     }
     m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;
@@ -72,6 +77,10 @@ void Stage1Scene::Update()
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
         m_IsFinished = true;
+    }
+    if (m_pEffectManager)
+    {
+        m_pEffectManager->Update();
     }
 }
 
@@ -101,7 +110,10 @@ void Stage1Scene::Draw()
     {
         m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
     }
-
+    if (m_pEffectManager)
+    {
+        m_pEffectManager->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+    }
     m_pRenderer->EndFrame();
 }
 
@@ -113,6 +125,7 @@ void Stage1Scene::Uninit()
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
     if (m_pSound){m_pSound->Uninit();delete m_pSound;m_pSound = nullptr;}
+    if(m_pEffectManager) { m_pEffectManager->Uninit(); delete m_pEffectManager; m_pEffectManager = nullptr; }
     AllClearList(m_pCharaList);
 }
 
