@@ -106,7 +106,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			}
 		}
 
-		/ 2. エフェクトが出ているなら、プレイヤーについてくるように位置を更新
+		// 2. エフェクトが出ているなら、プレイヤーについてくるように位置を更新
 		if (m_pRunningEffect)
 		{
 			// プレイヤーの足元(の少し後ろ)に合わせる計算
