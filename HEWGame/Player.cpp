@@ -20,12 +20,6 @@ Player::Player()
 
 	// ダッシュに関する初期化
 	m_charaType = State::CharaType::t_Player;
-	m_dDire[0] = DashDirection::NONE;
-	m_dDire[1] = DashDirection::NONE;
-
-	
-	m_dState = DashState::NONE;
-
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
 
@@ -137,11 +131,16 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		SetAnimation(nextAnim);
 	}
 
-	
-
-
-
-	Move(tile);
+	// ダッシュ中であればダッシュMoveを行う
+	if (m_dState == DashState::DASH)
+	{
+		DashMove(tile);
+	}
+	// ダッシュ待機中でもダッシュ中でもなければ通常のMOVE
+	else if (m_dState == DashState::None)
+	{
+		Move(tile);
+	}
 }
 
 void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
@@ -199,11 +198,11 @@ void Player::Attack(Character** charaList)
 		attackPos.x = GetPosition().x - attackSize.x;
 	}
 	//attackPos.y += m_Size.y / 4;
-	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y /4 ;
+	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
 
 	for (int i = 0; charaList[i] != nullptr; ++i)
 	{
-	    auto obj = charaList[i];
+		auto obj = charaList[i];
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
@@ -212,8 +211,8 @@ void Player::Attack(Character** charaList)
 		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
 
 		//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
-		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
-		
+		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
+
 		if (Col::Any(hit))
 		{
 			//敵にダメージを与える
@@ -280,14 +279,45 @@ void Player::SetAnimation(int stateIndex)
 	}
 }
 
-/*void Player::SkillMove()
+void Player::DashMove(const TileMap& tile)
 {
 	// 上下左右どちらも入力されているとき
-// 上下か左右どちらかにしか入力されているとき
-	if (m_dDire[0] == DashDirection::NONE || m_dDire[1] == DashDirection::NONE)
+	// 上下か左右どちらかにしか入力されているとき
+	if (m_dDire[0] == DashDirection::None || m_dDire[1] == DashDirection::None)
 	{
-
+		if (m_dDire[0] == DashDirection::UP)
+		{
+			m_Position.y -= m_dSpeed;
+			if (StageCol(tile, ColRes::TOP))m_Position.y += m_dSpeed;
+		}
+		else if (m_dDire[0] == DashDirection::DOWN)
+		{
+			m_Position.y += m_dSpeed;
+			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
+		}
+		else if (m_dDire[1] == DashDirection::RIGHT)
+		{
+			m_Position.x += m_dSpeed;
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
+		}
+		else if (m_dDire[1] == DashDirection::LEFT)
+		{
+			m_Position.x -= m_dSpeed;
+			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
+		}
+		m_dDistanceCount += m_dSpeed;
 	}
-}*/
+	else
+	{
+		m_dState = DashState::None;
+		m_dDistanceCount = 0;
+		m_dStayCount = 0;
+	}
 
-
+	if (m_dDistanceCount >= m_dDistanceMax)
+	{
+		m_dState = DashState::None;
+		m_dDistanceCount = 0;
+		m_dStayCount = 0;
+	}
+}

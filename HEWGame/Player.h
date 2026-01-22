@@ -41,11 +41,12 @@ private:
 	// ダッシュに関する変数
 	DashState m_dState;
 	DashDirection m_dDire[2];// ダッシュ方向
-	
+
 	static constexpr int m_dStayMax = 120;     // ダッシュ待機時間上限
 	int m_dStayCount = 0;           // ダッシュ待機時間カウント
-	static constexpr int m_dDistanceMax =500;   // ダッシュ距離上限
-	int m_dDistandeCount = 0;       // ダッシュ距離カウント
+	static constexpr int m_dDistanceMax = 1000;   // ダッシュ距離上限
+	int m_dDistanceCount = 0;       // ダッシュ距離カウント
+	float m_dSpeed = 100;
 
 public:
 	int testValue = 123;
@@ -67,7 +68,7 @@ public:
 	int TakeDamage()override;
 
 	// ダッシュ処理
-	//void SkillMove();
+	void DashMove(const TileMap& tile);
 
 	void WallJump();
 	void Blink();
@@ -75,5 +76,5 @@ public:
 	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
 	void SetSound(Sound* pSound) { m_pSound = pSound; }
 
-	
+
 };
