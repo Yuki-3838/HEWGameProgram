@@ -4,7 +4,6 @@ void EffectManager::Init()
     m_EffectDefs[EffectType::Smoke] = 
     {
     EffectType::Smoke,              // 1. エフェクトの種類
-    "asset/texture/testSP.png",     // 2. 画像ファイル名
     18,                             // 3. 総コマ数 (全部で何コマあるか)
     6,                              // 4. 横の分割数 (横に何コマ並んでいるか)
     320.0f,                         // 5. 1コマの幅 (TexW)

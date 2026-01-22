@@ -10,7 +10,6 @@
 struct EffectDef
 {
     EffectType type;
-    const char* filename;   // ファイル名
     int frameCount;         // 総コマ数
     int divX;               // 横分割数
     float texW;             // 画像全体の幅
