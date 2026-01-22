@@ -7,8 +7,8 @@
 enum class DashDirection
 {
 	NONE,
-	TOP,
-	BOTTOM,
+	UP,
+	DOWN,
 	RIGHT,
 	LEFT
 };
@@ -46,7 +46,7 @@ private:
 	int m_dStayCount = 0;           // ダッシュ待機時間カウント
 	static constexpr int m_dDistanceMax = 1000;   // ダッシュ距離上限
 	int m_dDistanceCount = 0;       // ダッシュ距離カウント
-	float m_dSpeed = 100;
+	float m_dSpeed = 63;
 
 public:
 	int testValue = 123;

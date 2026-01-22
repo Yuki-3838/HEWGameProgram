@@ -40,17 +40,18 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	{
 		m_dState = DashState::STAY;
 		m_dStayCount++;
+		m_JumpState = State::JumpState::NONE;
 		if (m_dStayCount < m_dStayMax)
 		{
 			
 			// 上下の処理
 			if (GetAsyncKeyState(VK_W) & 0x8000)
 			{
-				m_dDire[0] = DashDirection::TOP;
+				m_dDire[0] = DashDirection::UP;
 			}
-			if (GetAsyncKeyState(VK_S) & 0x8000)
+			else if (GetAsyncKeyState(VK_S) & 0x8000)
 			{
-				m_dDire[0] = DashDirection::BOTTOM;
+				m_dDire[0] = DashDirection::DOWN;
 			}
 			else
 			{
@@ -61,7 +62,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			{
 				m_dDire[1] = DashDirection::LEFT;
 			}
-			if (GetAsyncKeyState(VK_D) & 0x8000)
+			else if (GetAsyncKeyState(VK_D) & 0x8000)
 			{
 				m_dDire[1] = DashDirection::RIGHT;
 			}
@@ -77,11 +78,13 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			m_dState = DashState::DASH;
 		}
 	}
+	// ダッシュキーを離したら
 	else if (m_dState == DashState::STAY)
 	{
 		m_dState = DashState::DASH;
 	}
-	else
+	// ダッシュスキル中でなければ
+	else if(m_dState != DashState::DASH)
 	{
 		m_dState = DashState::NONE;
 		m_dStayCount = 0;
@@ -137,7 +140,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		DashMove(tile);
 	}
 	// ダッシュ待機中でもダッシュ中でもなければ通常のMOVE
-	else if (m_dState == DashState::None)
+	else if (m_dState == DashState::NONE)
 	{
 		Move(tile);
 	}
@@ -283,7 +286,7 @@ void Player::DashMove(const TileMap& tile)
 {
 	// 上下左右どちらも入力されているとき
 	// 上下か左右どちらかにしか入力されているとき
-	if (m_dDire[0] == DashDirection::None || m_dDire[1] == DashDirection::None)
+	if (m_dDire[0] == DashDirection::NONE || m_dDire[1] == DashDirection::NONE)
 	{
 		if (m_dDire[0] == DashDirection::UP)
 		{
@@ -309,14 +312,14 @@ void Player::DashMove(const TileMap& tile)
 	}
 	else
 	{
-		m_dState = DashState::None;
+		m_dState = DashState::NONE;
 		m_dDistanceCount = 0;
 		m_dStayCount = 0;
 	}
 
 	if (m_dDistanceCount >= m_dDistanceMax)
 	{
-		m_dState = DashState::None;
+		m_dState = DashState::NONE;
 		m_dDistanceCount = 0;
 		m_dStayCount = 0;
 	}
