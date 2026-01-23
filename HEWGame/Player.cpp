@@ -187,22 +187,102 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	// アニメーターから今のコマ情報を取得
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
-	//絵をどれくらい下にずらすか
-	float drawOffsetY = 0.0f;
+	// 描画位置とサイズ
+	float drawX = m_Position.x;
+	float drawY = m_Position.y;
+	float drawW = m_Size.x;
+	float drawH = m_Size.y;
+
+	// アニメーション状態ごとに描画サイズと位置を調整
+	if (m_CurrentAnimState == 0) // 待機
+	{
+		drawW = 240.0f;
+		drawH = 320.0f;
+
+		if (m_FlipX)
+		{
+			drawX = m_Position.x - (drawW - m_Size.x) + 56.0f;
+		}
+		else
+		{
+			drawX = m_Position.x - 56.0f;
+		}
+		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	}
+	else if (m_CurrentAnimState == 1) // 移動
+	{
+		drawW = 320.0f;
+		drawH = 240.0f;
+
+		if (m_FlipX)
+		{
+			drawX = m_Position.x - (drawW - m_Size.x) + 96.0f;
+		}
+		else
+		{
+			drawX = m_Position.x - 96.0f;
+		}
+		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	}
+	else if (m_CurrentAnimState == 2) // ジャンプ上昇
+	{
+		drawW = 280.0f;
+		drawH = 320.0f;
+
+		if (m_FlipX)
+		{
+			drawX = m_Position.x - (drawW - m_Size.x) + 76.0f;
+		}
+		else
+		{
+			drawX = m_Position.x - 76.0f;
+		}
+		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	}
+	else if (m_CurrentAnimState == 3) // 攻撃
+	{
+		drawW = 320.0f;
+		drawH = 240.0f;
+
+		if (m_FlipX)
+		{
+			drawX = m_Position.x - (drawW - m_Size.x) + 64.0f;
+		}
+		else
+		{
+			drawX = m_Position.x - 64.0f;
+		}
+		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	}
+	else if (m_CurrentAnimState == 4) // 落下
+	{
+		drawW = 240.0f;
+		drawH = 320.0f;
+
+		if (m_FlipX)
+		{
+			drawX = m_Position.x - (drawW - m_Size.x) + 56.0f;
+		}
+		else
+		{
+			drawX = m_Position.x - 56.0f;
+		}
+		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	}
+
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
 	{
 		pSR->Draw(
 			pContext,
 			m_pTexture,
-			m_Position.x, m_Position.y + drawOffsetY,
-			m_Size.x, m_Size.y,
+			drawX, drawY,
+			drawW, drawH,
 			viewProj,
 			f.x, f.y, f.w, f.h, // UV座標
 			0.0f,    // 回転なし
 			m_FlipX  // 反転フラグ
 		);
-		///k
 	}
 }
 
