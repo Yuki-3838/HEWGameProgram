@@ -30,6 +30,7 @@ enum class ColRes : unsigned
 	BOTTOM = 1u << 1,	// 0010 ‰º‚©‚çÚG
 	LEFT = 1u << 2,		// 0100 ¶‚©‚çÚG
 	RIGHT = 1u << 3,	// 1000 ‰E‚©‚çÚG
+	//lihio
 };
 
 // ƒIƒyƒŒ[ƒ^[‰‰ŽZŽq

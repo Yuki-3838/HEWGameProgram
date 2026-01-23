@@ -9,7 +9,7 @@ Player::Player()
 {
 	// プレイヤー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 20;
+	m_Stats.m_Speed = 30;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
@@ -202,6 +202,7 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 			0.0f,    // 回転なし
 			m_FlipX  // 反転フラグ
 		);
+		///k
 	}
 }
 

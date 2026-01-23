@@ -32,7 +32,7 @@ void Stage1Scene::Init()
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
     // 3. テクスチャのロード
-    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.jpg", m_pRenderer->GetDevice());
+    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
     m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Idol.png", m_pRenderer->GetDevice());
     m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
     m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
