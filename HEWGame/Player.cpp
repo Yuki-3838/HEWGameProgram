@@ -306,19 +306,19 @@ void Player::SetAnimation(int stateIndex)
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
 		//テクスチャの入れ替え
 		m_pTexture = m_pTexIdle;
-		m_Animator.Init(24, 8, w - 80, h + 80, 0.02f, 0.0f);
+		m_Animator.Init(24, 8, w - 80, h + 80, 0.03f, 0.0f);
 		break;
 	case 1: //移動
 		m_pTexture = m_pTexWalk;
-		m_Animator.Init(18, 6, w, h, 0.05f, 0.0f);
+		m_Animator.Init(18, 6, w, h, 0.03f, 0.0f);
 		break;
 	case 2: //ジャンプ
 		m_pTexture = m_pTexJump;
-		m_Animator.Init(14, 7, w-40, h + 80, 0.05f, 0.0f);
+		m_Animator.Init(14, 7, w-40, h + 80, 0.03f, 0.0f);
 		break;
 	case 3: //攻撃
 		m_pTexture = m_pTexAttack;
-		m_Animator.Init(6, 3, w, h, 0.06f, 0.0f);
+		m_Animator.Init(6, 3, w, h, 0.03f, 0.0f);
 		break;
 	}
 }
