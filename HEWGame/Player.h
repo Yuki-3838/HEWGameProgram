@@ -37,8 +37,6 @@ private:
 	//アニメーション切り替え関数
 	void SetAnimation(int stateIndex);
 
-	Sound* m_pSound = nullptr;
-
 	// ダッシュに関する変数
 	DashState m_dState;
 	DashDirection m_dDire[2];// ダッシュ方向
@@ -73,13 +71,6 @@ public:
 
 	// ダッシュ処理
 	void DashMove(const TileMap& tile);
-
-	void WallJump();
-	void Blink();
-	void GetBlink();
-	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
-	void SetSound(Sound* pSound) { m_pSound = pSound; }
-
 
     void WallJump();
     void Blink();
