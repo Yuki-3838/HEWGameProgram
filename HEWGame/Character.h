@@ -54,6 +54,7 @@ namespace State
 }
 
 
+
 struct Stats
 {
     int m_HP;           // 体力
@@ -70,6 +71,7 @@ struct Stats
 class Character : public GameObject
 {
 protected:
+
     Stats m_Stats;  // ステータス    
     State::collisionState m_colState{ false,false,false,false };    // 四方向の衝突状態
     State::MoveState m_MoveState = State::MoveState::RIGHT;          // 四方向へのどこへ移動しているか
