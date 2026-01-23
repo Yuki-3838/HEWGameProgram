@@ -27,6 +27,10 @@ Player::Player()
 	SetAnimation(0);
 
 	m_IsDead = false;
+
+	m_AttackTotalFrame = 30; 
+	m_AttackHitStart = 1;
+	m_AttackHitEnd = 30;
 }
 
 Player::~Player()
@@ -45,6 +49,9 @@ void Player::Update(const TileMap& tile, Character** charaList)
 
 	if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH)
 	{
+		m_MoveState = State::MoveState::LEFT;
+		m_FlipX = true;
+		m_charDir = State::CharDir::LEFT;
 		m_dState = DashState::STAY;
 		m_dStayCount++;
 		m_JumpState = State::JumpState::NONE;
@@ -92,7 +99,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 
 		//m_MoveState = State::MoveState::RIGHT;
 		m_FlipX = false;
-		m_charDir = CharDir::RIGHT;
+		m_charDir = State:: CharDir::RIGHT;
 		m_dState = DashState::NONE;
 		m_dStayCount = 0;
 
@@ -161,12 +168,12 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	{
 		m_AttackFrame++;
 		//攻撃判定のあるフレームならAttack関数を呼び出す
-		if (m_AttackFrame >= AttackHitStart && m_AttackFrame <= AttackHitEnd)
+		if (m_AttackFrame >= m_AttackHitStart && m_AttackFrame <= m_AttackHitEnd)
 		{
 			Attack(charaList);
 		}
 		//攻撃アニメ終了判定
-		if (m_AttackFrame >= AttackTotalFrame)
+		if (m_AttackFrame >= m_AttackTotalFrame)
 		{
 			m_IsAttack = false;
 			m_AttackFrame = 0;
@@ -228,11 +235,11 @@ void Player::Attack(Character** charaList)
 	//攻撃範囲設定
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
 	DirectX::XMFLOAT2 attackPos;
-	if (m_charDir == CharDir::RIGHT)//右向き
+	if (m_charDir == State:: CharDir::RIGHT)//右向き
 	{
 		attackPos.x = GetPosition().x + GetSize().x;
 	}
-	if (m_charDir == CharDir::LEFT)//左向き
+	if (m_charDir == State::CharDir::LEFT)//左向き
 	{
 		attackPos.x = GetPosition().x - attackSize.x;
 	}
