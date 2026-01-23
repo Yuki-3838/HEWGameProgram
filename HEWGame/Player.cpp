@@ -108,13 +108,13 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		{
 			m_MoveState = State::MoveState::LEFT;
 			m_FlipX = true;
-      m_charDir = CharDir::LEFT;
+			m_charDir = State::CharDir::LEFT;
 		}
 		if (GetAsyncKeyState(VK_D) & 0x8000)
 		{
 			m_MoveState = State::MoveState::RIGHT;
 			m_FlipX = false;
-      m_charDir = CharDir::RIGHT;
+			m_charDir = State::CharDir::RIGHT;
 		}
 		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 		{
