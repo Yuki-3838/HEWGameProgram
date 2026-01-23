@@ -1,137 +1,202 @@
 #include "Player.h"
 #include <Windows.h>
+#include<vector>
 
+std::vector<GameObject*> g_GameObjects;
 
-// ƒvƒŒƒCƒ„[‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 Player::Player()
 {
-	// ƒvƒŒƒCƒ„[ŒÅ—L‚Ì‰Šúİ’è
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å›ºæœ‰ã®åˆæœŸè¨­å®š
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 15;
+	m_Stats.m_Speed = 30;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
 
-	m_Size.x = 192.0f;
-	m_Size.y = 192.0f;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
 	m_Position.x = 0.0f;
-	m_Position.y = 640.0f;
+	m_Position.y = 100.0f;
 
+	// ãƒ€ãƒƒã‚·ãƒ¥ã«é–¢ã™ã‚‹åˆæœŸåŒ–
+	m_dState = DashState::NONE;
+	m_dDire[0] = DashDirection::NONE; m_dDire[1] = DashDirection::NONE;
 	m_charaType = State::CharaType::t_Player;
-	//—á‚¦‚Î0 ‚È‚ç‘Ò‹@A1‚È‚ç‘–‚éA2‚È‚çƒWƒƒƒ“ƒv‚È‚Ç
+	//ä¾‹ãˆã°0 ãªã‚‰å¾…æ©Ÿã€1ãªã‚‰èµ°ã‚‹ã€2ãªã‚‰ã‚¸ãƒ£ãƒ³ãƒ—ãªã©
 	SetAnimation(0);
 
-	isDead = false;
+	m_IsDead = false;
+
+	m_AttackTotalFrame = 30; 
+	m_AttackHitStart = 1;
+	m_AttackHitEnd = 30;
 }
 
 Player::~Player()
 {
-	//aaaaaaaaaaa
 }
 
 
-void Player::Update(const TileMap& tile)
+void Player::Update(const TileMap& tile, Character** charaList)
 {
-	m_MoveState = State::MoveState::NONE;  //Å‰‚Í‰EŒü‚«
-	// ˆÚ“®ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN (¶‰E‚Ç‚¿‚ç‚©)
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°
+	m_Animator.Update(1.0f / 1.0f);
+	m_MoveState = State::MoveState::NONE;  //æœ€åˆã¯å³å‘ã
+
+	// ç§»å‹•ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ (å·¦å³ã©ã¡ã‚‰ã‹)
 	bool isMoving = false;
-	// ˆÚ“®“ü—Íˆ—
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+
+	if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH)
 	{
 		m_MoveState = State::MoveState::LEFT;
 		m_FlipX = true;
-		isMoving = true;
+		m_charDir = State::CharDir::LEFT;
+		m_dState = DashState::STAY;
+		m_dStayCount++;
+		m_JumpState = State::JumpState::NONE;
+		if (m_dStayCount < m_dStayMax)
+		{
+			// ä¸Šä¸‹ã®å‡¦ç†
+			if (GetAsyncKeyState(VK_W) & 0x8000)
+			{
+				m_dDire[0] = DashDirection::UP;
+			}
+			else if (GetAsyncKeyState(VK_S) & 0x8000)
+			{
+				m_dDire[0] = DashDirection::DOWN;
+			}
+			else
+			{
+				m_dDire[0] = DashDirection::NONE;
+			}
+			// å·¦å³ã®å‡¦ç†
+			if (GetAsyncKeyState(VK_A) & 0x8000)
+			{
+				m_dDire[1] = DashDirection::LEFT;
+			}
+			else if (GetAsyncKeyState(VK_D) & 0x8000)
+			{
+				m_dDire[1] = DashDirection::RIGHT;
+			}
+			else
+			{
+				m_dDire[1] = DashDirection::NONE;
+			}
+		}
+		// å¾…æ©Ÿæ™‚é–“çµŒéã§å¼·åˆ¶ç™ºå‹•
+		else
+		{
+			m_dState = DashState::DASH;
+		}
 	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	else if (m_dState == DashState::STAY)
 	{
-		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = false;
-		isMoving = true;
+		m_dState = DashState::DASH;
 	}
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦”»’è(—Dæ“x‚ÍƒWƒƒƒ“ƒv„ˆÚ“®„‘Ò‹@)
-	int nextAnim = 0; // 0:‘Ò‹@ (ƒfƒtƒHƒ‹ƒg)
+	else if(m_dState == DashState::NONE)
+	{
 
-	// ƒWƒƒƒ“ƒv’†‚©
-	if (m_JumpState == State::JumpState::RISE || m_JumpState == State::JumpState::DESC)
-	{
-		nextAnim = 2; // ƒWƒƒƒ“ƒv—pƒAƒjƒ
+		//m_MoveState = State::MoveState::RIGHT;
+		m_FlipX = false;
+		m_charDir = State:: CharDir::RIGHT;
+		m_dState = DashState::NONE;
+		m_dStayCount = 0;
+
+		// ç§»å‹•å…¥åŠ›å‡¦ç†
+		if (GetAsyncKeyState(VK_A) & 0x8000)
+		{
+			m_MoveState = State::MoveState::LEFT;
+			m_FlipX = true;
+			m_charDir = State::CharDir::LEFT;
+		}
+		if (GetAsyncKeyState(VK_D) & 0x8000)
+		{
+			m_MoveState = State::MoveState::RIGHT;
+			m_FlipX = false;
+			m_charDir = State::CharDir::RIGHT;
+		}
+		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+		{
+			Jump();
+		}
+
+    if (m_IsAttack == false && GetAsyncKeyState(VK_F) & 0x8000)
+	  {
+		  m_IsAttack = true;
+		  m_AttackFrame = 0;
+	  } 
 	}
-	// ˆÚ“®’†‚©
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆåˆ¤å®š(å„ªå…ˆåº¦ã¯æ”»æ’ƒï¼ã‚¸ãƒ£ãƒ³ãƒ—ï¼ç§»å‹•ï¼å¾…æ©Ÿ)
+	int nextAnim = 0; // 0:å¾…æ©Ÿ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ)
+
+	//æ”»æ’ƒä¸­ã‹
+	if (m_IsAttack)
+	{
+		nextAnim = 3; //æ”»æ’ƒç”¨ã‚¢ãƒ‹ãƒ¡
+	}
+	// ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã‹
+	else if(m_JumpState == State::JumpState::RISE || m_JumpState == State::JumpState::DESC)
+	{
+		nextAnim = 2; // ã‚¸ãƒ£ãƒ³ãƒ—ç”¨ã‚¢ãƒ‹ãƒ¡
+	}
+	// ç§»å‹•ä¸­ã‹
 	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
 	{
-		nextAnim = 1; // ˆÚ“®—pƒAƒjƒ
+		nextAnim = 1; // ç§»å‹•ç”¨ã‚¢ãƒ‹ãƒ¡
 	}
 	else
 	{
-		nextAnim = 0; // ‘Ò‹@ƒAƒjƒ
+		nextAnim = 0; // å¾…æ©Ÿã‚¢ãƒ‹ãƒ¡
 	}
 
-	// ó‘Ô‚ª•Ï‚í‚Á‚½‚¾‚¯ƒZƒbƒg‚·‚é
+	// çŠ¶æ…‹ãŒå¤‰ã‚ã£ãŸæ™‚ã ã‘ã‚»ãƒƒãƒˆã™ã‚‹
 	if (nextAnim != m_CurrentAnimState)
 	{
 		SetAnimation(nextAnim);
 	}
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“XV
-	m_Animator.Update(1.0f / 2.0f);
-
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+	// ãƒ€ãƒƒã‚·ãƒ¥ä¸­ã§ã‚ã‚Œã°ãƒ€ãƒƒã‚·ãƒ¥Moveã‚’è¡Œã†
+	if (m_dState == DashState::DASH)
 	{
-		Jump();
+		DashMove(tile);
 	}
 
-	if (GetAsyncKeyState(VK_Z) & 0x8000)
+	
+	//æ”»æ’ƒå‡¦ç†
+	if (m_IsAttack)
 	{
-		Attack();
-	}
-	// --- ƒGƒtƒFƒNƒg‚Ì§Œä ---
-	if (isMoving)
-	{
-		// 1. ‚Ü‚¾ƒGƒtƒFƒNƒg‚ªo‚Ä‚¢‚È‚¯‚ê‚ÎAV‚µ‚­o‚·
-		if (m_pEffectManager && m_pRunningEffect == nullptr)
+		m_AttackFrame++;
+		//æ”»æ’ƒåˆ¤å®šã®ã‚ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ ãªã‚‰Attacké–¢æ•°ã‚’å‘¼ã³å‡ºã™
+		if (m_AttackFrame >= m_AttackHitStart && m_AttackFrame <= m_AttackHitEnd)
 		{
-			// ƒGƒtƒFƒNƒg‚ğ”­¶‚³‚¹A‚»‚Ìƒ|ƒCƒ“ƒ^‚ğó‚¯æ‚é
-			m_pRunningEffect = m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y, m_FlipX);
-
-			// ƒ‹[ƒvİ’è‚ğON‚É‚·‚éi‚±‚ê‚ÅŸè‚ÉÁ‚¦‚È‚¢j
-			if (m_pRunningEffect)
-			{
-				m_pRunningEffect->SetLoop(true);
-			}
+			Attack(charaList);
 		}
-
-		// 2. ƒGƒtƒFƒNƒg‚ªo‚Ä‚¢‚é‚È‚çAƒvƒŒƒCƒ„[‚É‚Â‚¢‚Ä‚­‚é‚æ‚¤‚ÉˆÊ’u‚ğXV
-		if (m_pRunningEffect)
+		//æ”»æ’ƒã‚¢ãƒ‹ãƒ¡çµ‚äº†åˆ¤å®š
+		if (m_AttackFrame >= m_AttackTotalFrame)
 		{
-			// ƒvƒŒƒCƒ„[‚Ì‘«Œ³(‚Ì­‚µŒã‚ë)‚É‡‚í‚¹‚éŒvZ
-			// (PlayŠÖ”“à‚ÌŒvZ‚Æ“¯‚¶ƒƒWƒbƒN‚ğè“®‚Ås‚¤‚©APlay‚ğŒÄ‚Ô‘ã‚í‚è‚ÉSetPosition‚ğg‚¤)
-
-			float offsetX = m_FlipX ? 192.0f : 40.0f;
-			float offsetY = 150.0f;                    // ‘«Œ³
-
-			m_pRunningEffect->SetPosition(m_Position.x + offsetX, m_Position.y + offsetY);
+			m_IsAttack = false;
+			m_AttackFrame = 0;
 		}
-	}
-	else
+  }
+	// ãƒ€ãƒƒã‚·ãƒ¥å¾…æ©Ÿä¸­ã§ã‚‚ãƒ€ãƒƒã‚·ãƒ¥ä¸­ã§ã‚‚ãªã‘ã‚Œã°é€šå¸¸ã®MOVE
+	else if (m_dState == DashState::NONE)
 	{
-		// ƒL[‚ğ—£‚µ‚Ä~‚Ü‚Á‚½‚çAƒGƒtƒFƒNƒg‚ğÁ‚·
-		if (m_pRunningEffect)
-		{
-			m_pRunningEffect->Stop(); // ƒGƒtƒFƒNƒg‚ğ’â~
-			m_pRunningEffect = nullptr; // •Ï”‚ğ‹ó‚É‚·‚é
-		}
+    // æ”»æ’ƒã‚’ãƒªã‚»ãƒƒãƒˆ
+    m_IsAttack = false;
+		m_AttackFrame = 0;
+		Move(tile);
 	}
-	Move(tile);
 }
 
 void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
 {
-	// ƒAƒjƒ[ƒ^[‚©‚ç¡‚ÌƒRƒ}î•ñ‚ğæ“¾
+	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‹ã‚‰ä»Šã®ã‚³ãƒæƒ…å ±ã‚’å–å¾—
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
-	//ŠG‚ğ‚Ç‚ê‚­‚ç‚¢‰º‚É‚¸‚ç‚·‚©
-	float drawOffsetY = 0;
-	// SpriteRenderer‚Å•`‰æ
+	//çµµã‚’ã©ã‚Œãã‚‰ã„ä¸‹ã«ãšã‚‰ã™ã‹
+	float drawOffsetY = 0.0f;
+	// SpriteRendererã§æç”»
 	if (m_pTexture && pSR)
 	{
 		pSR->Draw(
@@ -140,10 +205,11 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 			m_Position.x, m_Position.y + drawOffsetY,
 			m_Size.x, m_Size.y,
 			viewProj,
-			f.x, f.y, f.w, f.h, // UVÀ•W
-			0.0f,    // ‰ñ“]‚È‚µ
-			m_FlipX  // ”½“]ƒtƒ‰ƒO
+			f.x, f.y, f.w, f.h, // UVåº§æ¨™
+			0.0f,    // å›è»¢ãªã—
+			m_FlipX  // åè»¢ãƒ•ãƒ©ã‚°
 		);
+		///k
 	}
 }
 
@@ -152,157 +218,157 @@ void Player::UnInit()
 {
 }
 
-void Player::Move(const TileMap& tile)
-{
-	switch (m_MoveState)
-	{
-	case State::MoveState::LEFT:
-		m_Position.x -= m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_Stats.m_Speed;
-		break;
-	case State::MoveState::RIGHT:
-		m_Position.x += m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
-		break;
-	}
-
-	// ‚“x‚ÉŠÖ‚·‚éˆ—
-	switch (m_JumpState)
-	{
-		// ã¸ˆ—
-	case State::JumpState::RISE:
-		//@ã¸‚µA‚P‚†‚¸‚Âã¸‰Á‘¬“x‚ğ‚PŒ¸‘¬‚·‚é
-		m_Position.y -= m_Stats.m_AccelY;
-		m_Stats.m_AccelY--;
-		// “Vˆä‚ÉÕ“Ë‚µ‚½ê‡A‰º~‚ÉˆÚs‚·‚é
-		if (StageCol(tile, ColRes::TOP))
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY = -1;
-		}
-		// ã¸‰Á‘¬“x‚ª‚O‚É‚È‚Á‚½ê‡A‰º~‚ÉˆÚs‚·‚é
-		if (m_Stats.m_AccelY == 0)
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY = -1;
-		}
-		break;
-
-		// ‰º~ˆ—
-	case State::JumpState::DESC:
-		// ‰º~‚·‚é
-		m_Position.y -= m_Stats.m_AccelY;
-		// Å‘å‰º~‰Á‘¬“xo‚È‚¢ê‡A‰º~‰Á‘¬“x‚ğ‚P‰Á‘¬
-		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
-		{
-			m_Stats.m_AccelY -= m_Stats.m_Gravity;
-		}
-		if (StageCol(tile, ColRes::BOTTOM))
-		{
-			do
-			{
-				m_Position.y -= 1;
-			} while (StageCol(tile, ColRes::BOTTOM));
-			m_JumpState = State::JumpState::NONE;
-			m_Stats.m_AccelY = 0;
-		}
-		break;
-
-		// ’Êíˆ—
-	case State::JumpState::NONE:
-		// d—Í‚ğ—^‚¦A’n–Ê‚É’…’n‚µ‚Ä‚¢‚È‚¯‚ê‚Î‰º~‚ÉˆÚs
-		m_Position.y += m_Stats.m_Gravity;
-		if (!StageCol(tile, ColRes::BOTTOM))
-		{
-			m_JumpState = State::JumpState::DESC;
-			m_Stats.m_AccelY++;
-		}
-		m_Position.y -= m_Stats.m_Gravity;
-	}
-}
-
 void Player::Jump()
 {
-	//Y²‚Ì‰Á‘¬“x‚ª‚È‚¯‚ê‚Î’Ç‰Á
-	// ƒWƒƒƒ“ƒv@¨@’n–Ê‚É‚Â‚¢‚Ä‚¢‚½‚ç‰Â”\
-	// ˆ—@@
+	//Yè»¸ã®åŠ é€Ÿåº¦ãŒãªã‘ã‚Œã°è¿½åŠ 
+	// ã‚¸ãƒ£ãƒ³ãƒ—ã€€â†’ã€€åœ°é¢ã«ã¤ã„ã¦ã„ãŸã‚‰å¯èƒ½
+	// å‡¦ç†ã€€ã€€
 	if (m_JumpState == State::JumpState::NONE)
 	{
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;
 		m_JumpState = State::JumpState::RISE;
-		if (m_pSound)
+	}
+}
+
+void Player::Attack(Character** charaList)
+{
+	//æ”»æ’ƒç¯„å›²è¨­å®š
+	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
+	DirectX::XMFLOAT2 attackPos;
+	if (m_charDir == State:: CharDir::RIGHT)//å³å‘ã
+	{
+		attackPos.x = GetPosition().x + GetSize().x;
+	}
+	if (m_charDir == State::CharDir::LEFT)//å·¦å‘ã
+	{
+		attackPos.x = GetPosition().x - attackSize.x;
+	}
+	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y /4 ;
+
+	for (int i = 0; charaList[i] != nullptr; ++i)
+	{
+		auto obj = charaList[i];
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã˜ã‚ƒãªã‹ã£ãŸã‚‰ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
+		if (!obj)continue;
+
+		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemyä»¥å¤–ã ã£ãŸã‚‰ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
+
+		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
+		
+		if (Col::Any(hit))
 		{
-			m_pSound->Play(SOUND_LABEL_SE_JUMP);
+			//æ•µã«ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹
+			obj->TakeDamage();
+			//ã“ã“ã§ã¯enemyã‚’deleteã—ãªã„ï¼
 		}
 	}
 }
 
-void Player::Attack()
+int Player::TakeDamage()
 {
-	ApplyDamage();
-}
-
-void Player::TakeDamage(int damage)
-{
-	m_Stats.m_HP - damage;
-	if (m_Stats.m_HP <= 0)
-	{
-		m_Stats.m_HP = 0;
-		isDead = true;
-	}
-}
-
-int Player::ApplyDamage()
-{
-	return 0;
+	int damage = 1;
+	m_Stats.m_HP -= damage;
+	return m_Stats.m_HP;
 }
 
 void Player::WallJump()
 {
+
 }
 
 void Player::Blink()
 {
+
 }
 
 void Player::GetBlink()
 {
 }
 
-void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump)
+void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack)
 {
 	m_pTexIdle = idle;
 	m_pTexWalk = walk;
 	m_pTexJump = jump;
+	m_pTexAttack = attack;
+	
 
-	// ‰Šúó‘Ô‚Æ‚µ‚Ä‘Ò‹@‰æ‘œ‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// åˆæœŸçŠ¶æ…‹ã¨ã—ã¦å¾…æ©Ÿç”»åƒã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	SetAnimation(m_CurrentAnimState);
 }
 
 void Player::SetAnimation(int stateIndex)
 {
+	// sakagami love kouyou
 	m_CurrentAnimState = stateIndex;
-	// ‰Šúó‘Ô‚Æ‚µ‚Ä‘Ò‹@‰æ‘œ‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// åˆæœŸçŠ¶æ…‹ã¨ã—ã¦å¾…æ©Ÿç”»åƒã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	m_pTexture = m_pTexIdle;
 	m_CurrentAnimState = stateIndex;
-	//‰æ‘œ‚Ì\¬‚É‡‚í‚¹‚Ä”’l‚ğ•ÏX‚µ‚Ä‚Ë
+	//ç”»åƒã®æ§‹æˆã«åˆã‚ã›ã¦æ•°å€¤ã‚’å¤‰æ›´ã—ã¦ã­
 	float w = 320.0f;
 	float h = 240.0f;
-	// ó‘Ô‚É‡‚í‚¹‚ÄƒeƒNƒXƒ`ƒƒ‚ÆƒAƒjƒİ’è‚ğØ‚è‘Ö‚¦‚é
+	// çŠ¶æ…‹ã«åˆã‚ã›ã¦ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¨ã‚¢ãƒ‹ãƒ¡è¨­å®šã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
 	switch (stateIndex)
 	{
-		case 0://‘Ò‹@      ‘SƒRƒ}”, ‰¡‚Ì—ñ”, •, ‚‚³, 1ƒRƒ}‚ÌŠÔ, YÀ•W‚ÌŠJnˆÊ’u)
-			//ƒeƒNƒXƒ`ƒƒ‚Ì“ü‚ê‘Ö‚¦
-			m_pTexture = m_pTexIdle;
-			m_Animator.Init(18, 6, w, h, 0.01f,0.0f);
-			break; 
-		case 1: //ˆÚ“®
-			m_pTexture = m_pTexWalk;
-			m_Animator.Init(18, 6, w, h, 0.5f,0.0f);
-			break;
-		case 2:
-			m_pTexture = m_pTexJump;
-			m_Animator.Init(1, 4, w, h, 0.2f, 0.0f);
-			break;
+	case 0://å¾…æ©Ÿ      å…¨ã‚³ãƒæ•°, æ¨ªã®åˆ—æ•°, å¹…, é«˜ã•, 1ã‚³ãƒã®æ™‚é–“, Yåº§æ¨™ã®é–‹å§‹ä½ç½®)
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å…¥ã‚Œæ›¿ãˆ
+		m_pTexture = m_pTexIdle;
+		m_Animator.Init(24, 8, w - 80, h + 80, 0.02f, 0.0f);
+		break;
+	case 1: //ç§»å‹•
+		m_pTexture = m_pTexWalk;
+		m_Animator.Init(18, 6, w, h, 0.05f, 0.0f);
+		break;
+	case 2: //ã‚¸ãƒ£ãƒ³ãƒ—
+		m_pTexture = m_pTexJump;
+		m_Animator.Init(14, 7, w-40, h + 80, 0.05f, 0.0f);
+		break;
+	case 3: //æ”»æ’ƒ
+		m_pTexture = m_pTexAttack;
+		m_Animator.Init(6, 3, w, h, 0.06f, 0.0f);
+		break;
+	}
+}
+
+void Player::DashMove(const TileMap& tile)
+{
+	// ä¸Šä¸‹å·¦å³ã©ã¡ã‚‰ã‚‚å…¥åŠ›ã•ã‚Œã¦ã„ã‚‹ã¨ã
+	// ä¸Šä¸‹ã‹å·¦å³ã©ã¡ã‚‰ã‹ã«ã—ã‹å…¥åŠ›ã•ã‚Œã¦ã„ã‚‹ã¨ã
+	if (m_dDire[0] == DashDirection::NONE || m_dDire[1] == DashDirection::NONE)
+	{
+		if (m_dDire[0] == DashDirection::UP)
+		{
+			m_Position.y -= m_dSpeed;
+			if (StageCol(tile, ColRes::TOP))m_Position.y += m_dSpeed;
+		}
+		else if (m_dDire[0] == DashDirection::DOWN)
+		{
+			m_Position.y += m_dSpeed;
+			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
+		}
+		else if (m_dDire[1] == DashDirection::RIGHT)
+		{
+			m_Position.x += m_dSpeed;
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
+		}
+		else if (m_dDire[1] == DashDirection::LEFT)
+		{
+			m_Position.x -= m_dSpeed;
+			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
+		}
+		m_dDistanceCount += m_dSpeed;
+	}
+	else
+	{
+		m_dState = DashState::NONE;
+		m_dDistanceCount = 0;
+		m_dStayCount = 0;
+	}
+
+	if (m_dDistanceCount >= m_dDistanceMax)
+	{
+		m_dState = DashState::NONE;
+		m_dDistanceCount = 0;
+		m_dStayCount = 0;
 	}
 }

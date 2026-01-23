@@ -3,6 +3,11 @@
 #include "ResultScene.h"
 #include "DemoReelScene.h"
 
+#include<vector>
+#include"GameObject.h"
+
+std::vector<GameObject*> g_GameOjects;
+
 Game::Game()
 {
     m_pRenderer = nullptr;
@@ -21,21 +26,21 @@ void Game::Init(HWND hWnd, int width, int height)
 {
     m_hWnd = hWnd;
 
-    // 1. äeÉVÉXÉeÉÄÇÃê∂ê¨
+    // 1. ÂêÑ„Ç∑„Çπ„ÉÜ„É†„ÅÆÁîüÊàê
     m_pRenderer = new Renderer();
     m_pResourceManager = new ResourceManager();
     m_pSpriteRenderer = new SpriteRenderer();
     m_pSceneManager = new SceneManager();
     m_pInput = new Input();
 
-    // 2. ÉåÉìÉ_ÉâÅ[ÇÃèâä˙âªÅiDirect3D ãNìÆÅj
+    // 2. „É¨„É≥„ÉÄ„É©„Éº„ÅÆÂàùÊúüÂåñÔºàDirect3D Ëµ∑ÂãïÔºâ
     m_pRenderer->Init(m_hWnd, width, height);
 
-    // 3. ÉXÉvÉâÉCÉgï`âÊÇÃèâä˙âªÅiÉVÉFÅ[É_Å[ì«Ç›çûÇ›Ç»Ç«Åj
+    // 3. „Çπ„Éó„É©„Ç§„ÉàÊèèÁîª„ÅÆÂàùÊúüÂåñÔºà„Ç∑„Çß„Éº„ÉÄ„ÉºË™≠„ÅøËæº„Åø„Å™„Å©Ôºâ
     m_pSpriteRenderer->Init(m_pRenderer->GetDevice());
 
-    // 4. ç≈èâÇÃÉVÅ[ÉìÅiÉ^ÉCÉgÉãÅjÇÉZÉbÉg
-    // ÉRÉìÉXÉgÉâÉNÉ^Ç≈ë„ì¸Ç∑ÇÈÉXÉ^ÉCÉãÇÃÇΩÇﬂÅAÇ±Ç±Ç≈äeÉVÉXÉeÉÄÇìnÇ∑
+    // 4. ÊúÄÂàù„ÅÆ„Ç∑„Éº„É≥Ôºà„Çø„Ç§„Éà„É´Ôºâ„Çí„Çª„ÉÉ„Éà
+    // „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø„Åß‰ª£ÂÖ•„Åô„Çã„Çπ„Çø„Ç§„É´„ÅÆ„Åü„ÇÅ„ÄÅ„Åì„Åì„ÅßÂêÑ„Ç∑„Çπ„ÉÜ„É†„ÇíÊ∏°„Åô
     m_pSceneManager->ChangeScene(new TitleScene(
         m_pRenderer,
         m_pResourceManager,
@@ -48,21 +53,21 @@ void Game::Update()
 {
     if (!m_pInput || !m_pSceneManager) return;
 
-    // 1. ì¸óÕèÓïÒÇç≈êVÇ…Ç∑ÇÈ
-    m_pInput->Update(); // ÅöÇ±ÇÍÇ™Ç»Ç¢Ç∆îªíËÇ™çXêVÇ≥ÇÍÇ‹ÇπÇÒ
+    // 1. ÂÖ•ÂäõÊÉÖÂ†±„ÇíÊúÄÊñ∞„Å´„Åô„Çã
+    m_pInput->Update(); // ‚òÖ„Åì„Çå„Åå„Å™„ÅÑ„Å®Âà§ÂÆö„ÅåÊõ¥Êñ∞„Åï„Çå„Åæ„Åõ„Çì
 
-    // 2. ÉVÅ[ÉìÇÃçXêV
+    // 2. „Ç∑„Éº„É≥„ÅÆÊõ¥Êñ∞
     m_pSceneManager->Update();
-    // --- ÉVÅ[ÉìëJà⁄ÉçÉWÉbÉN ---
-    // ÉVÅ[ÉìÇ™ÅuéüÇ…êiÇ›ÇΩÇ¢ÅiShouldChangeSceneÅjÅvÇ∆åæÇ¡ÇƒÇ¢ÇÈÇ©ämîF
+    // --- „Ç∑„Éº„É≥ÈÅ∑Áßª„É≠„Ç∏„ÉÉ„ÇØ ---
+    // „Ç∑„Éº„É≥„Åå„ÄåÊ¨°„Å´ÈÄ≤„Åø„Åü„ÅÑÔºàShouldChangeSceneÔºâ„Äç„Å®Ë®Ä„Å£„Å¶„ÅÑ„Çã„ÅãÁ¢∫Ë™ç
     Scene* current = m_pSceneManager->GetCurrentScene();
     if (current && current->ShouldChangeScene())
     {
-        // Ç«ÇÃÉVÅ[ÉìÇ…êÿÇËë÷Ç¶ÇÈÇ©ÇÃîªíË
-        // typeid ÇégÇ§Ç©ÅAÉVÅ[Éìë§Ç… ID ÇéùÇΩÇπÇÈÇÃÇ™àÍî ìIÇ≈Ç∑Ç™ÅA
-        // Ç±Ç±Ç≈ÇÕä»íPÇ»èÛë‘ëJà⁄Ç∆ÇµÇƒé¿ëïó·Çé¶ÇµÇ‹Ç∑ÅB
+        // „Å©„ÅÆ„Ç∑„Éº„É≥„Å´Âàá„ÇäÊõø„Åà„Çã„Åã„ÅÆÂà§ÂÆö
+        // typeid „Çí‰Ωø„ÅÜ„Åã„ÄÅ„Ç∑„Éº„É≥ÂÅ¥„Å´ ID „ÇíÊåÅ„Åü„Åõ„Çã„ÅÆ„Åå‰∏ÄËà¨ÁöÑ„Åß„Åô„Åå„ÄÅ
+        // „Åì„Åì„Åß„ÅØÁ∞°Âçò„Å™Áä∂ÊÖãÈÅ∑Áßª„Å®„Åó„Å¶ÂÆüË£Ö‰æã„ÇíÁ§∫„Åó„Åæ„Åô„ÄÇ
 
-        // TitleScene ÇÃèÍçá -> Stage1Scene Ç÷
+        // TitleScene „ÅÆÂ†¥Âêà -> Stage1Scene „Å∏
         if (dynamic_cast<TitleScene*>(current))
         {
             m_pSceneManager->ChangeScene(new Stage1Scene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
@@ -71,12 +76,12 @@ void Game::Update()
         {
             m_pSceneManager->ChangeScene(new Stage1Scene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
         }
-        // Stage1Scene ÇÃèÍçá -> ResultScene Ç÷
+        // Stage1Scene „ÅÆÂ†¥Âêà -> ResultScene „Å∏
         else if (dynamic_cast<Stage1Scene*>(current))
         {
             m_pSceneManager->ChangeScene(new ResultScene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
         }
-        // ResultScene ÇÃèÍçá -> TitleScene Ç÷ñﬂÇÈ
+        // ResultScene „ÅÆÂ†¥Âêà -> TitleScene „Å∏Êàª„Çã
         else if (dynamic_cast<ResultScene*>(current))
         {
             m_pSceneManager->ChangeScene(new TitleScene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
@@ -94,7 +99,7 @@ void Game::Draw()
 
 void Game::Uninit()
 {
-    // ê∂ê¨ÇµÇΩèáÇ∆ãtèáÇ≈à¿ëSÇ…âï˙
+    // ÁîüÊàê„Åó„ÅüÈ†Ü„Å®ÈÄÜÈ†Ü„ÅßÂÆâÂÖ®„Å´Ëß£Êîæ
     if (m_pSceneManager) { m_pSceneManager->Uninit(); delete m_pSceneManager; m_pSceneManager = nullptr; }
     if (m_pSpriteRenderer) { m_pSpriteRenderer->Uninit(); delete m_pSpriteRenderer; m_pSpriteRenderer = nullptr; }
     if (m_pResourceManager) { m_pResourceManager->UninitAll(); delete m_pResourceManager; m_pResourceManager = nullptr; }

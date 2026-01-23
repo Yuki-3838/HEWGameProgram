@@ -5,10 +5,10 @@ Character::Character()
 	
 }
 
-// �����蔻��쐬��
+// 当たり判定作成中
 bool Character::StageCol(const TileMap& tile, const ColRes direction)
 {
-	// ���͂̃^�C����T��
+	// 周囲のタイルを探索
 	float left = GetPosition().x;
 	float right = GetPosition().x + GetSize().x;
 	float top = GetPosition().y;
@@ -19,7 +19,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	int tileY_T = static_cast<int>(top / 64);
 	int tileY_B = static_cast<int>(bottom / 64);
 	ColRes res;
-	// �����n���ꂽ�����ɑ΂��āA�������Ă����true �������Ă��Ȃ����false��Ԃ�
+	// 引き渡された方向に対して、当たっていればtrue 当たっていなければfalseを返す
 	switch (direction)
 	{
 	case ColRes::TOP:
@@ -92,4 +92,94 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 		break;
 	}
 	return false;
+}
+
+void Character::Move(const TileMap& tile)
+{
+	switch (m_MoveState)
+	{
+	case State::MoveState::LEFT:
+		m_Position.x -= m_Stats.m_Speed;
+		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_Stats.m_Speed;
+		break;
+	case State::MoveState::RIGHT:
+		m_Position.x += m_Stats.m_Speed;
+		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
+		break;
+	}
+
+	// 高度に関する処理
+	switch (m_JumpState)
+	{
+		// 上昇処理
+	case State::JumpState::RISE:
+		//　上昇し、１ｆずつ上昇加速度を１減速する
+		m_Position.y -= m_Stats.m_AccelY;
+		m_Stats.m_AccelY--;
+		// 天井に衝突した場合、下降に移行する
+		if (StageCol(tile, ColRes::TOP))
+		{
+			m_JumpState = State::JumpState::DESC;
+			m_Stats.m_AccelY = -1;
+		}
+		// 上昇加速度が０になった場合、下降に移行する
+		if (m_Stats.m_AccelY == 0)
+		{
+			m_JumpState = State::JumpState::DESC;
+			m_Stats.m_AccelY = -1;
+		}
+		break;
+
+		// 下降処理
+	case State::JumpState::DESC:
+		// 下降する
+		m_Position.y -= m_Stats.m_AccelY;
+		// 最大下降加速度出ない場合、下降加速度を１加速
+		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
+		{
+			m_Stats.m_AccelY -= m_Stats.m_Gravity;
+		}
+		if (StageCol(tile, ColRes::BOTTOM))
+		{
+			do
+			{
+				m_Position.y -= 1;
+			} while (StageCol(tile, ColRes::BOTTOM));
+			m_JumpState = State::JumpState::NONE;
+			m_Stats.m_AccelY = 0;
+		}
+		break;
+
+		// 落下処理
+	case State::JumpState::FALLING:
+		// 下降する
+		m_Position.y -= m_Stats.m_AccelY;
+		// 最大下降加速度出ない場合、下降加速度を１加速
+		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
+		{
+			m_Stats.m_AccelY -= m_Stats.m_Gravity;
+		}
+		if (StageCol(tile, ColRes::BOTTOM))
+		{
+			do
+			{
+				m_Position.y -= 1;
+			} while (StageCol(tile, ColRes::BOTTOM));
+			m_JumpState = State::JumpState::NONE;
+			m_Stats.m_AccelY = 0;
+		}
+		break;
+
+		// 通常時処理
+	case State::JumpState::NONE:
+		// 重力を与え、地面に着地していなければ下降に移行
+		m_Position.y += m_Stats.m_Gravity;
+		if (!StageCol(tile, ColRes::BOTTOM))
+		{
+			m_JumpState = State::JumpState::FALLING;
+			m_Stats.m_AccelY = 1;
+		}
+		m_Position.y -= m_Stats.m_Gravity;
+		m_Stats.m_DefPosY = m_Position.y;
+	}
 }
