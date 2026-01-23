@@ -21,7 +21,8 @@ Player::Player()
 
 	// ダッシュに関する初期化
 	m_dState = DashState::NONE;
-	m_dDire[0] = DashDirection::NONE; m_dDire[1] = DashDirection::NONE;
+	m_dDire[0] = DashDirection::NONE;
+	m_dDire[1] = DashDirection::NONE;
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
@@ -324,38 +325,62 @@ void Player::SetAnimation(int stateIndex)
 
 void Player::DashMove(const TileMap& tile)
 {
-	// 上下左右どちらも入力されているとき
-	// 上下か左右どちらかにしか入力されているとき
-	if (m_dDire[0] == DashDirection::NONE || m_dDire[1] == DashDirection::NONE)
+	if (m_dDire[0] != DashDirection::NONE && m_dDire[1] != DashDirection::NONE)
+	{
+		DirectX::XMFLOAT2 dir = { m_Position.x,m_Position.y };
+		float distance = m_dSpeed;
+		DirectX::XMVECTOR v = DirectX::XMLoadFloat2(&dir);
+		v = DirectX::XMVector2Normalize(v);
+		v = DirectX::XMVectorScale(v, distance);
+
+		switch (m_dDire[0])
+		{
+		case DashDirection::UP:
+			m_Position.y -= DirectX::XMVectorGetY(v);
+			if (StageCol(tile, ColRes::TOP))m_Position.y += DirectX::XMVectorGetY(v);
+			break;
+		case DashDirection::DOWN:
+			m_Position.y += DirectX::XMVectorGetY(v);
+			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= DirectX::XMVectorGetY(v);
+			break;
+		}
+		switch (m_dDire[1])
+		{
+		case DashDirection::RIGHT:
+			m_Position.x += DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= DirectX::XMVectorGetX(v);
+			break;
+		case DashDirection::LEFT:
+			m_Position.x -= DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x += DirectX::XMVectorGetX(v);
+			break;
+		}
+	}
+	else
 	{
 		if (m_dDire[0] == DashDirection::UP)
 		{
 			m_Position.y -= m_dSpeed;
 			if (StageCol(tile, ColRes::TOP))m_Position.y += m_dSpeed;
 		}
-		else if (m_dDire[0] == DashDirection::DOWN)
+		if (m_dDire[0] == DashDirection::DOWN)
 		{
 			m_Position.y += m_dSpeed;
 			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
 		}
-		else if (m_dDire[1] == DashDirection::RIGHT)
+		if (m_dDire[1] == DashDirection::RIGHT)
 		{
 			m_Position.x += m_dSpeed;
 			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
 		}
-		else if (m_dDire[1] == DashDirection::LEFT)
+		if (m_dDire[1] == DashDirection::LEFT)
 		{
 			m_Position.x -= m_dSpeed;
 			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
 		}
-		m_dDistanceCount += m_dSpeed;
 	}
-	else
-	{
-		m_dState = DashState::NONE;
-		m_dDistanceCount = 0;
-		m_dStayCount = 0;
-	}
+	m_dDistanceCount += m_dSpeed;
+	
 
 	if (m_dDistanceCount >= m_dDistanceMax)
 	{
