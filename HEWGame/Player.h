@@ -69,6 +69,7 @@ public:
     Player();
     ~Player() override;
 
+    void UnInit() override;
     // 毎フレームの更新処理（入力による移動など）
     void Update(const TileMap& tile, Character** charaList)override;
 
