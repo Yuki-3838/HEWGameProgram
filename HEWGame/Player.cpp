@@ -19,6 +19,8 @@ Player::Player()
 	m_Position.y = 100.0f;
 
 	// ダッシュに関する初期化
+	m_dState = DashState::NONE;
+	m_dDire[0] = DashDirection::NONE; m_dDire[1] = DashDirection::NONE;
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
@@ -38,26 +40,52 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
 	// 移動キーが押されているかチェック (左右どちらか)
 	bool isMoving = false;
-	// 移動入力処理
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+
+	if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH)
 	{
-		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = true;
-		isMoving = true;
+		m_dState = DashState::STAY;
+		m_dStayCount++;
+		m_JumpState = State::JumpState::NONE;
+		if (m_dStayCount < m_dStayMax)
+		{
+			// 上下の処理
+			if (GetAsyncKeyState(VK_W) & 0x8000)
+			{
+				m_dDire[0] = DashDirection::UP;
+			}
+			else if (GetAsyncKeyState(VK_S) & 0x8000)
+			{
+				m_dDire[0] = DashDirection::DOWN;
+			}
+			else
+			{
+				m_dDire[0] = DashDirection::NONE;
+			}
+			// 左右の処理
+			if (GetAsyncKeyState(VK_A) & 0x8000)
+			{
+				m_dDire[1] = DashDirection::LEFT;
+			}
+			else if (GetAsyncKeyState(VK_D) & 0x8000)
+			{
+				m_dDire[1] = DashDirection::RIGHT;
+			}
+			else
+			{
+				m_dDire[1] = DashDirection::NONE;
+			}
+		}
+		// 待機時間経過で強制発動
+		else
+		{
+			m_dState = DashState::DASH;
+		}
 	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-	{
-		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = false;
-		isMoving = true;
-	}
-	// ダッシュキーを離したら
 	else if (m_dState == DashState::STAY)
 	{
 		m_dState = DashState::DASH;
 	}
-	// ダッシュスキル中でなければ
-	else if(m_dState != DashState::DASH)
+	else if(m_dState == DashState::NONE)
 	{
 		m_dState = DashState::NONE;
 		m_dStayCount = 0;
