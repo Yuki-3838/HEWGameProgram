@@ -7,27 +7,27 @@
 
 namespace State
 {
-    struct collisionState   // true‚Å‚ ‚ê‚ÎÕ“Ë
+    struct collisionState   // trueã§ã‚ã‚Œã°è¡çª
     {
-        bool isOnGround;    // İ’u”»’è
-        bool isOnCeling;    // “Vˆä”»’è
-        bool isOnWallLeft;  // •Ç”»’è¶
-        bool isOnWallRight; // •Ç”»’è‰E
+        bool isOnGround;    // è¨­ç½®åˆ¤å®š
+        bool isOnCeling;    // å¤©äº•åˆ¤å®š
+        bool isOnWallLeft;  // å£åˆ¤å®šå·¦
+        bool isOnWallRight; // å£åˆ¤å®šå³
     };
 
     struct AttackFrame
     {
-        int TotalFrame;      //‘S‘ÌƒtƒŒ[ƒ€”
-        int StartUpFrame;    //”­¶
-        int ActiveFrame;     //‘±
-        int RecorveryFrame;  //ŒãŒ„
+        int TotalFrame;      //å…¨ä½“ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+        int StartUpFrame;    //ç™ºç”Ÿ
+        int ActiveFrame;     //æŒç¶š
+        int RecorveryFrame;  //å¾Œéš™
     };
 
     enum class MoveState
     {
         NONE,
-        LEFT,   // ¶
-        RIGHT,  // ‰E
+        LEFT,   // å·¦
+        RIGHT,  // å³
         TOP,
         BOTTOM
     };
@@ -36,7 +36,8 @@ namespace State
     {
         NONE,
         RISE,
-        DESC
+        DESC,
+        FALLING
     };
 
     enum class CharaType
@@ -46,30 +47,34 @@ namespace State
     };
 }
 
+
+
 struct Stats
 {
-    int m_HP;           // ‘Ì—Í
-    float m_Speed;      // XˆÚ“®‘¬“x
-    float m_Gravity;    // d—Í
-    float m_JumpPw;     // ƒWƒƒƒ“ƒv—Í
-    float m_AccelX = 0;     // X²‚Ì‰Á‘¬“x
-    float m_AccelY = 0;     // Y²‚Ì‰Á‘¬“x
-    float m_AccelYMax = 63; // Y²‚ÌÅ‘å‰Á‘¬“x
-    float m_AttackDamage;  //UŒ‚—pƒƒ“ƒo•Ï”
+    int m_HP;           // ä½“åŠ›
+    float m_Speed;      // Xç§»å‹•é€Ÿåº¦
+    float m_Gravity;    // é‡åŠ›
+    float m_JumpPw;     // ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+    float m_AccelX = 0;     // Xè»¸ã®åŠ é€Ÿåº¦
+    float m_AccelY = 0;     // Yè»¸ã®åŠ é€Ÿåº¦
+    float m_AccelYMax = 63; // Yè»¸ã®æœ€å¤§åŠ é€Ÿåº¦
+    float m_AttackDamage;  //æ”»æ’ƒç”¨ãƒ¡ãƒ³ãƒå¤‰æ•°
+    float m_DefPosY;        // ã‚¸ãƒ£ãƒ³ãƒ—ã—ã¦ã„ãªã„æ™‚ã®Yè»¸
 };
 
 class Character : public GameObject
 {
 protected:
-    Stats m_Stats;  // ƒXƒe[ƒ^ƒX    
-    State::collisionState m_colState{ false,false,false,false };    // l•ûŒü‚ÌÕ“Ëó‘Ô
-    State::MoveState m_MoveState = State::MoveState::RIGHT;          // l•ûŒü‚Ö‚Ì‚Ç‚±‚ÖˆÚ“®‚µ‚Ä‚¢‚é‚©
-    State::JumpState m_JumpState = State::JumpState::NONE;          // ƒWƒƒƒ“ƒv‚â~‰º‚È‚Ç‚Ìó‘Ô
-    State::CharaType m_charaType;                                   // ƒLƒƒƒ‰ƒNƒ^[‚Ìƒ^ƒCƒv
+
+    Stats m_Stats;  // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹    
+    State::collisionState m_colState{ false,false,false,false };    // å››æ–¹å‘ã®è¡çªçŠ¶æ…‹
+    State::MoveState m_MoveState = State::MoveState::RIGHT;          // å››æ–¹å‘ã¸ã®ã©ã“ã¸ç§»å‹•ã—ã¦ã„ã‚‹ã‹
+    State::JumpState m_JumpState = State::JumpState::NONE;          // ã‚¸ãƒ£ãƒ³ãƒ—ã‚„é™ä¸‹ãªã©ã®çŠ¶æ…‹
+    State::CharaType m_charaType;                                   // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ã‚¿ã‚¤ãƒ—
 
     GameObject* object;
 
-    bool m_IsDead;  //€–S‚µ‚½‚©‚Ç‚¤‚©
+    bool m_IsDead;  //æ­»äº¡ã—ãŸã‹ã©ã†ã‹
 
 public:
     Character();
@@ -88,14 +93,17 @@ public:
 
     State::CharaType GetCharaType() { return m_charaType; }
     State::JumpState GetJumpState() { return m_JumpState; }
-    float GetAcceleY() { return m_Stats.m_AccelY; }
 
-    // ƒLƒƒƒ‰ƒNƒ^[‹¤’Ê‚Ì‰Šú‰»i•K—v‚Å‚ ‚ê‚Îj
+    // ã‚²ãƒƒã‚¿ãƒ¼
+    float GetAcceleY() { return m_Stats.m_AccelY; }
+    float GetDefPosY() { return m_Stats.m_DefPosY; }
+
+    // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å…±é€šã®åˆæœŸåŒ–ï¼ˆå¿…è¦ã§ã‚ã‚Œã°ï¼‰
     virtual void Init(ID3D11ShaderResourceView* pTexture) override 
     {
         GameObject::Init(pTexture);
     }
 
-	// €–S‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©æ“¾
+	// æ­»äº¡ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹å–å¾—
     bool IsDead() const { return m_IsDead; }
 };

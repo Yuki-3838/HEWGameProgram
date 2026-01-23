@@ -4,48 +4,59 @@
 
 void Stage1Scene::Init()
 {
-    // ƒ^ƒCƒ‹‚Ìî•ñ
+    // ã‚¿ã‚¤ãƒ«ã®æƒ…å ±
     Kaneda::s_TileInfo tileTable[] =
     {
-        {false,false,false},    // ‹ó
-        {true,false,false},     // •Ç
-        {false,false,true}      // ƒS[ƒ‹
+        {false,false,false},    // ç©º
+        {true,false,false},     // å£
+        {false,false,true}      // ã‚´ãƒ¼ãƒ«
     };
-    // ƒŠƒXƒgì¬
+    // ãƒªã‚¹ãƒˆä½œæˆ
     CreateList(maxChara);
 
-    // 1. Šeíƒ}ƒl[ƒWƒƒ[Eƒ}ƒbƒv‚Ì¶¬
+    // 1. å„ç¨®ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ãƒ»ãƒãƒƒãƒ—ã®ç”Ÿæˆ
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(1920,1080);
 
-    // 2. ƒvƒŒƒCƒ„[‚Ì¶¬‚Æ‰Šú‰»
+    m_pSound = new Sound();
+    m_pSound->Init();
+    m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
+
+    m_pEffectManager = new EffectManager();
+    m_pEffectManager->Init();
+    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(),m_pResourceManager);
+    // 2. ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½ï¿½Æï¿½ï¿½ï¿½ï¿½ï¿½
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
-    // 3. ƒeƒNƒXƒ`ƒƒ‚Ìƒ[ƒh
-    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
-    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/T_Stand_B.png", m_pRenderer->GetDevice());
-    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/T_Dash_A.png", m_pRenderer->GetDevice());
-    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/testSP.png", m_pRenderer->GetDevice());
+    // 3. ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ­ãƒ¼ãƒ‰
+    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
+    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Idol.png", m_pRenderer->GetDevice());
+    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
+    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
     m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
     
 
-    // ƒvƒŒƒCƒ„[‚ÉƒeƒNƒXƒ`ƒƒ‚ğ“n‚·
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’æ¸¡ã™
     Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
     if (player)
     {
-        // š‚±‚±‚Å3–‡ƒZƒbƒg‚Å“n‚·
-        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk,m_pPlayerTexJump);
+        // â˜…ã“ã“ã§3æšã‚»ãƒƒãƒˆã§æ¸¡ã™
+        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk,m_pPlayerTexJump, m_pPlayerTexAttack);
 
-        // Å‰‚Ì‰Šú‰» (Init) ‚àŒÄ‚ñ‚Å‚¨‚­
-        player->Init(m_pPlayerTexIdle); //Idle‚ğ“n‚·
+        // ï¿½Åï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ (Init) ï¿½ï¿½ï¿½Ä‚ï¿½Å‚ï¿½ï¿½ï¿½
+        player->Init(m_pPlayerTexIdle); //Idleï¿½ï¿½nï¿½ï¿½
+
+        player->SetSound(m_pSound);
+        player->SetEffectManager(m_pEffectManager);
     }
     m_pCharaList[1]->Init(m_pEnemyTex);
     m_IsFinished = false;
 
-    //ƒGƒlƒ~[‚ÉƒvƒŒƒCƒ„[‚ÌˆÊ’uî•ñ‚ğ“n‚·
+    //ã‚¨ãƒãƒŸãƒ¼ã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®æƒ…å ±ã‚’æ¸¡ã™
     Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
     enemy->SetTarget(*player);
 
@@ -55,39 +66,43 @@ void Stage1Scene::Init()
 void Stage1Scene::Update()
 {
     CameraSeting();
-    // Œ»İ‚ÌƒLƒƒƒ‰ƒNƒ^[‚Ì”‚¾‚¯XV
+    // ç¾åœ¨ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®æ•°ã ã‘æ›´æ–°
     for (int i = 0; i < m_currentCharaNum; i++)
     {
-		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // €–S‚µ‚Ä‚¢‚È‚¯‚ê‚ÎXV
+		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // æ­»äº¡ã—ã¦ã„ãªã‘ã‚Œã°æ›´æ–°
         {
             m_pCharaList[i]->Update(*m_pTileMap,m_pCharaList);
         }
     }
-    // ƒV[ƒ“I—¹”»’è
+    // ã‚·ãƒ¼ãƒ³çµ‚äº†åˆ¤å®š
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
         m_IsFinished = true;
+    }
+    if (m_pEffectManager)
+    {
+        m_pEffectManager->Update();
     }
 }
 
 void Stage1Scene::Draw()
 {
-    // ”wŒiFƒNƒŠƒAi‹ó‚ÌFj
+    // èƒŒæ™¯è‰²ã‚¯ãƒªã‚¢ï¼ˆç©ºã®è‰²ï¼‰
     float clearColor[4] = { 0.f, 1.f, 0.f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
-    // ƒJƒƒ‰s—ñ‚Ìæ“¾
+    // ã‚«ãƒ¡ãƒ©è¡Œåˆ—ã®å–å¾—
     CameraSeting();
     
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
 
-    //1. ƒ}ƒbƒv‚Ì•`‰æ
+    //1. ãƒãƒƒãƒ—ã®æç”»
     m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
 
-    // 2. ƒvƒŒƒCƒ„[‚Ì•`‰æ
+    // 2. ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æç”»
     for (int i = 0; i < m_currentCharaNum; i++)
     {
-		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // €–S‚µ‚Ä‚¢‚È‚¯‚ê‚Î•`‰æ
+		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // æ­»äº¡ã—ã¦ã„ãªã‘ã‚Œã°æç”»
         {
              m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
         }
@@ -96,17 +111,22 @@ void Stage1Scene::Draw()
     {
         m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
     }
-
+    if (m_pEffectManager)
+    {
+        m_pEffectManager->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+    }
     m_pRenderer->EndFrame();
 }
 
 void Stage1Scene::Uninit()
 {
-    // ƒƒ‚ƒŠ‰ğ•ú
+    // ãƒ¡ãƒ¢ãƒªè§£æ”¾
     if (m_pPlayer) { delete m_pPlayer; m_pPlayer = nullptr; }
     if (m_pTileMap) { delete m_pTileMap; m_pTileMap = nullptr; }
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
+    if (m_pSound){m_pSound->Uninit();delete m_pSound;m_pSound = nullptr;}
+    if(m_pEffectManager) { m_pEffectManager->Uninit(); delete m_pEffectManager; m_pEffectManager = nullptr; }
     AllClearList(m_pCharaList);
 }
 
@@ -182,22 +202,42 @@ void Stage1Scene::TileCollision(int charaName)
 
 void Stage1Scene::CameraSeting()
 {
-    DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x, m_pCharaList[0]->GetPosition().y - 540 - 99);
-    // ƒvƒŒƒCƒ„[‚Ì‚˜À•W‚ª•Ç‚©‚çˆê’è‹——£‚Å‚È‚¯‚ê‚ÎƒJƒƒ‰‚ğŒÅ’è
-    /*if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
+    DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 696);
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ï½˜åº§æ¨™ãŒå£ã‹ã‚‰ä¸€å®šè·é›¢ã§ãªã‘ã‚Œã°ã‚«ãƒ¡ãƒ©ã‚’å›ºå®š
+    if (m_pCharaList[0]->GetPosition().x <= 240)
     {
-        m_pCamera->SetPosition(0, defCameraPos.y );
+         //ã‚¸ãƒ£ãƒ³ãƒ—ä¸­
+        if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
+        {
+            //m_pCamera->SetPosition(0, m_pCharaList[0]->GetDefPosY() - 696);
+        }
+        // ç€åœ°ä¸­
+        else
+        {
+            m_pCamera->SetPosition(0, defCameraPos.y);
+        }
     }
-    else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
+    //else if(// å·¦å£ã«è¿‘ã„å‡¦ç†)
+    // ã‚¸ãƒ£ãƒ³ãƒ—ä¸Šæ˜‡ã€é™ä¸‹ã®ã‚«ãƒ¡ãƒ©å‡¦ç†
+    else if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
+    {
+       m_pCamera->SetPosition(defCameraPos.x, m_pCharaList[0]->GetDefPosY() - 696);
+    }
+    else
+    {
+        m_pCamera->SetPosition(defCameraPos.x, defCameraPos.y);
+    }
+    
+    /*else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
     {
         m_pCamera->SetPosition(0, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99 + m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetAcceleY());
     }
     else if(m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
     {
         m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99);
-    }*/
-    
+    }
+    else
     {
         m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240,0);
-    }
+    }*/
 }
