@@ -236,8 +236,7 @@ void Player::Attack(Character** charaList)
 	{
 		attackPos.x = GetPosition().x - attackSize.x;
 	}
-	//attackPos.y += m_Size.y / 4;
-	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
+	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y /4 ;
 
 	for (int i = 0; charaList[i] != nullptr; ++i)
 	{
@@ -247,9 +246,8 @@ void Player::Attack(Character** charaList)
 
 		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
 
-		//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
-		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
-
+		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
+		
 		if (Col::Any(hit))
 		{
 			//敵にダメージを与える
@@ -268,11 +266,12 @@ int Player::TakeDamage()
 
 void Player::WallJump()
 {
-	// test wll
+
 }
 
 void Player::Blink()
 {
+
 }
 
 void Player::GetBlink()
@@ -293,6 +292,7 @@ void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceVie
 
 void Player::SetAnimation(int stateIndex)
 {
+	// sakagami love kouyou
 	m_CurrentAnimState = stateIndex;
 	// 初期状態として待機画像をセットしておく
 	m_pTexture = m_pTexIdle;
