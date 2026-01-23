@@ -19,6 +19,7 @@ enum class DashState
 	DASH
 };
 
+#include "EffectManager.h"
 class Player :public Character
 {
 private:
@@ -48,6 +49,9 @@ private:
 	int m_dDistanceCount = 0;       // ダッシュ距離カウント
 	float m_dSpeed = 63;
 
+    Sound* m_pSound = nullptr;
+    EffectManager* m_pEffectManager = nullptr;
+    Effect* m_pRunningEffect = nullptr;
 public:
 	int testValue = 123;
 	// コンストラクタ・デストラクタ
@@ -77,4 +81,10 @@ public:
 	void SetSound(Sound* pSound) { m_pSound = pSound; }
 
 
+    void WallJump();
+    void Blink();
+    void GetBlink();
+    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
+    void SetSound(Sound* pSound) { m_pSound = pSound; }
+    void SetEffectManager(EffectManager* em) { m_pEffectManager = em; }
 };

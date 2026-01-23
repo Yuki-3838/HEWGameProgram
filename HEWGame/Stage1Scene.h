@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "GameObject.h"
 #include "Enemy.h"
-
+#include "EffectManager.h"
 class Stage1Scene : public Scene
 {
 private:
@@ -30,6 +30,7 @@ private:
 
     bool m_IsFinished;
     Sound* m_pSound = nullptr;
+    EffectManager* m_pEffectManager = nullptr;
 public:
     using Scene::Scene;
     void Init() override;

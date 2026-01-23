@@ -36,47 +36,20 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
-	if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH)
+	// 移動キーが押されているかチェック (左右どちらか)
+	bool isMoving = false;
+	// 移動入力処理
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
-		m_dState = DashState::STAY;
-		m_dStayCount++;
-		m_JumpState = State::JumpState::NONE;
-		if (m_dStayCount < m_dStayMax)
-		{
-			
-			// 上下の処理
-			if (GetAsyncKeyState(VK_W) & 0x8000)
-			{
-				m_dDire[0] = DashDirection::UP;
-			}
-			else if (GetAsyncKeyState(VK_S) & 0x8000)
-			{
-				m_dDire[0] = DashDirection::DOWN;
-			}
-			else
-			{
-				m_dDire[0] = DashDirection::NONE;
-			}
-			// 左右の処理
-			if (GetAsyncKeyState(VK_A) & 0x8000)
-			{
-				m_dDire[1] = DashDirection::LEFT;
-			}
-			else if (GetAsyncKeyState(VK_D) & 0x8000)
-			{
-				m_dDire[1] = DashDirection::RIGHT;
-			}
-			else
-			{
-				m_dDire[1] = DashDirection::NONE;
-			}
-			
-		}
-		// 待機時間経過で強制発動
-		else
-		{
-			m_dState = DashState::DASH;
-		}
+		m_MoveState = State::MoveState::LEFT;
+		m_FlipX = true;
+		isMoving = true;
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	{
+		m_MoveState = State::MoveState::RIGHT;
+		m_FlipX = false;
+		isMoving = true;
 	}
 	// ダッシュキーを離したら
 	else if (m_dState == DashState::STAY)
