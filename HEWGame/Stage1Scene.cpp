@@ -99,6 +99,7 @@ void Stage1Scene::Draw()
     //1. マップの描画
     m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
 
+    //
     // 2. プレイヤーの描画
     for (int i = 0; i < m_currentCharaNum; i++)
     {
