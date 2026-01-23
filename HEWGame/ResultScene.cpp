@@ -41,6 +41,9 @@ void ResultScene::Draw()
 
 void ResultScene::Uninit()
 {
-    // 明示的にポインタを安全な状態に戻しておく
+    if(m_pResultTex)
+    {
+		m_pResultTex->Release();
+	}
     m_pResultTex = nullptr;
 }
