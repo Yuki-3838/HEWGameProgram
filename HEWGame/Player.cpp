@@ -109,12 +109,14 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			m_MoveState = State::MoveState::LEFT;
 			m_FlipX = true;
 			m_charDir = State::CharDir::LEFT;
+			isMoving = true;
 		}
 		if (GetAsyncKeyState(VK_D) & 0x8000)
 		{
 			m_MoveState = State::MoveState::RIGHT;
 			m_FlipX = false;
 			m_charDir = State::CharDir::RIGHT;
+			isMoving = true;
 		}
 		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 		{
@@ -161,8 +163,6 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	{
 		DashMove(tile);
 	}
-
-	
 	//攻撃処理
 	if (m_IsAttack)
 	{
@@ -178,7 +178,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			m_IsAttack = false;
 			m_AttackFrame = 0;
 		}
-  }
+	}
 	// ダッシュ待機中でもダッシュ中でもなければ通常のMOVE
 	else if (m_dState == DashState::NONE)
 	{
@@ -186,6 +186,43 @@ void Player::Update(const TileMap& tile, Character** charaList)
     m_IsAttack = false;
 		m_AttackFrame = 0;
 		Move(tile);
+	}
+	// --- エフェクトの制御 ---
+	if (isMoving)
+	{
+		/// 1. まだエフェクトが出ていなければ、新しく出す
+		if (m_pEffectManager && m_pRunningEffect == nullptr)
+		{
+			// エフェクトを発生させ、そのポインタを受け取る
+			m_pRunningEffect = m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y, m_FlipX);
+
+			// ループ設定をONにする（これで勝手に消えない）
+			if (m_pRunningEffect)
+			{
+				m_pRunningEffect->SetLoop(true);
+			}
+		}
+
+		// 2. エフェクトが出ているなら、プレイヤーについてくるように位置を更新
+		if (m_pRunningEffect)
+		{
+			// プレイヤーの足元(の少し後ろ)に合わせる計算
+			// (Play関数内の計算と同じロジックを手動で行うか、Playを呼ぶ代わりにSetPositionを使う)
+			float offsetX = m_FlipX ? 192.0f : 40.0f;
+			float offsetY = 150.0f;                    // ����
+
+			m_pRunningEffect->SetPosition(m_Position.x + offsetX, m_Position.y + offsetY);
+		}
+	}
+	else
+	{
+		// キーを離して止まったら、エフェクトを消す
+		if (m_pRunningEffect)
+		{
+			m_pRunningEffect->Stop();  // エフェクトを停止
+			m_pRunningEffect = nullptr;
+			m_pRunningEffect = nullptr;
+		}
 	}
 }
 
