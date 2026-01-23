@@ -105,6 +105,7 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 			0.0f,    // ‰ñ“]‚È‚µ
 			m_FlipX  // ”½“]ƒtƒ‰ƒO
 		);
+		///k
 	}
 }
 
