@@ -48,11 +48,16 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		m_FlipX = false;
 		m_charDir = CharDir::RIGHT;
 	}
-	//アニメーションの切り替え判定(優先度はジャンプ＞移動＞待機)
+	//アニメーションの切り替え判定(優先度は攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 
+	//攻撃中か
+	if (m_IsAttack)
+	{
+		nextAnim = 3; //攻撃用アニメ
+	}
 	// ジャンプ中か
-	if (m_JumpState == State::JumpState::RISE || m_JumpState == State::JumpState::DESC)
+	else if(m_JumpState == State::JumpState::RISE || m_JumpState == State::JumpState::DESC)
 	{
 		nextAnim = 2; // ジャンプ用アニメ
 	}
@@ -198,11 +203,13 @@ void Player::GetBlink()
 {
 }
 
-void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump)
+void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack)
 {
 	m_pTexIdle = idle;
 	m_pTexWalk = walk;
 	m_pTexJump = jump;
+	m_pTexAttack = attack;
+	
 
 	// 初期状態として待機画像をセットしておく
 	SetAnimation(m_CurrentAnimState);
@@ -223,15 +230,19 @@ void Player::SetAnimation(int stateIndex)
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
 		//テクスチャの入れ替え
 		m_pTexture = m_pTexIdle;
-		m_Animator.Init(18, 6, w, h, 0.01f, 0.0f);
+		m_Animator.Init(24, 8, w - 80, h + 80, 0.02f, 0.0f);
 		break;
 	case 1: //移動
 		m_pTexture = m_pTexWalk;
-		m_Animator.Init(18, 6, w, h, 0.5f, 0.0f);
+		m_Animator.Init(18, 6, w, h, 0.05f, 0.0f);
 		break;
-	case 2:
+	case 2: //ジャンプ
 		m_pTexture = m_pTexJump;
-		m_Animator.Init(1, 4, w, h, 0.2f, 0.0f);
+		m_Animator.Init(14, 7, w-40, h + 80, 0.05f, 0.0f);
+		break;
+	case 3: //攻撃
+		m_pTexture = m_pTexAttack;
+		m_Animator.Init(6, 3, w, h, 0.06f, 0.0f);
 		break;
 	}
 }

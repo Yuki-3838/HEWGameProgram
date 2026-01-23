@@ -16,6 +16,7 @@ private:
     ID3D11ShaderResourceView* m_pTexIdle = nullptr; // 待機用
     ID3D11ShaderResourceView* m_pTexWalk = nullptr; // 移動用
     ID3D11ShaderResourceView* m_pTexJump = nullptr; // ジャンプ用
+    ID3D11ShaderResourceView* m_pTexAttack = nullptr; //攻撃用
 
     Animator m_Animator;//アニメーション管理
     bool m_FlipX = false; // 左右反転フラグ
@@ -56,6 +57,6 @@ public:
     void WallJump();
     void Blink();
     void GetBlink();
-    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
+    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack);
     void SetSound(Sound* pSound) { m_pSound = pSound; }
 };
