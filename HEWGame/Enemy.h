@@ -6,10 +6,12 @@ class Enemy :public Character
 {
 private:
 	const Character* m_pTarget = nullptr;
-	bool isDetection; //ƒvƒŒƒCƒ„[‚Ì”­Œ©ó‘Ô
+	bool isDetection; //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç™ºè¦‹çŠ¶æ…‹
+
+	
 
 public:
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^EƒfƒXƒgƒ‰ƒNƒ^
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ»ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Enemy();
 	~Enemy() override;
 
