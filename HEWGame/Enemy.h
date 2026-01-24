@@ -6,29 +6,10 @@
 class Enemy :public Character
 {
 private:
-
-	// 各状態のテクスチャを保持しておく変数
-	ID3D11ShaderResourceView* m_eTexIdle = nullptr; // 待機用
-	ID3D11ShaderResourceView* m_eTexWalk = nullptr; // 移動用
-	ID3D11ShaderResourceView* m_eTexJump = nullptr; // ジャンプ用
-
-	bool m_FlipX = true; // 左右反転フラグ
-	Animator m_Animator;//アニメーション管理
-
-	//現在再生中のアニメーション状態
-	int m_CurrentAnimState = -1;
-
-	//アニメーション切り替え関数
-	void SetAnimation(int stateIndex);
-
-
-	const Character* m_pTarget = nullptr; //ターゲット（プレイヤー）の
+	const Character* m_pTarget = nullptr;
 	bool isDetection; //プレイヤーの発見状態
-	int SCount = 0;   //タイマー
-	int SCount2 = 0;
-	//サーチ範囲設定
-	DirectX::XMFLOAT2 searchSize;
-	DirectX::XMFLOAT2 searchPos;
+
+	
 
 public:
 	// コンストラクタ・デストラクタ
