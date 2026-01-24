@@ -17,8 +17,8 @@ private:
 
     Camera* m_pCamera = nullptr;
     //マルチスレッド用
-    std::thread* m_pThread = nullptr;      // 裏で作業するスレッド
-    std::atomic<bool> m_IsFinished;        // 「終わった？」を管理するフラグ（スレッドセーフ）
+    std::thread* m_pThread = nullptr;// 裏で作業するスレッド
+    std::atomic<bool> m_IsFinished;  //「終わった？」を管理するフラグ（スレッドセーフ）
 
     // 裏で実行する関数
     void BackgroundLoad();

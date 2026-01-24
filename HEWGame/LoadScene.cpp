@@ -16,7 +16,7 @@ void LoadScene::Init()
     // ロード画面自体の画像（これは即座に必要なので普通に読む）
     m_pLoadTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
 
-    //スレッド作成：裏で BackgroundLoad 関数を実行させる！
+    //スレッド作成：裏で BackgroundLoad 関数を実行させる
     //this を渡しているのは、メンバ関数を実行するため
     m_pThread = new std::thread(&LoadScene::BackgroundLoad, this);
 }
@@ -45,7 +45,7 @@ void LoadScene::BackgroundLoad()
         m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", device);
         m_pResourceManager->LoadTexture("asset/texture/Test_dash_Effect.png", device);
 
-        // ※必要ならSoundなどもここで先読みできますが、まずは画像でOK
+        // ※必要ならSoundなどもここで先読みできまる
     }
 
     // 読み込みが終わったらフラグを立てる
@@ -58,7 +58,7 @@ void LoadScene::BackgroundLoad()
 void LoadScene::Update()
 {
     // メインスレッドはここでアニメーションの計算をするだけ
-    // もし m_IsFinished が true になったら、Game.cpp が感知してシーンを切り替えてくれます
+    // もし m_IsFinished が true になったら、Game.cpp が感知してシーンを切り替えてくれる
 }
 
 void LoadScene::Draw()
