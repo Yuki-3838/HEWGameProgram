@@ -21,6 +21,8 @@ private:
     void SetAnimation(int stateIndex);
 
     Sound* m_pSound = nullptr;
+    EffectManager* m_pEffectManager = nullptr;
+    Effect* m_pRunningEffect = nullptr;
 public:
     // コンストラクタ・デストラクタ
     Player();
@@ -33,15 +35,17 @@ public:
     void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
     // ステージとの当たり判定取得
 
-    void UnInit()override;
+	void Jump()override;
+	void Attack(Character** charaList)override;
+	int TakeDamage()override;
 
-    void Jump()override;
-    void Attack(Character** charaList)override;
-    int TakeDamage()override;
+	// ダッシュ処理
+	void DashMove(const TileMap& tile);
 
     void WallJump();
     void Blink();
     void GetBlink();
-    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
+    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack);
     void SetSound(Sound* pSound) { m_pSound = pSound; }
+    void SetEffectManager(EffectManager* em) { m_pEffectManager = em; }
 };

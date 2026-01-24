@@ -8,11 +8,12 @@ Enemy::Enemy()
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
-
 	m_Size.x = 128.0f;
 	m_Size.y = 256.0f;
-	m_Position.x = 500.0f;
+	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
+
+	searchSize = { 500.f, 128.0f };
 
 	m_charaType = State::CharaType::t_Enemy;
 
@@ -21,6 +22,7 @@ Enemy::Enemy()
 
 Enemy::~Enemy()
 {
+
 }
 
 void Enemy::Update(const TileMap& tile, Character** charaList)
@@ -30,10 +32,12 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
+		m_FlipX = false;
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
+		m_FlipX = true;
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
@@ -81,11 +85,18 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 			targetPos.x += m_pTarget->GetSize().x * 0.5f;
 			enemyPos.x += GetSize().x * 0.5f;
 
-			if (targetPos.x < enemyPos.x)
-				m_MoveState = State::MoveState::LEFT;
-			else
-				m_MoveState = State::MoveState::RIGHT;
 
+			if (targetPos.x + 250.0f < enemyPos.x)
+			{
+				m_MoveState = State::MoveState::LEFT;
+				m_FlipX = false;
+			}
+
+			else if (targetPos.x - 250.0f > enemyPos.x)
+			{
+				m_MoveState = State::MoveState::RIGHT;
+				m_FlipX = true;
+			}
 		}
 	}
 	Move(tile);

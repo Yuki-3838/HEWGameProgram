@@ -9,21 +9,29 @@ Player::Player()
 {
 	// プレイヤー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 15;
+	m_Stats.m_Speed = 30;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
 
-	m_Size.x = 320.0f;
-	m_Size.y = 320.0f;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
 	m_Position.x = 0.0f;
 	m_Position.y = 100.0f;
 
+	// ダッシュに関する初期化
+	m_dState = DashState::NONE;
+	m_dDire[0] = DashDirection::NONE;
+	m_dDire[1] = DashDirection::NONE;
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
 
 	m_IsDead = false;
+
+	m_AttackTotalFrame = 30; 
+	m_AttackHitStart = 1;
+	m_AttackHitEnd = 30;
 }
 
 Player::~Player()
@@ -33,6 +41,8 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile, Character** charaList)
 {
+	//アニメーション更新
+	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //最初は右向き
 
 	// 移動入力処理
@@ -42,17 +52,23 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		m_FlipX = true;
 		m_charDir = CharDir::LEFT;
 	}
-	if (GetAsyncKeyState(VK_D) & 0x8000)
+	else if(m_dState == DashState::NONE)
 	{
-		m_MoveState = State::MoveState::RIGHT;
+
+		//m_MoveState = State::MoveState::RIGHT;
 		m_FlipX = false;
 		m_charDir = CharDir::RIGHT;
 	}
-	//アニメーションの切り替え判定(優先度はジャンプ＞移動＞待機)
+	//アニメーションの切り替え判定(優先度は攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 
+	//攻撃中か
+	if (m_IsAttack)
+	{
+		nextAnim = 3; //攻撃用アニメ
+	}
 	// ジャンプ中か
-	if (m_JumpState == State::JumpState::RISE || m_JumpState == State::JumpState::DESC)
+	else if(m_JumpState == State::JumpState::RISE || m_JumpState == State::JumpState::DESC)
 	{
 		nextAnim = 2; // ジャンプ用アニメ
 	}
@@ -72,12 +88,10 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		SetAnimation(nextAnim);
 	}
 
-	//アニメーション更新
-	m_Animator.Update(1.0f / 60.0f);
-
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+	// ダッシュ中であればダッシュMoveを行う
+	if (m_dState == DashState::DASH)
 	{
-		Jump();
+		DashMove(tile);
 	}
 
 	if (m_IsAttack == false && GetAsyncKeyState(VK_F) & 0x8000)
@@ -101,6 +115,29 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			m_AttackFrame = 0;
 		}
 	}
+	// --- エフェクトの制御 ---
+	if (isMoving)
+	{
+		/// 1. まだエフェクトが出ていなければ、新しく出す
+		if (m_pEffectManager && m_pRunningEffect == nullptr)
+		{
+			// エフェクトを発生させ、そのポインタを受け取る
+			m_pRunningEffect = m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y, m_FlipX);
+
+			// ループ設定をONにする（これで勝手に消えない）
+			if (m_pRunningEffect)
+			{
+				m_pRunningEffect->SetLoop(true);
+			}
+		}
+
+		// 2. エフェクトが出ているなら、プレイヤーについてくるように位置を更新
+		if (m_pRunningEffect)
+		{
+			// プレイヤーの足元(の少し後ろ)に合わせる計算
+			// (Play関数内の計算と同じロジックを手動で行うか、Playを呼ぶ代わりにSetPositionを使う)
+			float offsetX = m_FlipX ? 192.0f : 40.0f;
+			float offsetY = 150.0f;                    // ����
 
 
 	Move(tile);
@@ -126,6 +163,7 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 			0.0f,    // 回転なし
 			m_FlipX  // 反転フラグ
 		);
+		///k
 	}
 }
 
@@ -195,22 +233,25 @@ int Player::TakeDamage()
 
 void Player::WallJump()
 {
-	// test wll
+
 }
 
 void Player::Blink()
 {
+
 }
 
 void Player::GetBlink()
 {
 }
 
-void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump)
+void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack)
 {
 	m_pTexIdle = idle;
 	m_pTexWalk = walk;
 	m_pTexJump = jump;
+	m_pTexAttack = attack;
+	
 
 	// 初期状態として待機画像をセットしておく
 	SetAnimation(m_CurrentAnimState);
@@ -218,6 +259,7 @@ void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceVie
 
 void Player::SetAnimation(int stateIndex)
 {
+	// sakagami love kouyou
 	m_CurrentAnimState = stateIndex;
 	// 初期状態として待機画像をセットしておく
 	m_pTexture = m_pTexIdle;
@@ -231,15 +273,86 @@ void Player::SetAnimation(int stateIndex)
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
 		//テクスチャの入れ替え
 		m_pTexture = m_pTexIdle;
-		m_Animator.Init(18, 6, w, h, 0.01f, 0.0f);
+		m_Animator.Init(24, 8, w - 80, h + 80, 0.02f, 0.0f);
 		break;
 	case 1: //移動
 		m_pTexture = m_pTexWalk;
-		m_Animator.Init(18, 6, w, h, 0.5f, 0.0f);
+		m_Animator.Init(18, 6, w, h, 0.05f, 0.0f);
 		break;
-	case 2:
+	case 2: //ジャンプ
 		m_pTexture = m_pTexJump;
-		m_Animator.Init(1, 4, w, h, 0.2f, 0.0f);
+		m_Animator.Init(14, 7, w-40, h + 80, 0.05f, 0.0f);
 		break;
+	case 3: //攻撃
+		m_pTexture = m_pTexAttack;
+		m_Animator.Init(6, 3, w, h, 0.06f, 0.0f);
+		break;
+	}
+}
+
+void Player::DashMove(const TileMap& tile)
+{
+	if (m_dDire[0] != DashDirection::NONE && m_dDire[1] != DashDirection::NONE)
+	{
+		DirectX::XMFLOAT2 dir = { m_Position.x,m_Position.y };
+		float distance = m_dSpeed;
+		DirectX::XMVECTOR v = DirectX::XMLoadFloat2(&dir);
+		v = DirectX::XMVector2Normalize(v);
+		v = DirectX::XMVectorScale(v, distance);
+
+		switch (m_dDire[0])
+		{
+		case DashDirection::UP:
+			m_Position.y -= DirectX::XMVectorGetY(v);
+			if (StageCol(tile, ColRes::TOP))m_Position.y += DirectX::XMVectorGetY(v);
+			break;
+		case DashDirection::DOWN:
+			m_Position.y += DirectX::XMVectorGetY(v);
+			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= DirectX::XMVectorGetY(v);
+			break;
+		}
+		switch (m_dDire[1])
+		{
+		case DashDirection::RIGHT:
+			m_Position.x += DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= DirectX::XMVectorGetX(v);
+			break;
+		case DashDirection::LEFT:
+			m_Position.x -= DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x += DirectX::XMVectorGetX(v);
+			break;
+		}
+	}
+	else
+	{
+		if (m_dDire[0] == DashDirection::UP)
+		{
+			m_Position.y -= m_dSpeed;
+			if (StageCol(tile, ColRes::TOP))m_Position.y += m_dSpeed;
+		}
+		if (m_dDire[0] == DashDirection::DOWN)
+		{
+			m_Position.y += m_dSpeed;
+			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
+		}
+		if (m_dDire[1] == DashDirection::RIGHT)
+		{
+			m_Position.x += m_dSpeed;
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
+		}
+		if (m_dDire[1] == DashDirection::LEFT)
+		{
+			m_Position.x -= m_dSpeed;
+			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
+		}
+	}
+	m_dDistanceCount += m_dSpeed;
+	
+
+	if (m_dDistanceCount >= m_dDistanceMax)
+	{
+		m_dState = DashState::NONE;
+		m_dDistanceCount = 0;
+		m_dStayCount = 0;
 	}
 }

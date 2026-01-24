@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "GameObject.h"
 #include "Enemy.h"
-
+#include "EffectManager.h"
 class Stage1Scene : public Scene
 {
 private:
@@ -25,11 +25,17 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexIdle;
     ID3D11ShaderResourceView* m_pPlayerTexWalk;
     ID3D11ShaderResourceView* m_pPlayerTexJump;
+    ID3D11ShaderResourceView* m_pPlayerTexAttack;
+
+    ID3D11ShaderResourceView* m_pEnemyTexIdle;
+    ID3D11ShaderResourceView* m_pEnemyTexWalk;
+    ID3D11ShaderResourceView* m_pEnemyTexJump;
 
     // testetstest kesite iiyo
 
     bool m_IsFinished;
     Sound* m_pSound = nullptr;
+    EffectManager* m_pEffectManager = nullptr;
 public:
     using Scene::Scene;
     void Init() override;
