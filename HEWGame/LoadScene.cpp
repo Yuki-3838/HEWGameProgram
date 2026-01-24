@@ -6,19 +6,22 @@ LoadScene::LoadScene(Renderer* r, ResourceManager* res, SpriteRenderer* spr, Inp
 {
     m_pThread = nullptr;
     m_IsFinished = false; // 最初は終わってない
+    m_pCamera = nullptr;
 }
 
 void LoadScene::Init()
 {
+    m_pCamera = new Camera(1920, 1080);
+    m_pCamera->SetPosition(0.0f, 0.0f);
     // ロード画面自体の画像（これは即座に必要なので普通に読む）
-    m_pLoadTex = m_pResourceManager->LoadTexture("asset/texture/gu230.png", m_pRenderer->GetDevice());
+    m_pLoadTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
 
     //スレッド作成：裏で BackgroundLoad 関数を実行させる！
     //this を渡しているのは、メンバ関数を実行するため
     m_pThread = new std::thread(&LoadScene::BackgroundLoad, this);
 }
 
-// ★この関数が「裏側（別スレッド）」で動きます
+//この関数が「裏側（別スレッド）」で動きます
 void LoadScene::BackgroundLoad()
 {
     // ID3D11Device* はスレッドセーフ（同時アクセスOK）なので、
@@ -46,8 +49,8 @@ void LoadScene::BackgroundLoad()
     }
 
     // 読み込みが終わったらフラグを立てる
-    // （少しウェイトを入れてロード画面を見せる演出を入れてもいいです）
-    // std::this_thread::sleep_for(std::chrono::milliseconds(1000)); 
+    //ちょっと見せるよう
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000)); 
 
     m_IsFinished = true; // 完了！
 }
@@ -63,6 +66,7 @@ void LoadScene::Draw()
     float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
+    DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
     if (m_pLoadTex)
     {
         // ローディングアイコンをくるくる回す演出
@@ -73,9 +77,9 @@ void LoadScene::Draw()
         m_pSpriteRenderer->Draw(
             m_pRenderer->GetContext(),
             m_pLoadTex,
-            960.0f, 540.0f,      // 座標
-            128.0f, 128.0f,      // サイズ
-            DirectX::XMMatrixIdentity(),
+            0.0f, 0.0f,      // 座標
+            1280.0f, 960.0f,      // サイズ
+            viewProj,
             0.0f, 0.0f, 128.0f, 128.0f, // UV
             angle
         );
@@ -96,5 +100,10 @@ void LoadScene::Uninit()
         }
         delete m_pThread;
         m_pThread = nullptr;
+    }
+    if (m_pCamera)
+    {
+        delete m_pCamera;
+        m_pCamera = nullptr;
     }
 }

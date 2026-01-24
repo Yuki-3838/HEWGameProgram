@@ -15,6 +15,7 @@ private:
     ID3D11ShaderResourceView* m_pLoadTex = nullptr; // ローディング画像
     NextSceneType m_NextScene;
 
+    Camera* m_pCamera = nullptr;
     //マルチスレッド用
     std::thread* m_pThread = nullptr;      // 裏で作業するスレッド
     std::atomic<bool> m_IsFinished;        // 「終わった？」を管理するフラグ（スレッドセーフ）

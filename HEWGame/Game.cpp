@@ -76,15 +76,14 @@ void Game::Update()
         }
         else if (auto loadScene = dynamic_cast<LoadScene*>(current)) // loadSceneとしてキャスト
         {
+            //LoadSceneが持っている「次の行き先」情報を取得
+            NextSceneType type = loadScene->GetNextSceneType();
             // LoadScene の場合 -> 指定された次のシーンへ
-            if (loadScene->GetNextSceneType() == NextSceneType::Stage1)
+            if (type == NextSceneType::Stage1)
             {
                 m_pSceneManager->ChangeScene(new Stage1Scene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
             }
-            else if (loadScene->GetNextSceneType() == NextSceneType::Title)
-            {
-                m_pSceneManager->ChangeScene(new TitleScene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
-			}
+            //ほかのステージを追加の場合else if(type == NextType)
         }
         else if (dynamic_cast<DemoReelScene*>(current))
         {
