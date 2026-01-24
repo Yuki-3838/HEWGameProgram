@@ -21,12 +21,17 @@ Player::Player()
 
 	// ダッシュに関する初期化
 	m_dState = DashState::NONE;
-	m_dDire[0] = DashDirection::NONE; m_dDire[1] = DashDirection::NONE;
+	m_dDire[0] = DashDirection::NONE;
+	m_dDire[1] = DashDirection::NONE;
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
 
 	m_IsDead = false;
+
+	m_AttackTotalFrame = 30; 
+	m_AttackHitStart = 1;
+	m_AttackHitEnd = 30;
 }
 
 Player::~Player()
@@ -40,80 +45,19 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //待機状態に戻す
 
-	// 移動キーが押されているかチェック (左右どちらか)
-	bool isMoving = false;
-
-	if (GetAsyncKeyState(VK_V) & 0x8000 && m_dState != DashState::DASH)
+	// 移動入力処理
+	if (GetAsyncKeyState(VK_A) & 0x8000)
 	{
-		m_dState = DashState::STAY;
-		m_dStayCount++;
-		m_JumpState = State::JumpState::NONE;
-		if (m_dStayCount < m_dStayMax)
-		{
-			// 上下の処理
-			if (GetAsyncKeyState(VK_W) & 0x8000)
-			{
-				m_dDire[0] = DashDirection::UP;
-			}
-			else if (GetAsyncKeyState(VK_S) & 0x8000)
-			{
-				m_dDire[0] = DashDirection::DOWN;
-			}
-			else
-			{
-				m_dDire[0] = DashDirection::NONE;
-			}
-			// 左右の処理
-			if (GetAsyncKeyState(VK_A) & 0x8000)
-			{
-				m_dDire[1] = DashDirection::LEFT;
-			}
-			else if (GetAsyncKeyState(VK_D) & 0x8000)
-			{
-				m_dDire[1] = DashDirection::RIGHT;
-			}
-			else
-			{
-				m_dDire[1] = DashDirection::NONE;
-			}
-		}
-		// 待機時間経過で強制発動
-		else
-		{
-			m_dState = DashState::DASH;
-		}
-	}
-	else if (m_dState == DashState::STAY)
-	{
-		m_dState = DashState::DASH;
+		m_MoveState = State::MoveState::LEFT;
+		m_FlipX = true;
+		m_charDir = CharDir::LEFT;
 	}
 	else if (m_dState == DashState::NONE)
 	{
-		m_dStayCount = 0;
 
-		// 移動入力処理
-		if (GetAsyncKeyState(VK_A) & 0x8000)
-		{
-			m_MoveState = State::MoveState::LEFT;
-			m_FlipX = true;
-			m_charDir = CharDir::LEFT;
-		}
-		if (GetAsyncKeyState(VK_D) & 0x8000)
-		{
-			m_MoveState = State::MoveState::RIGHT;
-			m_FlipX = false;
-			m_charDir = CharDir::RIGHT;
-		}
-		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-		{
-			Jump();
-		}
-
-		if (m_IsAttack == false && GetAsyncKeyState(VK_F) & 0x8000)
-		{
-			m_IsAttack = true;
-			m_AttackFrame = 0;
-		}
+		//m_MoveState = State::MoveState::RIGHT;
+		m_FlipX = false;
+		m_charDir = CharDir::RIGHT;
 	}
 	//アニメーションの切り替え判定(優先度は攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
@@ -155,7 +99,11 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		DashMove(tile);
 	}
 
-
+	if (m_IsAttack == false && GetAsyncKeyState(VK_F) & 0x8000)
+	{
+		m_IsAttack = true;
+		m_AttackFrame = 0;
+	}
 	//攻撃処理
 	if (m_IsAttack)
 	{
@@ -172,14 +120,32 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			m_AttackFrame = 0;
 		}
 	}
-	// ダッシュ待機中でもダッシュ中でもなければ通常のMOVE
-	else if (m_dState == DashState::NONE)
+	// --- エフェクトの制御 ---
+	if (isMoving)
 	{
-		// 攻撃をリセット
-		m_IsAttack = false;
-		m_AttackFrame = 0;
-		Move(tile);
-	}
+		/// 1. まだエフェクトが出ていなければ、新しく出す
+		if (m_pEffectManager && m_pRunningEffect == nullptr)
+		{
+			// エフェクトを発生させ、そのポインタを受け取る
+			m_pRunningEffect = m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y, m_FlipX);
+
+			// ループ設定をONにする（これで勝手に消えない）
+			if (m_pRunningEffect)
+			{
+				m_pRunningEffect->SetLoop(true);
+			}
+		}
+
+		// 2. エフェクトが出ているなら、プレイヤーについてくるように位置を更新
+		if (m_pRunningEffect)
+		{
+			// プレイヤーの足元(の少し後ろ)に合わせる計算
+			// (Play関数内の計算と同じロジックを手動で行うか、Playを呼ぶ代わりにSetPositionを使う)
+			float offsetX = m_FlipX ? 192.0f : 40.0f;
+			float offsetY = 150.0f;                    // ����
+
+
+	Move(tile);
 }
 
 void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
@@ -316,7 +282,6 @@ void Player::Attack(Character** charaList)
 	{
 		attackPos.x = GetPosition().x - attackSize.x;
 	}
-	//attackPos.y += m_Size.y / 4;
 	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
 
 	for (int i = 0; charaList[i] != nullptr; ++i)
@@ -327,9 +292,7 @@ void Player::Attack(Character** charaList)
 
 		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
 
-		//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
 		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
-
 		if (Col::Any(hit))
 		{
 			//敵にダメージを与える
@@ -341,18 +304,26 @@ void Player::Attack(Character** charaList)
 
 int Player::TakeDamage()
 {
-	int damage = 1;
-	m_Stats.m_HP -= damage;
-	return m_Stats.m_HP;
+	
+		int damage = 1;
+		m_Stats.m_HP -= damage;
+		if (m_Stats.m_HP <= 0)
+		{
+			m_Stats.m_HP = 0;
+			m_IsDead = true;
+		}
+		return m_Stats.m_HP;
+	
 }
 
 void Player::WallJump()
 {
-	// test wll
+
 }
 
 void Player::Blink()
 {
+
 }
 
 void Player::GetBlink()
@@ -374,6 +345,7 @@ void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceVie
 
 void Player::SetAnimation(int stateIndex)
 {
+	// sakagami love kouyou
 	m_CurrentAnimState = stateIndex;
 	// 初期状態として待機画像をセットしておく
 	m_pTexture = m_pTexIdle;
@@ -410,38 +382,62 @@ void Player::SetAnimation(int stateIndex)
 
 void Player::DashMove(const TileMap& tile)
 {
-	// 上下左右どちらも入力されているとき
-	// 上下か左右どちらかにしか入力されているとき
-	if (m_dDire[0] == DashDirection::NONE || m_dDire[1] == DashDirection::NONE)
+	if (m_dDire[0] != DashDirection::NONE && m_dDire[1] != DashDirection::NONE)
+	{
+		DirectX::XMFLOAT2 dir = { m_Position.x,m_Position.y };
+		float distance = m_dSpeed;
+		DirectX::XMVECTOR v = DirectX::XMLoadFloat2(&dir);
+		v = DirectX::XMVector2Normalize(v);
+		v = DirectX::XMVectorScale(v, distance);
+
+		switch (m_dDire[0])
+		{
+		case DashDirection::UP:
+			m_Position.y -= DirectX::XMVectorGetY(v);
+			if (StageCol(tile, ColRes::TOP))m_Position.y += DirectX::XMVectorGetY(v);
+			break;
+		case DashDirection::DOWN:
+			m_Position.y += DirectX::XMVectorGetY(v);
+			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= DirectX::XMVectorGetY(v);
+			break;
+		}
+		switch (m_dDire[1])
+		{
+		case DashDirection::RIGHT:
+			m_Position.x += DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= DirectX::XMVectorGetX(v);
+			break;
+		case DashDirection::LEFT:
+			m_Position.x -= DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::RIGHT))m_Position.x += DirectX::XMVectorGetX(v);
+			break;
+		}
+	}
+	else
 	{
 		if (m_dDire[0] == DashDirection::UP)
 		{
 			m_Position.y -= m_dSpeed;
 			if (StageCol(tile, ColRes::TOP))m_Position.y += m_dSpeed;
 		}
-		else if (m_dDire[0] == DashDirection::DOWN)
+		if (m_dDire[0] == DashDirection::DOWN)
 		{
 			m_Position.y += m_dSpeed;
 			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
 		}
-		else if (m_dDire[1] == DashDirection::RIGHT)
+		if (m_dDire[1] == DashDirection::RIGHT)
 		{
 			m_Position.x += m_dSpeed;
 			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
 		}
-		else if (m_dDire[1] == DashDirection::LEFT)
+		if (m_dDire[1] == DashDirection::LEFT)
 		{
 			m_Position.x -= m_dSpeed;
 			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
 		}
-		m_dDistanceCount += m_dSpeed;
 	}
-	else
-	{
-		m_dState = DashState::NONE;
-		m_dDistanceCount = 0;
-		m_dStayCount = 0;
-	}
+	m_dDistanceCount += m_dSpeed;
+	
 
 	if (m_dDistanceCount >= m_dDistanceMax)
 	{

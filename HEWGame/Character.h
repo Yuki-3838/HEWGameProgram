@@ -45,6 +45,12 @@ namespace State
         t_Player = 0,
         t_Enemy = 1
     };
+
+    enum class CharDir
+    {
+        LEFT,
+        RIGHT
+    };
 }
 
 
@@ -65,6 +71,11 @@ struct Stats
 class Character : public GameObject
 {
 protected:
+    Stats m_Stats;  // ステータス    
+    State::collisionState m_colState{ false,false,false,false };    // 四方向の衝突状態
+    State::MoveState m_MoveState = State::MoveState::RIGHT;          // 四方向へのどこへ移動しているか
+    State::JumpState m_JumpState = State::JumpState::NONE;          // ジャンプや降下などの状態
+    State::CharaType m_charaType;                                   // キャラクターのタイプ
 
     Stats m_Stats;  // ステータス    
     State::collisionState m_colState{ false,false,false,false };    // 四方向の衝突状態
@@ -72,7 +83,22 @@ protected:
     State::JumpState m_JumpState = State::JumpState::NONE;          // ジャンプや降下などの状態
     State::CharaType m_charaType;                                   // キャラクターのタイプ
 
-    GameObject* object;
+    //攻撃判定用変数
+    bool m_IsAttack;
+    bool m_IsDead;  //死亡したかどうか
+    int m_AttackFrame;
+    int m_AttackTotalFrame;  //攻撃アニメの総フレーム数
+    int m_AttackHitStart;     //攻撃判定が発生する開始フレーム
+    int m_AttackHitEnd;      //攻撃判定が発生する終了フレーム
+	State::CharDir m_charDir; //キャラクターの向き  
+
+    //攻撃判定用変数
+    bool m_IsAttack;
+    int m_AttackFrame;
+    static const int AttackTotalFrame = 30;  //攻撃アニメの総フレーム数
+    static const int AttackHitStart = 1;     //攻撃判定が発生する開始フレーム
+    static const int AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
+    CharDir m_charDir; //キャラクターの向き
 
     bool m_IsDead;  //死亡したかどうか
 

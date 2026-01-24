@@ -1,24 +1,31 @@
 #pragma once
 #include"Character.h"
+#include"Animator.h"
 
 
 class Enemy :public Character
 {
 private:
 	const Character* m_pTarget = nullptr;
-	bool isDetection; //ƒvƒŒƒCƒ„[‚Ì”­Œ©ó‘Ô
+	bool isDetection; //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç™ºè¦‹çŠ¶æ…‹
+
+	
 
 public:
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^EƒfƒXƒgƒ‰ƒNƒ^
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ»ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Enemy();
 	~Enemy() override;
 
 	void Update(const TileMap& tile, Character** charaList)override;
 	void UnInit()override;
+	void Draw();
 
-	
 	void Attack(Character** charaList)override;
 	int TakeDamage() override;
 	void Jump()override;
 	void SetTarget(const Character& target);
+	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
+
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã•ã›ã‚‹ãŸã‚ã®æç”»
+	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
 };

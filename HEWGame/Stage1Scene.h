@@ -28,6 +28,10 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexFall;
     ID3D11ShaderResourceView* m_pPlayerTexAttack;
 
+    ID3D11ShaderResourceView* m_pEnemyTexIdle;
+    ID3D11ShaderResourceView* m_pEnemyTexWalk;
+    ID3D11ShaderResourceView* m_pEnemyTexJump;
+
     // testetstest kesite iiyo
 
     bool m_IsFinished;
