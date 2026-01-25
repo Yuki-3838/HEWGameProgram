@@ -22,7 +22,7 @@ Player::Player()
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
-	//a
+
 	m_IsDead = false;
 }
 
@@ -40,13 +40,13 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	{
 		m_MoveState = State::MoveState::LEFT;
 		m_FlipX = true;
-		m_charDir = CharDir::LEFT;
+		m_charDir = State::CharDir::LEFT;
 	}
 	if (GetAsyncKeyState(VK_D) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
 		m_FlipX = false;
-		m_charDir = CharDir::RIGHT;
+		m_charDir = State::CharDir::RIGHT;
 	}
 	//アニメーションの切り替え判定(優先度はジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
@@ -151,11 +151,11 @@ void Player::Attack(Character** charaList)
 	//攻撃範囲設定
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
 	DirectX::XMFLOAT2 attackPos;
-	if (m_charDir == CharDir::RIGHT)//右向き
+	if (m_charDir == State::CharDir::RIGHT)//右向き
 	{
 		attackPos.x = GetPosition().x + GetSize().x;
 	}
-	if (m_charDir == CharDir::LEFT)//左向き
+	if (m_charDir == State::CharDir::LEFT)//左向き
 	{
 		attackPos.x = GetPosition().x - attackSize.x;
 	}

@@ -102,11 +102,11 @@ void Enemy::Attack(Character** charaList)
 	//攻撃範囲設定
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
 	DirectX::XMFLOAT2 attackPos;
-	if (m_charDir == CharDir::RIGHT)//右向き
+	if (m_charDir == State::CharDir::RIGHT)//右向き
 	{
 		attackPos.x = GetPosition().x + GetSize().x;
 	}
-	if (m_charDir == CharDir::LEFT)//左向き
+	if (m_charDir == State::CharDir::LEFT)//左向き
 	{
 		attackPos.x = GetPosition().x - attackSize.x;
 	}

@@ -1,6 +1,7 @@
 #include "Stage1Scene.h"
 #include "iostream"
 #include "Collision.h"
+#include <cmath> // fmod
 
 void Stage1Scene::Init()
 {
@@ -18,7 +19,7 @@ void Stage1Scene::Init()
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
     m_pMapRenderer = new MapRenderer();
-    m_pCamera = new Camera(1920,1080);
+    m_pCamera = new Camera(m_ScreenWidth, m_ScreenHeight);
 
     m_pSound = new Sound();
     m_pSound->Init();
@@ -28,12 +29,28 @@ void Stage1Scene::Init()
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
     // 3. テクスチャのロード
+    // マップ・キャラ等
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/card.jpg", m_pRenderer->GetDevice());
     m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/T_Stand_B.png", m_pRenderer->GetDevice());
     m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
     m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/testSP.png", m_pRenderer->GetDevice());
     m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
-    
+
+    // 背景テクスチャ
+    m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/bg_front.png", m_pRenderer->GetDevice()); // 手前
+    m_pBGTexMid =   m_pResourceManager->LoadTexture("asset/texture/bg_mid.png", m_pRenderer->GetDevice());   // 中
+    m_pBGTexBack =  m_pResourceManager->LoadTexture("asset/texture/bg_back.png", m_pRenderer->GetDevice());  // 奥
+
+    // 背景パララックス係数（必要ならレイヤ別に調整）
+    // 横追従度
+    m_BGParallaxU[0] = 1.0f; // 手前（横）
+    m_BGParallaxU[1] = 0.6f; // 中（横）
+    m_BGParallaxU[2] = 0.3f; // 奥（横）
+
+    // 縦追従度
+    m_BGParallaxV[0] = 1.0f; // 手前（縦）
+    m_BGParallaxV[1] = 1.0f; // 中（縦）
+    m_BGParallaxV[2] = 1.0f; // 奥（縦）
 
     // プレイヤーにテクスチャを渡す
     Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
@@ -53,8 +70,6 @@ void Stage1Scene::Init()
     //エネミーにプレイヤーの位置情報を渡す
     Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
     enemy->SetTarget(*player);
-
-
 }
 
 void Stage1Scene::Update()
@@ -63,7 +78,7 @@ void Stage1Scene::Update()
     // 現在のキャラクターの数だけ更新
     for (int i = 0; i < m_currentCharaNum; i++)
     {
-		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
+        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
         {
             m_pCharaList[i]->Update(*m_pTileMap,m_pCharaList);
         }
@@ -86,13 +101,16 @@ void Stage1Scene::Draw()
     
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
 
+    // 0. 背景（パララックス）
+    DrawBackground(viewProj);
+
     //1. マップの描画
     m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
 
     // 2. プレイヤーの描画
     for (int i = 0; i < m_currentCharaNum; i++)
     {
-		if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ描画
+        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ描画
         {
              m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
         }
@@ -105,6 +123,67 @@ void Stage1Scene::Draw()
     m_pRenderer->EndFrame();
 }
 
+void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
+{
+    // SRV からテクスチャ幅/高さを取得
+    auto GetTexSize = [](ID3D11ShaderResourceView* srv) -> std::pair<float, float>
+    {
+        if (!srv) return { 0.0f, 0.0f };
+        ID3D11Resource* res = nullptr;
+        srv->GetResource(&res);
+        if (!res) return { 0.0f, 0.0f };
+        ID3D11Texture2D* tex = static_cast<ID3D11Texture2D*>(res);
+        D3D11_TEXTURE2D_DESC desc = {};
+        tex->GetDesc(&desc);
+        res->Release();
+        return { static_cast<float>(desc.Width), static_cast<float>(desc.Height) };
+    };
+
+    ID3D11DeviceContext* ctx = m_pRenderer->GetContext();
+
+    // 描画順：奥（遅い） -> 中 -> 手前（速い）
+    ID3D11ShaderResourceView* layers[3] = { m_pBGTexBack, m_pBGTexMid, m_pBGTexFront };
+
+    // カメラ位置（ワールド単位）
+    float cameraX = m_pCamera->GetX();
+    float cameraY = m_pCamera->GetY();
+
+    for (int i = 0; i < 3; ++i)
+    {
+        ID3D11ShaderResourceView* srv = layers[i];
+        if (!srv) continue;
+
+        auto [texW, texH] = GetTexSize(srv);
+        if (texW <= 0.0f || texH <= 0.0f) continue;
+
+        // 横/縦パララックス係数（layers array は back, mid, front）
+        float parallaxH = m_BGParallaxU[2 - i];
+        float parallaxV = m_BGParallaxV[2 - i];
+
+        // テクスチャを画面高さに合わせてスケール（縦比を画面に合わせる）
+        float scale = static_cast<float>(m_ScreenHeight) / texH;
+        float drawW = texW * scale;
+        float drawH = static_cast<float>(m_ScreenHeight);
+
+        // 横オフセット（テクスチャ単位 → ピクセル）
+        float offsetTexX = std::fmod(cameraX * parallaxH, texW);
+        if (offsetTexX < 0.0f) offsetTexX += texW;
+        float offsetPixelsX = offsetTexX * scale;
+
+        // 横開始位置：左に余分な1枚分を確保して見切れを防止
+        float startX = -offsetPixelsX - drawW;
+
+        // 縦はタイルせず、カメラに追従させる（1枚）
+        float drawY = cameraY * parallaxV;
+
+        // 横だけ繰り返して描画（上下は単一表示）
+        for (float x = startX; x < static_cast<float>(m_ScreenWidth) + drawW; x += drawW)
+        {
+            m_pSpriteRenderer->Draw(ctx, srv, x, drawY, drawW, drawH, viewProj);
+        }
+    }
+}
+
 void Stage1Scene::Uninit()
 {
     // メモリ解放
@@ -114,6 +193,11 @@ void Stage1Scene::Uninit()
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
     if (m_pSound){m_pSound->Uninit();delete m_pSound;m_pSound = nullptr;}
     AllClearList(m_pCharaList);
+
+    // 背景のSRVは ResourceManager が管理している想定のため Release しない。
+    m_pBGTexFront = nullptr;
+    m_pBGTexMid = nullptr;
+    m_pBGTexBack = nullptr;
 }
 
 void Stage1Scene::CreateList(int num)
@@ -124,7 +208,7 @@ void Stage1Scene::CreateList(int num)
     }
     for (int i = 0; i < maxChara; i++)
     {
-		m_pCharaList[i] = nullptr;
+        m_pCharaList[i] = nullptr;
     }
 }
 
@@ -213,17 +297,4 @@ void Stage1Scene::CameraSeting()
     {
         m_pCamera->SetPosition(defCameraPos.x, defCameraPos.y);
     }
-    
-    /*else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
-    {
-        m_pCamera->SetPosition(0, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99 + m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetAcceleY());
-    }
-    else if(m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
-    {
-        m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99);
-    }
-    else
-    {
-        m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240,0);
-    }*/
 }
