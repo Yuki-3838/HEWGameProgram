@@ -27,6 +27,10 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexJump;
     ID3D11ShaderResourceView* m_pPlayerTexAttack;
 
+    ID3D11ShaderResourceView* m_pPlayerTexDash;
+    ID3D11ShaderResourceView* m_pPlayerTexDashStay;
+    ID3D11ShaderResourceView* m_pPlayerTexDashEffect;
+
     ID3D11ShaderResourceView* m_pEnemyTexIdle;
     ID3D11ShaderResourceView* m_pEnemyTexWalk;
     ID3D11ShaderResourceView* m_pEnemyTexJump;

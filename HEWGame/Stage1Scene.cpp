@@ -38,6 +38,10 @@ void Stage1Scene::Init()
     m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
     m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
 
+    m_pPlayerTexDash = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
+    m_pPlayerTexDashStay = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
+    m_pPlayerTexDashEffect = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityC.png", m_pRenderer->GetDevice());
+
     //3-2. エネミー
     m_pEnemyTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
     m_pEnemyTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
@@ -48,8 +52,8 @@ void Stage1Scene::Init()
     Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
     if (player)
     {
-        // ★ここで3枚セットで渡す
-        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk,m_pPlayerTexJump, m_pPlayerTexAttack);
+        // ★ここで7枚セットで渡す
+        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk,m_pPlayerTexJump, m_pPlayerTexAttack, m_pPlayerTexDash, m_pPlayerTexDashStay, m_pPlayerTexDashEffect);
 
         // �ŏ��̏����� (Init) ���Ă�ł���
         player->Init(m_pPlayerTexIdle); //Idle��n��

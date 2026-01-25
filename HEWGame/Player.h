@@ -28,6 +28,10 @@ private:
     ID3D11ShaderResourceView* m_pTexWalk = nullptr; // 移動用
     ID3D11ShaderResourceView* m_pTexJump = nullptr; // ジャンプ用
     ID3D11ShaderResourceView* m_pTexAttack = nullptr; //攻撃用
+    ID3D11ShaderResourceView* m_pTexDashStay = nullptr; // ダッシュ待機用
+    ID3D11ShaderResourceView* m_pTexDash = nullptr; // スキル用
+    ID3D11ShaderResourceView* m_pTexDashEffect = nullptr; // ダッシュのエフェクト
+
 
     Animator m_Animator;//アニメーション管理
     bool m_FlipX = false; // 左右反転フラグ
@@ -42,11 +46,16 @@ private:
 	DashState m_dState;
 	DashDirection m_dDire[2];// ダッシュ方向
 
-	static constexpr int m_dStayMax = 120;     // ダッシュ待機時間上限
+	static constexpr int m_dStayMax = 300;     // ダッシュ待機時間上限
 	int m_dStayCount = 0;           // ダッシュ待機時間カウント
 	static constexpr int m_dDistanceMax = 1000;   // ダッシュ距離上限
 	int m_dDistanceCount = 0;       // ダッシュ距離カウント
 	float m_dSpeed = 63;
+    float m_sGauge ; //スキルのゲージ
+    float m_sGaugeMAX; //ダッシュのゲージ最大値
+    float m_sChage;  //1f当たりのチャージ量
+    bool m_sChageF; // チャージオンオフフラグ
+    bool m_sQpush; //Q(ダッシュボタン)を押している間のフラグ
 
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
@@ -70,11 +79,17 @@ public:
 
 	// ダッシュ処理
 	void DashMove(const TileMap& tile);
+    void DashInput();  
+    void StartDash();  
+    void EndDash();    
+    bool  m_canAirDash = true; // 空中ダッシュ用
+    
 
     void WallJump();
     void Blink();
     void GetBlink();
-    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack);
+    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack ,
+                         ID3D11ShaderResourceView* dash, ID3D11ShaderResourceView* dashstay , ID3D11ShaderResourceView* dasheffect);
     void SetSound(Sound* pSound) { m_pSound = pSound; }
     void SetEffectManager(EffectManager* em) { m_pEffectManager = em; }
 };
