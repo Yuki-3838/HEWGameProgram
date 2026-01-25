@@ -70,25 +70,16 @@ struct Stats
 class Character : public GameObject
 {
 protected:
-    // 共通ステータス
-    Stats m_Stats;
 
-    // 衝突・状態
-    State::collisionState m_colState{ false, false, false, false };
-    State::MoveState      m_MoveState = State::MoveState::RIGHT;
-    State::JumpState      m_JumpState = State::JumpState::NONE;
-    State::CharaType      m_charaType = State::CharaType::t_Player;
+    Stats m_Stats;  // ステータス    
+    State::collisionState m_colState{ false,false,false,false };    // 四方向の衝突状態
+    State::MoveState m_MoveState = State::MoveState::RIGHT;          // 四方向へのどこへ移動しているか
+    State::JumpState m_JumpState = State::JumpState::NONE;          // ジャンプや降下などの状態
+    State::CharaType m_charaType;                                   // キャラクターのタイプ
 
-    // 攻撃関連
-    bool m_IsAttack = false;
-    int  m_AttackFrame = 0;
-    static const int AttackTotalFrame = 30;  // 攻撃アニメの総フレーム数
-    static const int AttackHitStart = 1;     // 攻撃判定開始フレーム
-    static const int AttackHitEnd = 30;      // 攻撃判定終了フレーム
-    State::CharDir m_charDir = State::CharDir::RIGHT;
+    GameObject* object;
 
-    // 生死
-    bool m_IsDead = false;
+    bool m_IsDead;  //死亡したかどうか
 
 public:
     Character();
@@ -109,15 +100,15 @@ public:
     State::JumpState GetJumpState() const { return m_JumpState; }
 
     // ゲッター
-    float GetAcceleY() const { return m_Stats.m_AccelY; }
-    float GetDefPosY() const  { return m_Stats.m_DefPosY; }
+    float GetAcceleY() { return m_Stats.m_AccelY; }
+    float GetDefPosY() { return m_Stats.m_DefPosY; }
 
-    // キャラクター共通の初期化
-    virtual void Init(ID3D11ShaderResourceView* pTexture) override
+    // キャラクター共通の初期化（必要であれば）
+    virtual void Init(ID3D11ShaderResourceView* pTexture) override 
     {
         GameObject::Init(pTexture);
     }
 
-    // 死亡しているかどうか取得
+	// 死亡しているかどうか取得
     bool IsDead() const { return m_IsDead; }
 };

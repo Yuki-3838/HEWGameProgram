@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include <DirectXMath.h>
 
+#include "EffectManager.h"
 class Stage1Scene : public Scene
 {
 private:
@@ -26,6 +27,7 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexIdle;
     ID3D11ShaderResourceView* m_pPlayerTexWalk;
     ID3D11ShaderResourceView* m_pPlayerTexJump;
+    ID3D11ShaderResourceView* m_pPlayerTexAttack;
 
     // 背景用テクスチャ（手前・中・奥）
     ID3D11ShaderResourceView* m_pBGTexFront = nullptr; // 手前
@@ -42,6 +44,7 @@ private:
 
     bool m_IsFinished;
     Sound* m_pSound = nullptr;
+    EffectManager* m_pEffectManager = nullptr;
 public:
     using Scene::Scene;
     void Init() override;

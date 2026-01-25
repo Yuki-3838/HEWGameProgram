@@ -5,10 +5,10 @@ Character::Character()
 	
 }
 
-// “–‚½‚è”»’èì¬’†
+// å½“ãŸã‚Šåˆ¤å®šä½œæˆä¸­
 bool Character::StageCol(const TileMap& tile, const ColRes direction)
 {
-	// üˆÍ‚Ìƒ^ƒCƒ‹‚ğ’Tõ
+	// å‘¨å›²ã®ã‚¿ã‚¤ãƒ«ã‚’æ¢ç´¢
 	float left = GetPosition().x;
 	float right = GetPosition().x + GetSize().x;
 	float top = GetPosition().y;
@@ -19,7 +19,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	int tileY_T = static_cast<int>(top / 64);
 	int tileY_B = static_cast<int>(bottom / 64);
 	ColRes res;
-	// ˆø‚«“n‚³‚ê‚½•ûŒü‚É‘Î‚µ‚ÄA“–‚½‚Á‚Ä‚¢‚ê‚Îtrue “–‚½‚Á‚Ä‚¢‚È‚¯‚ê‚Îfalse‚ğ•Ô‚·
+	// å¼•ãæ¸¡ã•ã‚ŒãŸæ–¹å‘ã«å¯¾ã—ã¦ã€å½“ãŸã£ã¦ã„ã‚Œã°true å½“ãŸã£ã¦ã„ãªã‘ã‚Œã°falseã‚’è¿”ã™
 	switch (direction)
 	{
 	case ColRes::TOP:
@@ -108,21 +108,21 @@ void Character::Move(const TileMap& tile)
 		break;
 	}
 
-	// ‚“x‚ÉŠÖ‚·‚éˆ—
+	// é«˜åº¦ã«é–¢ã™ã‚‹å‡¦ç†
 	switch (m_JumpState)
 	{
-		// ã¸ˆ—
+		// ä¸Šæ˜‡å‡¦ç†
 	case State::JumpState::RISE:
-		//@ã¸‚µA‚P‚†‚¸‚Âã¸‰Á‘¬“x‚ğ‚PŒ¸‘¬‚·‚é
+		//ã€€ä¸Šæ˜‡ã—ã€ï¼‘ï½†ãšã¤ä¸Šæ˜‡åŠ é€Ÿåº¦ã‚’ï¼‘æ¸›é€Ÿã™ã‚‹
 		m_Position.y -= m_Stats.m_AccelY;
 		m_Stats.m_AccelY--;
-		// “Vˆä‚ÉÕ“Ë‚µ‚½ê‡A‰º~‚ÉˆÚs‚·‚é
+		// å¤©äº•ã«è¡çªã—ãŸå ´åˆã€ä¸‹é™ã«ç§»è¡Œã™ã‚‹
 		if (StageCol(tile, ColRes::TOP))
 		{
 			m_JumpState = State::JumpState::DESC;
 			m_Stats.m_AccelY = -1;
 		}
-		// ã¸‰Á‘¬“x‚ª‚O‚É‚È‚Á‚½ê‡A‰º~‚ÉˆÚs‚·‚é
+		// ä¸Šæ˜‡åŠ é€Ÿåº¦ãŒï¼ã«ãªã£ãŸå ´åˆã€ä¸‹é™ã«ç§»è¡Œã™ã‚‹
 		if (m_Stats.m_AccelY == 0)
 		{
 			m_JumpState = State::JumpState::DESC;
@@ -130,11 +130,11 @@ void Character::Move(const TileMap& tile)
 		}
 		break;
 
-		// ‰º~ˆ—
+		// ä¸‹é™å‡¦ç†
 	case State::JumpState::DESC:
-		// ‰º~‚·‚é
+		// ä¸‹é™ã™ã‚‹
 		m_Position.y -= m_Stats.m_AccelY;
-		// Å‘å‰º~‰Á‘¬“xo‚È‚¢ê‡A‰º~‰Á‘¬“x‚ğ‚P‰Á‘¬
+		// æœ€å¤§ä¸‹é™åŠ é€Ÿåº¦å‡ºãªã„å ´åˆã€ä¸‹é™åŠ é€Ÿåº¦ã‚’ï¼‘åŠ é€Ÿ
 		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
 		{
 			m_Stats.m_AccelY -= m_Stats.m_Gravity;
@@ -150,11 +150,11 @@ void Character::Move(const TileMap& tile)
 		}
 		break;
 
-		// —‰ºˆ—
+		// è½ä¸‹å‡¦ç†
 	case State::JumpState::FALLING:
-		// ‰º~‚·‚é
+		// ä¸‹é™ã™ã‚‹
 		m_Position.y -= m_Stats.m_AccelY;
-		// Å‘å‰º~‰Á‘¬“xo‚È‚¢ê‡A‰º~‰Á‘¬“x‚ğ‚P‰Á‘¬
+		// æœ€å¤§ä¸‹é™åŠ é€Ÿåº¦å‡ºãªã„å ´åˆã€ä¸‹é™åŠ é€Ÿåº¦ã‚’ï¼‘åŠ é€Ÿ
 		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
 		{
 			m_Stats.m_AccelY -= m_Stats.m_Gravity;
@@ -170,14 +170,14 @@ void Character::Move(const TileMap& tile)
 		}
 		break;
 
-		// ’Êíˆ—
+		// é€šå¸¸æ™‚å‡¦ç†
 	case State::JumpState::NONE:
-		// d—Í‚ğ—^‚¦A’n–Ê‚É’…’n‚µ‚Ä‚¢‚È‚¯‚ê‚Î‰º~‚ÉˆÚs
+		// é‡åŠ›ã‚’ä¸ãˆã€åœ°é¢ã«ç€åœ°ã—ã¦ã„ãªã‘ã‚Œã°ä¸‹é™ã«ç§»è¡Œ
 		m_Position.y += m_Stats.m_Gravity;
 		if (!StageCol(tile, ColRes::BOTTOM))
 		{
 			m_JumpState = State::JumpState::FALLING;
-			m_Stats.m_AccelY++;
+			m_Stats.m_AccelY = 1;
 		}
 		m_Position.y -= m_Stats.m_Gravity;
 		m_Stats.m_DefPosY = m_Position.y;
