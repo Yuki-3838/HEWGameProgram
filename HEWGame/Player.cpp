@@ -22,7 +22,7 @@ Player::Player()
 	m_charaType = State::CharaType::t_Player;
 	//例えば0 なら待機、1なら走る、2ならジャンプなど
 	SetAnimation(0);
-
+	//a
 	m_IsDead = false;
 }
 
