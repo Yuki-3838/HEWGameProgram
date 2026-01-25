@@ -51,13 +51,7 @@ namespace State
         LEFT,
         RIGHT
     };
-}
 
-    enum class CharDir
-    {
-        LEFT,
-        RIGHT
-    };
 }
 
 

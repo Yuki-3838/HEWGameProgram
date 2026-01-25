@@ -56,12 +56,12 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 	{
 		m_AttackFrame++;
 		//攻撃判定のあるフレームならAttack関数を呼び出す
-		if (m_AttackFrame >= AttackHitStart && m_AttackFrame <= AttackHitEnd)
+		if (m_AttackFrame >= m_AttackHitStart && m_AttackFrame <= m_AttackHitEnd)
 		{
 			Attack(charaList);
 		}
 		//攻撃アニメ終了判定
-		if (m_AttackFrame >= AttackTotalFrame)
+		if (m_AttackFrame >= m_AttackTotalFrame)
 		{
 			m_IsAttack = false;
 			m_AttackFrame = 0;
