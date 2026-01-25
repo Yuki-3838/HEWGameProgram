@@ -91,3 +91,5 @@ public:
     void SetSound(Sound* pSound) { m_pSound = pSound; }
     void SetEffectManager(EffectManager* em) { m_pEffectManager = em; }
 };
+
+// 上書き用
