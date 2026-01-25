@@ -1,5 +1,5 @@
 #include "Enemy.h"
-
+//a
 Enemy::Enemy()
 {
 	// エネミー固有の初期設定
