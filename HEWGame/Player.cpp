@@ -432,7 +432,7 @@ void Player::DashMove(const TileMap& tile)
 		}
 	}
 	m_dDistanceCount += m_dSpeed;
-	
+
 
 	if (m_dDistanceCount >= m_dDistanceMax)
 	{
