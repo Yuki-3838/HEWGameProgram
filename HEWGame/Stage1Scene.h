@@ -29,6 +29,11 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexJump;
     ID3D11ShaderResourceView* m_pPlayerTexAttack;
 
+    ID3D11ShaderResourceView* m_pEnemyTexIdle;
+    ID3D11ShaderResourceView* m_pEnemyTexWalk;
+    ID3D11ShaderResourceView* m_pEnemyTexJump;
+
+    // testetstest kesite iiyo
     // 背景用テクスチャ（手前・中・奥）
     ID3D11ShaderResourceView* m_pBGTexFront = nullptr; // 手前
     ID3D11ShaderResourceView* m_pBGTexMid = nullptr;   // 中

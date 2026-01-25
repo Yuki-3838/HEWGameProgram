@@ -38,7 +38,13 @@ void Stage1Scene::Init()
     m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
     m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
     m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
-    m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
+
+    //3-2. エネミー
+    m_pEnemyTexIdle = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
+    m_pEnemyTexWalk = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
+    m_pEnemyTexJump = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
+    
+    //m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
 
     // 背景テクスチャ
     m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/bg_front.png", m_pRenderer->GetDevice()); // 手前
@@ -69,11 +75,19 @@ void Stage1Scene::Init()
         player->SetSound(m_pSound);
         player->SetEffectManager(m_pEffectManager);
     }
-    m_pCharaList[1]->Init(m_pEnemyTex);
+
+    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
+    {
+        // ★ここで3枚セットで渡す
+        enemy->SetTextures(m_pEnemyTexIdle, m_pEnemyTexWalk, m_pEnemyTexJump);
+
+        // 最初の初期化 (Init) も呼んでおく
+        enemy->Init(m_pEnemyTexIdle); //Idleを渡す
+    }
+
     m_IsFinished = false;
 
     //エネミーにプレイヤーの位置情報を渡す
-    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
     enemy->SetTarget(*player);
 }
 
@@ -116,6 +130,7 @@ void Stage1Scene::Draw()
     //1. マップの描画
     m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
 
+    //
     // 2. プレイヤーの描画
     for (int i = 0; i < m_currentCharaNum; i++)
     {
