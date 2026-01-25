@@ -79,6 +79,16 @@ protected:
 
     GameObject* object;
 
+
+    // 攻撃関連
+    bool m_IsAttack = false;
+    int  m_AttackFrame = 0;
+    static const int AttackTotalFrame = 30;  // 攻撃アニメの総フレーム数
+    static const int AttackHitStart = 1;     // 攻撃判定開始フレーム
+    static const int AttackHitEnd = 30;      // 攻撃判定終了フレーム
+    State::CharDir m_charDir = State::CharDir::RIGHT;
+
+
     bool m_IsDead;  //死亡したかどうか
 
 public:
