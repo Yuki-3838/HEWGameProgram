@@ -13,7 +13,7 @@ Enemy::Enemy()
 	m_Size.y = 256.0f;
 	m_Position.x = 500.0f;
 	m_Position.y = 0.0f;
-
+	//a
 	m_charaType = State::CharaType::t_Enemy;
 
 	isDetection = false; //プレイヤーの発見状態
