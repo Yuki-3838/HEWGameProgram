@@ -260,9 +260,16 @@ void Player::Attack(Character** charaList)
 
 int Player::TakeDamage()
 {
-	int damage = 1;
-	m_Stats.m_HP -= damage;
-	return m_Stats.m_HP;
+	
+		int damage = 1;
+		m_Stats.m_HP -= damage;
+		if (m_Stats.m_HP <= 0)
+		{
+			m_Stats.m_HP = 0;
+			m_IsDead = true;
+		}
+		return m_Stats.m_HP;
+	
 }
 
 void Player::WallJump()

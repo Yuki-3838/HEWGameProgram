@@ -1,8 +1,8 @@
 #include "Enemy.h"
-
+//a
 Enemy::Enemy()
 {
-	// �G�l�~�[�ŗL�̏����ݒ�
+	// エネミー固有の初期設定
 	m_Stats.m_HP = 1;
 	m_Stats.m_Speed = 15;
 	m_Stats.m_Gravity = 5;
@@ -13,10 +13,10 @@ Enemy::Enemy()
 	m_Size.y = 256.0f;
 	m_Position.x = 500.0f;
 	m_Position.y = 0.0f;
-
+	//a
 	m_charaType = State::CharaType::t_Enemy;
 
-	isDetection = false; //�v���C���[�̔������
+	isDetection = false; //プレイヤーの発見状態
 }
 
 Enemy::~Enemy()
@@ -26,7 +26,7 @@ Enemy::~Enemy()
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
 	m_MoveState = State::MoveState::NONE;
-	// �ړ����͏���
+	// 移動入力処理
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
@@ -40,13 +40,36 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		Jump();
 	}
 
-	//�񔭌����
-	if (isDetection == false)
+	if (m_IsAttack == false && GetAsyncKeyState(VK_Z) & 0x8000)
 	{
-		//���E�ړ��ɂ���\��
+		m_IsAttack = true;
+		m_AttackFrame = 0;
 	}
 
-	//������Ԏ�
+	//攻撃処理
+	if (m_IsAttack)
+	{
+		m_AttackFrame++;
+		//攻撃判定のあるフレームならAttack関数を呼び出す
+		if (m_AttackFrame >= AttackHitStart && m_AttackFrame <= AttackHitEnd)
+		{
+			Attack(charaList);
+		}
+		//攻撃アニメ終了判定
+		if (m_AttackFrame >= AttackTotalFrame)
+		{
+			m_IsAttack = false;
+			m_AttackFrame = 0;
+		}
+	}
+
+	//非発見状態
+	if (isDetection == false)
+	{
+		//左右移動にする予定
+	}
+
+	//発見状態時
 	if (isDetection == true)
 	{
 		m_MoveState = State::MoveState::NONE;
@@ -76,8 +99,37 @@ void Enemy::UnInit()
 
 void Enemy::Attack(Character** charaList)
 {
+	//攻撃範囲設定
+	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
+	DirectX::XMFLOAT2 attackPos;
+	if (m_charDir == State::CharDir::RIGHT)//右向き
+	{
+		attackPos.x = GetPosition().x + GetSize().x;
+	}
+	if (m_charDir == State::CharDir::LEFT)//左向き
+	{
+		attackPos.x = GetPosition().x - attackSize.x;
+	}
+	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
 
+	for (int i = 0; charaList[i] != nullptr; ++i)
+	{
+		auto obj = charaList[i];
+		//オブジェクトじゃなかったらスキップする
+		if (!obj)continue;
+
+		if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
+
+		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
+		if (Col::Any(hit))
+		{
+			//敵にダメージを与える
+			obj->TakeDamage();
+			//ここではplayerをdeleteしない！
+		}
+	}
 }
+
 int Enemy::TakeDamage()
 {
 	int damage = 1;
@@ -92,9 +144,9 @@ int Enemy::TakeDamage()
 
 void Enemy::Jump()
 {
-	//Y���̉����x���Ȃ���Βǉ�
-// �W�����v�@���@�n�ʂɂ��Ă�����\
-// �����@�@
+	//Y軸の加速度がなければ追加
+// ジャンプ　→　地面についていたら可能
+// 処理　　
 	if (m_JumpState == State::JumpState::NONE)
 	{
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;

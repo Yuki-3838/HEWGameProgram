@@ -3,7 +3,7 @@
 #include "Collision.h"
 #include "MapRenderer.h"
 #include "TileMap.h"
-#include"Input.h"
+#include "Input.h"
 
 namespace State
 {
@@ -45,21 +45,26 @@ namespace State
         t_Player = 0,
         t_Enemy = 1
     };
-}
 
+    enum class CharDir
+    {
+        LEFT,
+        RIGHT
+    };
+}
 
 
 struct Stats
 {
-    int m_HP;           // 体力
-    float m_Speed;      // X移動速度
-    float m_Gravity;    // 重力
-    float m_JumpPw;     // ジャンプ力
-    float m_AccelX = 0;     // X軸の加速度
-    float m_AccelY = 0;     // Y軸の加速度
-    float m_AccelYMax = 63; // Y軸の最大加速度
-    float m_AttackDamage;  //攻撃用メンバ変数
-    float m_DefPosY;        // ジャンプしていない時のY軸
+    int m_HP;                // 体力
+    float m_Speed;           // X移動速度
+    float m_Gravity;         // 重力
+    float m_JumpPw;          // ジャンプ力
+    float m_AccelX = 0;      // X軸の加速度
+    float m_AccelY = 0;      // Y軸の加速度
+    float m_AccelYMax = 63;  // Y軸の最大加速度
+    float m_AttackDamage;    // 攻撃用メンバ変数
+    float m_DefPosY;         // ジャンプしていない時のY軸
 };
 
 class Character : public GameObject
@@ -82,8 +87,8 @@ public:
 
     virtual void UnInit() = 0;
 
-     void Move(const TileMap& tile) ;
-    virtual void  Attack(Character** charaList) = 0;
+    void Move(const TileMap& tile);
+    virtual void Attack(Character** charaList) = 0;
     virtual int TakeDamage() = 0;
     virtual void Jump() = 0;
 
@@ -91,8 +96,8 @@ public:
 
     virtual void Update(const TileMap& tile, Character** charaList) = 0;
 
-    State::CharaType GetCharaType() { return m_charaType; }
-    State::JumpState GetJumpState() { return m_JumpState; }
+    State::CharaType GetCharaType() const { return m_charaType; }
+    State::JumpState GetJumpState() const { return m_JumpState; }
 
     // ゲッター
     float GetAcceleY() { return m_Stats.m_AccelY; }
