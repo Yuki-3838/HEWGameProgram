@@ -334,9 +334,12 @@ void Stage1Scene::CameraSeting()
             m_pCamera->SetPosition(0, defCameraPos.y);
         }
     }
-    //else if(// 左壁に近い処理)
+    else if (defCameraPos.y < m_pCharaList[0]->GetPosition().y)
+    {
+        m_pCamera->SetPosition(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 696);
+    }
     // ジャンプ上昇、降下のカメラ処理
-    else if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
+   /* else if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
     {
         m_pCamera->SetPosition(defCameraPos.x, m_pCharaList[0]->GetDefPosY() - 696);
     }
@@ -345,7 +348,7 @@ void Stage1Scene::CameraSeting()
         m_pCamera->SetPosition(defCameraPos.x, defCameraPos.y);
     }
 
-    /*else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
+    else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
     {
         m_pCamera->SetPosition(0, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99 + m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetAcceleY());
     }
