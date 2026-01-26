@@ -38,7 +38,7 @@ public:
     // 指定座標のタイルID取得
     e_TileId GetTileID(int x, int y) const;
     // 指定座標のタイルIDを変更
-    e_TileId SetTileID(int x, int y) { m_MapData[x][y] = TILE_EMPTY; }
+    void SetEmpty(int x, int y) { m_MapData[x][y] = TILE_EMPTY; }
 
     int GetWidth() const { return m_MapWidth; }
     int GetHeight() const { return m_MapHeight; }

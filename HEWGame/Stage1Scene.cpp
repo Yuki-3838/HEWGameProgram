@@ -3,6 +3,7 @@
 #include "Collision.h"
 #include <cmath> 
 
+
 void Stage1Scene::Init()
 {
     // タイルの情報
@@ -375,16 +376,21 @@ void Stage1Scene::EnemySpawn()
         {
             if (m_pTileMap->GetTileID(x, y) == TILE_SPAWN)
             {
-                int num = 1;
-                for (;num < maxChara;num++)
+                SpawnPoint p{ x,y };
+                if (exploredPoint.insert(p).second)
                 {
-                    if (m_pCharaList[num] == nullptr)
+                    int num = 1;
+                    for (; num < maxChara; num++)
                     {
-                        break;
+                        if (m_pCharaList[num] == nullptr)
+                        {
+                            break;
+                        }
                     }
+                    m_pCharaList[num] = AddList(State::CharaType::t_Enemy);
+                    m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
                 }
-                m_pCharaList[num] = AddList(State::CharaType::t_Enemy);
-                m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
+       
 
             }
         }
