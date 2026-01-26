@@ -27,6 +27,8 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexJump;
     ID3D11ShaderResourceView* m_pPlayerTexFall;
     ID3D11ShaderResourceView* m_pPlayerTexAttack;
+    ID3D11ShaderResourceView* m_pPlayerTexAbilityA;
+    ID3D11ShaderResourceView* m_pPlayerTexAbilityB;
 
     // testetstest kesite iiyo
 

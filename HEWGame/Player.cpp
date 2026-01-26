@@ -115,11 +115,21 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			m_AttackFrame = 0;
 		}
 	}
-	//アニメーションの切り替え判定(優先度は攻撃＞ジャンプ＞移動＞待機)
+	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 
+	// ダッシュ中か
+	if (m_dState == DashState::DASH)
+	{
+		nextAnim = 6; // ダッシュ用アニメ（AbilityB）
+	}
+	// 溜め中か
+	else if (m_dState == DashState::STAY)
+	{
+		nextAnim = 5; // 溜め用アニメ（AbilityA）
+	}
 	//攻撃中か
-	if (m_IsAttack)
+	else if (m_IsAttack)
 	{
 		nextAnim = 3; //攻撃用アニメ
 	}
@@ -193,82 +203,112 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	float drawW = m_Size.x;
 	float drawH = m_Size.y;
 
-	// アニメーション状態ごとに描画サイズと位置を調整
-	if (m_CurrentAnimState == 0) // 待機
-	{
-		drawW = 240.0f;
-		drawH = 320.0f;
+	//// アニメーション状態ごとに描画サイズと位置を調整
+	//if (m_CurrentAnimState == 0) // 待機
+	//{
+	//	drawW = 240.0f;
+	//	drawH = 320.0f;
 
-		if (m_FlipX)
-		{
-			drawX = m_Position.x - (drawW - m_Size.x) + 56.0f;
-		}
-		else
-		{
-			drawX = m_Position.x - 56.0f;
-		}
-		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	}
-	else if (m_CurrentAnimState == 1) // 移動
-	{
-		drawW = 320.0f;
-		drawH = 240.0f;
+	//	if (m_FlipX)
+	//	{
+	//		drawX = m_Position.x - (drawW - m_Size.x) + 56.0f;
+	//	}
+	//	else
+	//	{
+	//		drawX = m_Position.x - 56.0f;
+	//	}
+	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	//}
+	//else if (m_CurrentAnimState == 1) // 移動
+	//{
+	//	drawW = 320.0f;
+	//	drawH = 240.0f;
 
-		if (m_FlipX)
-		{
-			drawX = m_Position.x - (drawW - m_Size.x) + 96.0f;
-		}
-		else
-		{
-			drawX = m_Position.x - 96.0f;
-		}
-		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	}
-	else if (m_CurrentAnimState == 2) // ジャンプ上昇
-	{
-		drawW = 280.0f;
-		drawH = 320.0f;
+	//	if (m_FlipX)
+	//	{
+	//		drawX = m_Position.x - (drawW - m_Size.x) + 96.0f;
+	//	}
+	//	else
+	//	{
+	//		drawX = m_Position.x - 96.0f;
+	//	}
+	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	//}
+	//else if (m_CurrentAnimState == 2) // ジャンプ上昇
+	//{
+	//	drawW = 280.0f;
+	//	drawH = 320.0f;
 
-		if (m_FlipX)
-		{
-			drawX = m_Position.x - (drawW - m_Size.x) + 76.0f;
-		}
-		else
-		{
-			drawX = m_Position.x - 76.0f;
-		}
-		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	}
-	else if (m_CurrentAnimState == 3) // 攻撃
-	{
-		drawW = 320.0f;
-		drawH = 240.0f;
+	//	if (m_FlipX)
+	//	{
+	//		drawX = m_Position.x - (drawW - m_Size.x) + 76.0f;
+	//	}
+	//	else
+	//	{
+	//		drawX = m_Position.x - 76.0f;
+	//	}
+	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	//}
+	//else if (m_CurrentAnimState == 3) // 攻撃
+	//{
+	//	drawW = 320.0f;
+	//	drawH = 240.0f;
 
-		if (m_FlipX)
-		{
-			drawX = m_Position.x - (drawW - m_Size.x) + 64.0f;
-		}
-		else
-		{
-			drawX = m_Position.x - 64.0f;
-		}
-		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	}
-	else if (m_CurrentAnimState == 4) // 落下
-	{
-		drawW = 240.0f;
-		drawH = 320.0f;
+	//	if (m_FlipX)
+	//	{
+	//		drawX = m_Position.x - (drawW - m_Size.x) + 64.0f;
+	//	}
+	//	else
+	//	{
+	//		drawX = m_Position.x - 64.0f;
+	//	}
+	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	//}
+	//else if (m_CurrentAnimState == 4) // 落下
+	//{
+	//	drawW = 240.0f;
+	//	drawH = 320.0f;
 
-		if (m_FlipX)
-		{
-			drawX = m_Position.x - (drawW - m_Size.x) + 56.0f;
-		}
-		else
-		{
-			drawX = m_Position.x - 56.0f;
-		}
-		drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	}
+	//	if (m_FlipX)
+	//	{
+	//		drawX = m_Position.x - (drawW - m_Size.x) + 56.0f;
+	//	}
+	//	else
+	//	{
+	//		drawX = m_Position.x - 56.0f;
+	//	}
+	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	//}
+	//else if (m_CurrentAnimState == 5) // 溜め（AbilityA）
+	//{
+	//	drawW = 256.0f;
+	//	drawH = 256.0f;
+
+	//	if (m_FlipX)
+	//	{
+	//		drawX = m_Position.x - (drawW - m_Size.x) + 64.0f;
+	//	}
+	//	else
+	//	{
+	//		drawX = m_Position.x - 64.0f;
+	//	}
+	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	//}
+	//else if (m_CurrentAnimState == 6) // ダッシュ（AbilityB）
+	//{
+	//	drawW = 256.0f;
+	//	drawH = 256.0f;
+
+	//	if (m_FlipX)
+	//	{
+	//		drawX = m_Position.x - (drawW - m_Size.x) + 64.0f;
+	//	}
+	//	else
+	//	{
+	//		drawX = m_Position.x - 64.0f;
+	//	}
+	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
+	//}
 
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
@@ -359,14 +399,15 @@ void Player::GetBlink()
 {
 }
 
-void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack)
+void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
 {
 	m_pTexIdle = idle;
 	m_pTexWalk = walk;
 	m_pTexJump = jump;
 	m_pTexFall = fall;
 	m_pTexAttack = attack;
-
+	m_pTexAbilityA = abilityA;
+	m_pTexAbilityB = abilityB;
 
 	// 初期状態として待機画像をセットしておく
 	SetAnimation(m_CurrentAnimState);
@@ -404,6 +445,14 @@ void Player::SetAnimation(int stateIndex)
 	case 4: //落下
 		m_pTexture = m_pTexFall;
 		m_Animator.Init(14, 7, w - 80, h + 80, 0.01f, 0.0f, false);
+		break;
+	case 5: //溜め（AbilityA）
+		m_pTexture = m_pTexAbilityA;
+		m_Animator.Init(28, 7, w, h+30, 0.05f, 0.0f, true);
+		break;
+	case 6: //ダッシュ（AbilityB）
+		m_pTexture = m_pTexAbilityB;
+		m_Animator.Init(20, 5, w, h-30, 0.02f, 0.0f, false);
 		break;
 	}
 }
