@@ -123,6 +123,9 @@
     <ClCompile Include="EffectManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="EnemyShooter.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -211,6 +214,12 @@
     </ClInclude>
     <ClInclude Include="EffectManager.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyShooter.h">
+      <Filter>ヘッダー ファイル\オブジェクト関連</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyShielder.h">
+      <Filter>ヘッダー ファイル\オブジェクト関連</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

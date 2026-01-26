@@ -1,25 +1,26 @@
 #pragma once
 #include <vector>
 
-//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌˆêƒRƒ}‚Ìî•ñ‚ğ•\‚·\‘¢‘Ì
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ä¸€ã‚³ãƒã®æƒ…å ±ã‚’è¡¨ã™æ§‹é€ ä½“
 struct AnimFrame
 {
-	float x,  y, w, h; //Ø‚è”²‚«”ÍˆÍ
-	float duration;   //‚±‚ÌƒRƒ}‚Ì•\¦ŠÔi•bj
+	float x, y, w, h; //åˆ‡ã‚ŠæŠœãç¯„å›²
+	float duration;   //ã“ã®ã‚³ãƒã®è¡¨ç¤ºæ™‚é–“ï¼ˆç§’ï¼‰
 };
 
 class Animator
 {
 private:
-	std::vector<AnimFrame> m_frames; //ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒRƒ}‚ÌƒŠƒXƒg
-	float m_ElapsedTime = 0.0f;      //Œ»İ‚ÌƒRƒ}‚Å‚ÌŒo‰ßŠÔ
-	size_t m_CurrentFrameIndex = 0;  //Œ»İ‚ÌƒRƒ}‚ÌƒCƒ“ƒfƒbƒNƒX
+	std::vector<AnimFrame> m_frames; // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚³ãƒã®ãƒªã‚¹ãƒˆ
+	float m_ElapsedTime = 0.0f;      // ç¾åœ¨ã®ã‚³ãƒã§ã®çµŒéæ™‚é–“
+	size_t m_CurrentFrameIndex = 0;  // ç¾åœ¨ã®ã‚³ãƒã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	bool m_Loop = true;              // ãƒ«ãƒ¼ãƒ—å†ç”Ÿã™ã‚‹ã‹ã©ã†ã‹
+	bool m_Finished = false;         // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çµ‚äº†ãƒ•ãƒ©ã‚°
 
 public:
-	// count: ƒRƒ}”, xCount: ‰¡‚É‰½ŒÂ•À‚ñ‚Å‚¢‚é‚©, w/h: 1ƒRƒ}‚ÌƒTƒCƒY –ˆƒtƒŒ[ƒ€ŒÄ‚Ño‚µ‚ÄƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚é
-	void Init(int count, int xCount, float w, float h, float durationPerFrame = 0.1f,float offsetY = 0.0f);
+	// count: ã‚³ãƒæ•°, xCount: æ¨ªã«ä½•å€‹ä¸¦ã‚“ã§ã„ã‚‹ã‹, w/h: 1ã‚³ãƒã®ã‚µã‚¤ã‚º æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å‘¼ã³å‡ºã—ã¦ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹
+	void Init(int count, int xCount, float w, float h, float durationPerFrame = 0.1f, float offsetY = 0.0f, bool loop = true);
 	void Update(float deltaTime);
 
 	AnimFrame GetCurrentFrame() const;
 };
-

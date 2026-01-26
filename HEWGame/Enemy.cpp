@@ -1,5 +1,6 @@
 #include "Enemy.h"
-//a
+
+
 Enemy::Enemy()
 {
 	// エネミー固有の初期設定
@@ -18,7 +19,7 @@ Enemy::Enemy()
 	m_charaType = State::CharaType::t_Enemy;
 
 	isDetection = false; //プレイヤーの発見状態
-	m_FlipX = false;   // 左右反転フラグ(最初は左向き)
+	m_FlipX = true;   // 左右反転フラグ(最初は左向き)
 }
 
 Enemy::~Enemy()
@@ -33,12 +34,12 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = false;
+		m_FlipX = true;
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = true;
+		m_FlipX = false;
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
@@ -77,13 +78,13 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		if (SCount == 200)
 		{
 			m_MoveState = State::MoveState::RIGHT;
-			m_FlipX = true; //右を見る
+			m_FlipX = false; //右を見る
 		}
 
 		if (SCount == 400)
 		{
 			m_MoveState = State::MoveState::LEFT;
-			m_FlipX = false; //左を見る
+			m_FlipX = true; //左を見る
 
 			SCount = 0;
 		}
@@ -91,12 +92,12 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 
 		if (m_FlipX)//右向き
 		{
-			//attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
-			searchPos.x = GetPosition().x + GetSize().x;
+			searchPos.x = GetPosition().x - searchSize.x;
 		}
 		else//左向き
 		{
-			searchPos.x = GetPosition().x - searchSize.x;
+			// attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
+			searchPos.x = GetPosition().x + GetSize().x;
 		}
 		//attackPos.y += m_Size.y / 4;
 		searchPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
@@ -146,13 +147,13 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 			if (targetPos.x + 250.0f < enemyPos.x)
 			{
 				m_MoveState = State::MoveState::LEFT;
-				m_FlipX = false;
+				m_FlipX = true;
 			}
 
 			else if (targetPos.x - 250.0f > enemyPos.x)
 			{
 				m_MoveState = State::MoveState::RIGHT;
-				m_FlipX = true;
+				m_FlipX = false;
 			}
 		}
 	}
@@ -162,6 +163,10 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 void Enemy::UnInit()
 {
   
+}
+
+void Enemy::Draw()
+{
 }
 
 
@@ -229,12 +234,12 @@ void Enemy::SetTarget(const Character& target)
 
 void Enemy::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump)
 {
-	m_eTexIdle = idle;
-	m_eTexWalk = walk;
-	m_eTexJump = jump;
+		m_eTexIdle = idle;
+		m_eTexWalk = walk;
+		m_eTexJump = jump;
 
-	// 初期状態として待機画像をセットしておく
-	SetAnimation(m_CurrentAnimState);
+		// 初期状態として待機画像をセットしておく
+		SetAnimation(m_CurrentAnimState);
 }
 
 //アニメーションさせるための描画
@@ -245,7 +250,7 @@ void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XM
 
 	////絵をどれくらい下にずらすか
 	//float drawOffsetY = 60.0f;   /*+ drawOffsetY*/
-
+	
 
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
@@ -253,7 +258,7 @@ void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XM
 		pSR->Draw(
 			pContext,
 			m_pTexture,
-			m_Position.x, m_Position.y,
+			m_Position.x, m_Position.y,   
 			m_Size.x, m_Size.y,
 			viewProj,
 			f.x, f.y, f.w, f.h, // UV座標
