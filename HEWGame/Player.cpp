@@ -366,11 +366,9 @@ void Player::SetAnimation(int stateIndex)
 	float animH = 0; // 今回設定するアニメの高さ
 	float uvOffsetY = 0.0f; // UVのYオフセット
 	float scale = 1.0f;
-	float finalW = animW * scale;
-	float finalH = animH * scale;
 
-	float offX = (m_Size.x - finalW) / 2;
-	float offY = (m_Size.y - finalH);
+	float offX;
+	float offY;
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
@@ -379,33 +377,62 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexIdle;
 		animW = w - 80;
 		animH = h + 80;
-
-		// Init呼び出しは後でまとめて行う
-		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true,offX,offY,scale);
+		scale = 0.8f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.x - animH * scale);
+		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true, offX, offY, scale);
 		break;
 	case 1: //移動
 		m_pTexture = m_pTexWalk;
-		m_Animator.Init(18, 6, w, h, 0.05f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.8f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.x - animH * scale);
+		m_Animator.Init(18, 6, animW, animH, 0.05f, 0.0f, true, offX, offY, scale);
 		break;
 	case 2: //ジャンプ上昇（ループしない）
 		m_pTexture = m_pTexJump;
-		m_Animator.Init(14, 7, w - 40, h + 80, 0.1f, 0.0f, false);
+		animW = w - 40;
+		animH = h + 80;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.x - animH * scale);
+		m_Animator.Init(14, 7, animW, animH, 0.1f, 0.0f, false, offX, offY, scale);
 		break;
 	case 3: //攻撃
 		m_pTexture = m_pTexAttack;
-		m_Animator.Init(6, 3, w, h, 0.03f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 1.1f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.x - animH * scale);
+		m_Animator.Init(6, 3, animW, animH, 0.03f, 0.0f, false, offX, offY, scale);
 		break;
 	case 4: //落下
 		m_pTexture = m_pTexFall;
-		m_Animator.Init(14, 7, w - 80, h + 80, 0.01f, 0.0f, false);
+		animW = w - 80;
+		animH = h + 80;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.x - animH * scale);
+		m_Animator.Init(14, 7, animW, animH, 0.01f, 0.0f, false, offX, offY, scale);
 		break;
 	case 5: //溜め（AbilityA）
 		m_pTexture = m_pTexAbilityA;
-		m_Animator.Init(28, 7, w, h+30, 0.05f, 0.0f, true);
+		animW = w;
+		animH = h + 30;
+		scale = 0.8f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.x - animH * scale);
+		m_Animator.Init(28, 7, animW, animH, 0.05f, 0.0f, true, offX, offY, scale);
 		break;
 	case 6: //ダッシュ（AbilityB）
 		m_pTexture = m_pTexAbilityB;
-		m_Animator.Init(20, 5, w, h-30, 0.02f, 0.0f, false);
+		animW = w;
+		animH = h - 30;
+		scale = 0.8f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.x - animH * scale);
+		m_Animator.Init(20, 5, animW, animH, 0.02f, 0.0f, false, offX, offY, scale);
 		break;
 
 	}
