@@ -3,12 +3,11 @@
 
 class EnemyShielder : public Enemy
 {
+private:
+
 public:
 	EnemyShielder();
 	~EnemyShielder();
-
-private:
-
 
 };
 

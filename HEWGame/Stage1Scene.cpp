@@ -30,7 +30,8 @@ void Stage1Scene::Init()
     m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(), m_pResourceManager);
     // 2. �v���C���[�̐����Ə�����
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
-    m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
+    m_pCharaList[1] = AddList(State::CharaType::t_EnemySword);
+    m_pCharaList[2] = AddList(State::CharaType::t_EnemyShooter);
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
@@ -49,17 +50,17 @@ void Stage1Scene::Init()
     m_pPlayerTexDashEffect = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityC.png", m_pRenderer->GetDevice());
 
     //3-2. エネミー
-    m_pEnemyTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
 
-    m_pEnemyGunTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyGunTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyGunTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShooterTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemyShooterTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShooterTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
 
-    m_pEnemySeTexIdle = m_pResourceManager->LoadTexture("asset/texture/Se_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemySeTexWalk = m_pResourceManager->LoadTexture("asset/texture/Se_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemySeTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShielderTexIdle = m_pResourceManager->LoadTexture("asset/texture/Se_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemyShielderTexWalk = m_pResourceManager->LoadTexture("asset/texture/Se_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShielderTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
 
 
     
@@ -72,9 +73,9 @@ void Stage1Scene::Init()
 
     // 背景パララックス係数（必要ならレイヤ別に調整）
     // 横追従度
-    m_BGParallaxU[0] = 1.0f; // 手前（横）
-    m_BGParallaxU[1] = 0.6f; // 中（横）
-    m_BGParallaxU[2] = 0.3f; // 奥（横）
+    m_BGParallaxU[0] = 0.6f; // 手前（横）
+    m_BGParallaxU[1] = 0.4f; // 中（横）
+    m_BGParallaxU[2] = 0.2f; // 奥（横）
 
     // 縦追従度
     m_BGParallaxV[0] = 1.0f; // 手前（縦）
@@ -98,10 +99,19 @@ void Stage1Scene::Init()
     Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
     {
         // ★ここで3枚セットで渡す
-        enemy->SetTextures(m_pEnemyTexIdle, m_pEnemyTexWalk, m_pEnemyTexJump);
+        enemy->SetTextures(m_pEnemySwordTexIdle, m_pEnemySwordTexWalk, m_pEnemySwordTexJump);
 
         // 最初の初期化 (Init) も呼んでおく
-        enemy->Init(m_pEnemyTexIdle); //Idleを渡す
+        enemy->Init(m_pEnemySwordTexIdle); //Idleを渡す
+    }
+
+    Enemy* enemy2 = dynamic_cast<Enemy*>(m_pCharaList[2]);
+    {
+        // ★ここで3枚セットで渡す
+        enemy2->SetTextures(m_pEnemySwordTexIdle, m_pEnemySwordTexWalk, m_pEnemySwordTexJump);
+
+        // 最初の初期化 (Init) も呼んでおく
+        enemy2->Init(m_pEnemySwordTexIdle); //Idleを渡す
     }
 
     m_IsFinished = false;
@@ -286,11 +296,17 @@ Character* Stage1Scene::AddList(State::CharaType e_name)
     case State::CharaType::t_Player:
         return new Player;
         break;
-    case State::CharaType::t_Enemy:
-        return new Enemy;
+
+    case State::CharaType::t_EnemySword:
+        return new EnemySword;
+        break;
+
+    case State::CharaType::t_EnemyShooter:
+        return new EnemyShooter;
         break;
     };
 
+    return nullptr;
 }
 
 void Stage1Scene::TileCollision(int charaName)

@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "GameObject.h"
 #include "Enemy.h"
+#include "EnemySword.h"
+#include "EnemyShooter.h"
 #include <DirectXMath.h>
 
 #include "EffectManager.h"
@@ -36,17 +38,17 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexDashStay;
     ID3D11ShaderResourceView* m_pPlayerTexDashEffect;
 
-    ID3D11ShaderResourceView* m_pEnemyTexIdle;
-    ID3D11ShaderResourceView* m_pEnemyTexWalk;
-    ID3D11ShaderResourceView* m_pEnemyTexJump;
+    ID3D11ShaderResourceView* m_pEnemySwordTexIdle;
+    ID3D11ShaderResourceView* m_pEnemySwordTexWalk;
+    ID3D11ShaderResourceView* m_pEnemySwordTexJump;
 
-    ID3D11ShaderResourceView* m_pEnemyGunTexIdle;
-    ID3D11ShaderResourceView* m_pEnemyGunTexWalk;
-    ID3D11ShaderResourceView* m_pEnemyGunTexJump;
+    ID3D11ShaderResourceView* m_pEnemyShooterTexIdle;
+    ID3D11ShaderResourceView* m_pEnemyShooterTexWalk;
+    ID3D11ShaderResourceView* m_pEnemyShooterTexJump;
 
-    ID3D11ShaderResourceView* m_pEnemySeTexIdle;
-    ID3D11ShaderResourceView* m_pEnemySeTexWalk;
-    ID3D11ShaderResourceView* m_pEnemySeTexJump;
+    ID3D11ShaderResourceView* m_pEnemyShielderTexIdle;
+    ID3D11ShaderResourceView* m_pEnemyShielderTexWalk;
+    ID3D11ShaderResourceView* m_pEnemyShielderTexJump;
 
     // testetstest kesite iiyo
     // 背景用テクスチャ（手前・中・奥）

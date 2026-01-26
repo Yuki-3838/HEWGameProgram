@@ -1,17 +1,33 @@
-#include "Enemy.h"
+#include "EnemySword.h"
 
 
-Enemy::Enemy()
+EnemySword::EnemySword()
+{
+	// エネミー固有の初期設定
+	m_Stats.m_HP = 1;
+	m_Stats.m_Speed = 15;
+	m_Stats.m_Gravity = 5;
+	m_Stats.m_JumpPw = 25;
+
+	m_Size.x = 128.0f;
+	m_Size.y = 256.0f;
+	m_Position.x = 1000.0f;
+	m_Position.y = 0.0f;
+
+	searchSize = { 500.f, 128.0f };
+
+	m_charaType = State::CharaType::t_EnemySword;
+
+	isDetection = false; //プレイヤーの発見状態
+	m_charDir = State::CharDir::LEFT; // エネミーの向き
+}
+
+EnemySword::~EnemySword()
 {
 
 }
 
-Enemy::~Enemy()
-{
-
-}
-
-void Enemy::Update(const TileMap& tile, Character** charaList)
+void EnemySword::Update(const TileMap& tile, Character** charaList)
 {
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
@@ -145,14 +161,44 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		}
 	}
 	Move(tile);
+
+	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
+	int nextAnim = 0; // 0:待機 (デフォルト)
+
+	//攻撃中か
+	if (m_IsAttack)
+	{
+		nextAnim = 3; //攻撃用アニメ
+	}
+	// ジャンプ上昇中か
+	else if (m_JumpState == State::JumpState::RISE)
+	{
+		nextAnim = 2; // ジャンプ上昇用アニメ
+	}
+	// 移動中か
+	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
+	{
+		nextAnim = 1; // 移動用アニメ
+	}
+	else
+	{
+		nextAnim = 0; // 待機アニメ
+	}
+
+	// 状態が変わった時だけセットする
+	if (nextAnim != m_CurrentAnimState)
+	{
+		SetAnimation(nextAnim);
+	}
+
 }
 
-void Enemy::UnInit()
+void EnemySword::UnInit()
 {
-  
+
 }
 
-void Enemy::Attack(Character** charaList)
+void EnemySword::Attack(Character** charaList)
 {
 	//攻撃範囲設定
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
@@ -185,74 +231,7 @@ void Enemy::Attack(Character** charaList)
 	}
 }
 
-int Enemy::TakeDamage()
-{
-	int damage = 1;
-	m_Stats.m_HP -= damage;
-	if (m_Stats.m_HP <= 0)
-	{
-		m_Stats.m_HP = 0;
-		m_IsDead = true;
-	}
-	return m_Stats.m_HP;
-}
-
-void Enemy::Jump()
-{
-	//Y軸の加速度がなければ追加
-// ジャンプ　→　地面についていたら可能
-// 処理　　
-	if (m_JumpState == State::JumpState::NONE)
-	{
-		m_Stats.m_AccelY = m_Stats.m_JumpPw;
-		m_JumpState = State::JumpState::RISE;
-	}
-}
-
-void Enemy::SetTarget(const Character& target)
-{
-	m_pTarget = &target;
-}
-
-void Enemy::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump)
-{
-		m_eTexIdle = idle;
-		m_eTexWalk = walk;
-		m_eTexJump = jump;
-
-		// 初期状態として待機画像をセットしておく
-		SetAnimation(m_CurrentAnimState);
-}
-
-//アニメーションさせるための描画
-void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
-{
-	// アニメーターから今のコマ情報を取得
-	AnimFrame f = m_Animator.GetCurrentFrame();
-
-	////絵をどれくらい下にずらすか
-	//float drawOffsetY = 60.0f;   /*+ drawOffsetY*/
-	
-	// 向きを管理するenumからbollの反転部フラグに変換
-	m_FlipX = (m_charDir == State::CharDir::LEFT);
-
-	// SpriteRendererで描画
-	if (m_pTexture && pSR)
-	{
-		pSR->Draw(
-			pContext,
-			m_pTexture,
-			m_Position.x, m_Position.y,   
-			m_Size.x, m_Size.y,
-			viewProj,
-			f.x, f.y, f.w, f.h, // UV座標
-			0.0f,    // 回転なし
-			m_FlipX  // 反転フラグ
-		);
-	}
-}
-
-void Enemy::SetAnimation(int stateIndex)
+void EnemySword::SetAnimation(int stateIndex)
 {
 	m_CurrentAnimState = stateIndex;
 	// 初期状態として待機画像をセットしておく

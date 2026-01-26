@@ -356,7 +356,7 @@ void Player::Attack(Character** charaList)
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
-		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
+		if (obj->GetCharaType() == State::CharaType::t_Player)continue;  //playerだったらスキップする
 
 		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
 		
