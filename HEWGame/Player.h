@@ -3,7 +3,6 @@
 #include"Animator.h"
 #include"Sound.h"
 #include "EffectManager.h"
-#include "CollisionData.h"
 
 
 enum class DashDirection
@@ -60,13 +59,10 @@ private:
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
     Effect* m_pRunningEffect = nullptr;
-    CollisionData* m_Collider = nullptr;
 public:
     // コンストラクタ・デストラクタ
     Player();
     ~Player() override;
-
-    void Init(ID3D11ShaderResourceView* pTexture, ID3D11ShaderResourceView* pDebugTex);
     void UnInit() override;
     // 毎フレームの更新処理（入力による移動など）
     void Update(const TileMap& tile, Character** charaList)override;
