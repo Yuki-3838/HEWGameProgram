@@ -28,6 +28,7 @@ EnemyShooter::~EnemyShooter()
 
 void EnemyShooter::Update(const TileMap& tile, Character** charaList)
 {
+
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 
@@ -160,6 +161,35 @@ void EnemyShooter::Update(const TileMap& tile, Character** charaList)
 		}
 	}
 	Move(tile);
+
+	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
+	int nextAnim = 0; // 0:待機 (デフォルト)
+
+	//攻撃中か
+	if (m_IsAttack)
+	{
+		nextAnim = 3; //攻撃用アニメ
+	}
+	// ジャンプ上昇中か
+	else if (m_JumpState == State::JumpState::RISE)
+	{
+		nextAnim = 2; // ジャンプ上昇用アニメ
+	}
+	// 移動中か
+	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
+	{
+		nextAnim = 1; // 移動用アニメ
+	}
+	else
+	{
+		nextAnim = 0; // 待機アニメ
+	}
+
+	// 状態が変わった時だけセットする
+	if (nextAnim != m_CurrentAnimState)
+	{
+		SetAnimation(nextAnim);
+	}
 }
 
 void EnemyShooter::UnInit()
@@ -211,14 +241,14 @@ void EnemyShooter::SetAnimation(int stateIndex)
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
-	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
+	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(1, 1, w, h, 0.01f, 0.0f);
+		m_Animator.Init(32, 8, w - 100, h + 50, 0.01f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(1, 1, w, h, 0.2f, 0.0f);
+		m_Animator.Init(32, 8, w, h + 30, 0.02f, 0.0f, true);
 		break;
 	case 2:
 		m_pTexture = m_eTexJump;

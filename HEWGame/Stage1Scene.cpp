@@ -32,6 +32,7 @@ void Stage1Scene::Init()
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_EnemySword);
     m_pCharaList[2] = AddList(State::CharaType::t_EnemyShooter);
+    m_pCharaList[3] = AddList(State::CharaType::t_EnemyShielder);
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
@@ -50,17 +51,17 @@ void Stage1Scene::Init()
     m_pPlayerTexDashEffect = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityC.png", m_pRenderer->GetDevice());
 
     //3-2. エネミー
-    m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sword_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sword_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
 
-    m_pEnemyShooterTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyShooterTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyShooterTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShooterTexIdle = m_pResourceManager->LoadTexture("asset/texture/Shooter_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemyShooterTexWalk = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShooterTexJump = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
 
-    m_pEnemyShielderTexIdle = m_pResourceManager->LoadTexture("asset/texture/Se_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyShielderTexWalk = m_pResourceManager->LoadTexture("asset/texture/Se_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyShielderTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShielderTexIdle = m_pResourceManager->LoadTexture("asset/texture/Shielder_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemyShielderTexWalk = m_pResourceManager->LoadTexture("asset/texture/Shielder_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShielderTexJump = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
 
 
     
@@ -108,11 +109,21 @@ void Stage1Scene::Init()
     Enemy* enemy2 = dynamic_cast<Enemy*>(m_pCharaList[2]);
     {
         // ★ここで3枚セットで渡す
-        enemy2->SetTextures(m_pEnemySwordTexIdle, m_pEnemySwordTexWalk, m_pEnemySwordTexJump);
+        enemy2->SetTextures(m_pEnemyShooterTexIdle, m_pEnemyShooterTexWalk, m_pEnemyShooterTexJump);
 
         // 最初の初期化 (Init) も呼んでおく
-        enemy2->Init(m_pEnemySwordTexIdle); //Idleを渡す
+        enemy2->Init(m_pEnemyShooterTexIdle); //Idleを渡す
     }
+
+    Enemy* enemy3 = dynamic_cast<Enemy*>(m_pCharaList[3]);
+    {
+        // ★ここで3枚セットで渡す
+        enemy3->SetTextures(m_pEnemyShielderTexIdle, m_pEnemyShielderTexWalk, m_pEnemyShielderTexJump);
+
+        // 最初の初期化 (Init) も呼んでおく
+        enemy3->Init(m_pEnemyShielderTexIdle); //Idleを渡す
+    }
+
 
     m_IsFinished = false;
 
@@ -303,6 +314,10 @@ Character* Stage1Scene::AddList(State::CharaType e_name)
 
     case State::CharaType::t_EnemyShooter:
         return new EnemyShooter;
+        break;
+
+    case State::CharaType::t_EnemyShielder:
+        return new EnemyShielder;
         break;
     };
 

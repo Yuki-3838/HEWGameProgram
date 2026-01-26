@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include "EnemySword.h"
 #include "EnemyShooter.h"
+#include "EnemyShielder.h"
 #include <DirectXMath.h>
 
 #include "EffectManager.h"
