@@ -149,7 +149,9 @@
     </ClCompile>
     <ClCompile Include="EnemyShooter.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameDate.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapRenderer.cpp" />
@@ -184,7 +186,9 @@
     <ClInclude Include="EnemyShielder.h" />
     <ClInclude Include="EnemyShooter.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameDate.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameUI.h" />
     <ClInclude Include="HewStd.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MapRenderer.h" />
