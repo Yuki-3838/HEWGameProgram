@@ -444,12 +444,12 @@ void Player::DashMove(const TileMap& tile)
 			m_Position.y += m_dSpeed;
 			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
 		}
-		if (m_dDire[1] == DashDirection::RIGHT || (m_dDire[1] == DashDirection::NONE && m_charDir == State::CharDir::RIGHT))
+		if (m_dDire[1] == DashDirection::RIGHT || (m_dDire[1] == DashDirection::NONE && m_dDire[0] == DashDirection::NONE && m_charDir == State::CharDir::RIGHT))
 		{
 			m_Position.x += m_dSpeed;
 			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
 		}
-		if (m_dDire[1] == DashDirection::LEFT || (m_dDire[1] == DashDirection::NONE && m_charDir == State::CharDir::LEFT))
+		if (m_dDire[1] == DashDirection::LEFT || (m_dDire[1] == DashDirection::NONE && m_dDire[0] == DashDirection::NONE && m_charDir == State::CharDir::LEFT))
 		{
 			m_Position.x -= m_dSpeed;
 			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
