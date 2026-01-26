@@ -319,6 +319,13 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 }
 
 
+void Player::Init(ID3D11ShaderResourceView* pTexture, ID3D11ShaderResourceView* pDebugTex)
+{
+	GameObject::Init(pTexture);
+
+	m_Collider.Init(pDebugTex, m_Position.x, m_Position.y, 40.0f, 80.0f);
+}
+
 void Player::UnInit()
 {
 }

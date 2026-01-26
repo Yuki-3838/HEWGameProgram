@@ -48,6 +48,9 @@ private:
     ID3D11ShaderResourceView* m_pEnemySeTexWalk;
     ID3D11ShaderResourceView* m_pEnemySeTexJump;
 
+
+    //デバック用
+    ID3D11ShaderResourceView* pDebugTex;
     // testetstest kesite iiyo
     // 背景用テクスチャ（手前・中・奥）
     ID3D11ShaderResourceView* m_pBGTexFront = nullptr; // 手前

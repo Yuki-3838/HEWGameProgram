@@ -89,7 +89,7 @@ void Stage1Scene::Init()
         player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack, m_pPlayerTexAbilityA, m_pPlayerTexAbilityB);
 
         // �ŏ��̏����� (Init) ���Ă�ł���
-        player->Init(m_pPlayerTexIdle); //Idle��n��
+        player->Init(m_pPlayerTexIdle, pDebugTex); //Idle��n��
 
         player->SetSound(m_pSound);
         player->SetEffectManager(m_pEffectManager);
@@ -108,6 +108,8 @@ void Stage1Scene::Init()
 
     //エネミーにプレイヤーの位置情報を渡す
     enemy->SetTarget(*player);
+
+    m_pResourceManager->LoadTexture("asset/texture/debug_box", m_pRenderer->GetDevice());
 }
 
 void Stage1Scene::Update()
