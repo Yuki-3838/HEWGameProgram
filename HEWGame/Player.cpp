@@ -46,7 +46,7 @@ void Player::Init(ID3D11ShaderResourceView* pTexture, ID3D11ShaderResourceView* 
 {
 	GameObject::Init(pTexture);
 
-	m_Collider.Init(pDebugTex, m_Position.x, m_Position.y, 128.0f, 128.0f);
+	m_Collider.Init(pDebugTex, m_Position.x, m_Position.y, 320.0f, 320.0f);
 }
 float s; //gauge確認用
 void Player::Update(const TileMap& tile, Character** charaList)
@@ -55,8 +55,13 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //待機状態に戻す
+	
+	float colW = m_Collider.GetSize().x; // 設定したサイズを取得
+	float colH = m_Collider.GetSize().y;
 
-	m_Collider.UpdatePos(m_Position.x, m_Position.y, 0.0f, 0.0f);
+	float offsetX = (m_Size.x - colW) / 2.0f;       // 横は真ん中
+	float offsetY = (m_Size.y - colH) / 2.0f;       // 縦は足元（下）に合わせる
+	m_Collider.UpdatePos(m_Position.x, m_Position.y, offsetX, offsetY);
 	// 移動キーが押されているかチェック (左右どちらか)
 	bool isMoving = false;
 	//空中にいるかのチェック
