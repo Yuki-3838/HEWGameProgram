@@ -26,4 +26,12 @@ void GameUI::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer, 
     DrawNumber(context, spriteRenderer, static_cast<int>(GameDate::GetTime()), 10.0f, 50.0f, 1.0f);
 }
 
+void GameUI::DrawGauge(ID3D11DeviceContext* context, SpriteRenderer* sprite, float x, float y, float w, float h, float current, float max)
+{
+}
+
+void GameUI::DrawNumber(ID3D11DeviceContext* context, SpriteRenderer* sprite, int number, float x, float y, float scale)
+{
+}
+
 
