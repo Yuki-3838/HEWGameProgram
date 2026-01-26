@@ -2,40 +2,43 @@
 #include <vector>
 #include <string>
 
-namespace Kaneda
-{
-    // ƒ^ƒCƒ‹ID
-    enum e_TileId
-    {
-        TILE_NOTFOUND = -1, // Œ©‚Â‚©‚ç‚È‚¢
-        TILE_EMPTY = 0,     // ‹ó‚«
-        TILE_WALL = 1,      // •Ç
-        TILE_GOAL = 2       // ƒS[ƒ‹
-    };
 
-    // ƒ^ƒCƒ‹‚Ìî•ñ
-    struct s_TileInfo // “–‚½‚è”»’èAƒ_ƒ[ƒW”»’èAƒS[ƒ‹”»’è
-    {
-        bool isSolid;       // “–‚½‚è”»’è
-        bool isDamage;      // ƒ_ƒ[ƒW
-        bool isGoal;        // ƒS[ƒ‹
-    };
+// ã‚¿ã‚¤ãƒ«ID
+enum e_TileId
+{
+	TILE_NOTFOUND = -1, // è¦‹ã¤ã‹ã‚‰ãªã„
+	TILE_EMPTY = 0,     // ç©ºã
+	TILE_WALL = 1,      // å£
+	TILE_GOAL = 9,       // ã‚´ãƒ¼ãƒ«
+    TILE_SPAWN = 2
+
 };
+
+// ã‚¿ã‚¤ãƒ«ã®æƒ…å ±
+struct s_TileInfo // å½“ãŸã‚Šåˆ¤å®šã€ãƒ€ãƒ¡ãƒ¼ã‚¸åˆ¤å®šã€ã‚´ãƒ¼ãƒ«åˆ¤å®š
+{
+	bool isSolid;       // å½“ãŸã‚Šåˆ¤å®š
+	bool isDamage;      // ãƒ€ãƒ¡ãƒ¼ã‚¸
+	bool isGoal;        // ã‚´ãƒ¼ãƒ«
+};
+
 
 class TileMap
 {
 private:
-    // ƒ^ƒCƒ‹ID‚Ì2ŸŒ³”z—ñ (m_MapData[y][x])
+    // ã‚¿ã‚¤ãƒ«IDã®2æ¬¡å…ƒé…åˆ— (m_MapData[y][x])
     std::vector<std::vector<int>> m_MapData;
     int m_MapWidth = 0;
     int m_MapHeight = 0;
-    static constexpr float m_TileSize = 64.0f; // ƒ^ƒCƒ‹1–‡‚Ì•\¦ƒTƒCƒY
+    static constexpr float m_TileSize = 64.0f; // ã‚¿ã‚¤ãƒ«1æšã®è¡¨ç¤ºã‚µã‚¤ã‚º
 public:
-    // CSVƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+    // CSVãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
     bool LoadCSV(const std::string& fileName);
 
-    // w’èÀ•W‚Ìƒ^ƒCƒ‹IDæ“¾
-    Kaneda::e_TileId GetTileID(int x, int y) const;
+    // æŒ‡å®šåº§æ¨™ã®ã‚¿ã‚¤ãƒ«IDå–å¾—
+    e_TileId GetTileID(int x, int y) const;
+    // æŒ‡å®šåº§æ¨™ã®ã‚¿ã‚¤ãƒ«IDã‚’å¤‰æ›´
+    e_TileId SetTileID(int x, int y) { m_MapData[x][y] = TILE_EMPTY; }
 
     int GetWidth() const { return m_MapWidth; }
     int GetHeight() const { return m_MapHeight; }
@@ -43,5 +46,6 @@ public:
     void Clear();
 
     inline float GetTileSize() const { return m_TileSize; }
+
 };
 

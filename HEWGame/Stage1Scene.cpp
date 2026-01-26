@@ -1,12 +1,12 @@
 #include "Stage1Scene.h"
 #include "iostream"
 #include "Collision.h"
-#include <cmath> // fmod
+#include <cmath> 
 
 void Stage1Scene::Init()
 {
     // タイルの情報
-    Kaneda::s_TileInfo tileTable[] =
+    s_TileInfo tileTable[] =
     {
         {false,false,false},    // 空
         {true,false,false},     // 壁
@@ -112,6 +112,8 @@ void Stage1Scene::Init()
 
 void Stage1Scene::Update()
 {
+    EnemySpawn();
+
     CameraSeting();
     // 現在のキャラクターの数だけ更新
     for (int i = 0; i < m_currentCharaNum; i++)
@@ -309,7 +311,7 @@ void Stage1Scene::TileCollision(int charaName)
     {
         for (int x = left; x <= right; x++)
         {
-            if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_WALL)
+            if (m_pTileMap->GetTileID(x, y) == TILE_WALL)
             {
 
             }
@@ -361,3 +363,35 @@ void Stage1Scene::CameraSeting()
         m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240,0);
     }*/
 }
+
+void Stage1Scene::EnemySpawn()
+{
+    int search = 5;
+    int X = m_pCharaList[0]->GetPosition().x / m_pTileMap->GetTileSize() - search;
+    int Y = m_pCharaList[0]->GetPosition().y / m_pTileMap->GetTileSize() - search;
+	for (int x = X;x < m_ScreenWidth / m_pTileMap->GetTileSize() + search;x++)
+    {
+        for (int y = Y;y < m_ScreenHeight / m_pTileMap->GetTileSize() + search;y++)
+        {
+            if (m_pTileMap->GetTileID(x, y) == TILE_SPAWN)
+            {
+                int num = 1;
+                for (;num < maxChara;num++)
+                {
+                    if (m_pCharaList[num] == nullptr)
+                    {
+                        break;
+                    }
+                }
+                m_pCharaList[num] = AddList(State::CharaType::t_Enemy);
+                m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
+
+            }
+        }
+    }
+}
+
+
+//State::CharaType GetCharaType() const { return m_charaType; }
+// Character.hでアクセス違反のエラーがでる
+// まだ未探索

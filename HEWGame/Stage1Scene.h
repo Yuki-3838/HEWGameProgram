@@ -85,4 +85,7 @@ public:
 
     // 当たり判定
     void TileCollision(int charaName);
+
+    // 敵の出現に関する処理  
+    void EnemySpawn();
 };
