@@ -67,62 +67,62 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	}
 	
 
-	/*DashInput();*/
+	DashInput();
 
 	//旧ダッシュ処理
-	if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH && m_sGauge >= 1.0f)
-	{
-		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = true;
-		m_charDir = State::CharDir::LEFT;
-		m_dState = DashState::STAY;
-		m_dStayCount++;
-		m_JumpState = State::JumpState::NONE;
-		m_sQpush = true;
-		if (m_dStayCount < m_dStayMax)
-		{
-			 //上下の処理
-			if (GetAsyncKeyState(VK_W) & 0x8000)
-			{
-				m_dDire[0] = DashDirection::UP;
-				
-			}
-			else if (GetAsyncKeyState(VK_S) & 0x8000)
-			{
-				m_dDire[0] = DashDirection::DOWN;
-			}
-			else
-			{
-				m_dDire[0] = DashDirection::NONE;
-			}
-			 //左右の処理
-			if (GetAsyncKeyState(VK_A) & 0x8000)
-			{
-				m_dDire[1] = DashDirection::LEFT;
-				
-			}
-			else if (GetAsyncKeyState(VK_D) & 0x8000)
-			{
-				m_dDire[1] = DashDirection::RIGHT;
-			}
-			else
-			{
-				m_dDire[1] = DashDirection::NONE;
-			}
-		}
-		 //待機時間経過で強制発動
-		else
-		{
-			m_dState = DashState::DASH;
-			
-		}
-	}
-	
-	else if (m_dState == DashState::STAY)
-	{
-		m_dState = DashState::DASH;
-	}
-	
+	//if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH && m_sGauge >= 1.0f)
+	//{
+	//	m_MoveState = State::MoveState::LEFT;
+	//	m_FlipX = true;
+	//	m_charDir = State::CharDir::LEFT;
+	//	m_dState = DashState::STAY;
+	//	m_dStayCount++;
+	//	m_JumpState = State::JumpState::NONE;
+	//	m_sQpush = true;
+	//	if (m_dStayCount < m_dStayMax)
+	//	{
+	//		 //上下の処理
+	//		if (GetAsyncKeyState(VK_W) & 0x8000)
+	//		{
+	//			m_dDire[0] = DashDirection::UP;
+	//			
+	//		}
+	//		else if (GetAsyncKeyState(VK_S) & 0x8000)
+	//		{
+	//			m_dDire[0] = DashDirection::DOWN;
+	//		}
+	//		else
+	//		{
+	//			m_dDire[0] = DashDirection::NONE;
+	//		}
+	//		 //左右の処理
+	//		if (GetAsyncKeyState(VK_A) & 0x8000)
+	//		{
+	//			m_dDire[1] = DashDirection::LEFT;
+	//			
+	//		}
+	//		else if (GetAsyncKeyState(VK_D) & 0x8000)
+	//		{
+	//			m_dDire[1] = DashDirection::RIGHT;
+	//		}
+	//		else
+	//		{
+	//			m_dDire[1] = DashDirection::NONE;
+	//		}
+	//	}
+	//	 //待機時間経過で強制発動
+	//	else
+	//	{
+	//		m_dState = DashState::DASH;
+	//		
+	//	}
+	//}
+	//
+	//else if (m_dState == DashState::STAY)
+	//{
+	//	m_dState = DashState::DASH;
+	//}
+	//
 
 	//通常移動
 	 if(m_dState == DashState::NONE)
@@ -437,67 +437,67 @@ void Player::SetAnimation(int stateIndex)
 void Player::DashMove(const TileMap& tile)
 {
 
-	// 上下左右どちらも入力されているとき
-	// 上下か左右どちらかにしか入力されているとき
-	if (m_dDire[0] == DashDirection::NONE || m_dDire[1] == DashDirection::NONE)
-	{
-		if (m_dDire[0] == DashDirection::UP)
-		{
-			m_Position.y -= m_dSpeed;
-			if (StageCol(tile, ColRes::TOP))m_Position.y += m_dSpeed;
-		}
-		else if (m_dDire[0] == DashDirection::DOWN)
-		{
-			m_Position.y += m_dSpeed;
-			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
-		}
-		else if (m_dDire[1] == DashDirection::RIGHT)
-		{
-			m_Position.x += m_dSpeed;
-			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
-		}
-		else if (m_dDire[1] == DashDirection::LEFT)
-		{
-			m_Position.x -= m_dSpeed;
-			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
-		}
-		m_dDistanceCount += m_dSpeed;
-	}
-	else
-	{
-		m_dState = DashState::NONE;
-		m_dDistanceCount = 0;
-		m_dStayCount = 0;
-	}
-
-	if (m_dDistanceCount >= m_dDistanceMax)
-	{
-		m_dState = DashState::NONE;
-		m_dDistanceCount = 0;
-		m_dStayCount = 0;
-
-	}
-
-	//float vx = 0.0f;
-	//float vy = 0.0f;
-
-	//if (m_dDire[0] == DashDirection::UP)    vy = -1.0f;
-	//if (m_dDire[0] == DashDirection::DOWN)  vy = 1.0f;
-	//if (m_dDire[1] == DashDirection::LEFT)  vx = -1.0f;
-	//if (m_dDire[1] == DashDirection::RIGHT) vx = 1.0f;
-
-	//// 正規化（斜めが速くならないように）
-	//float len = sqrtf(vx * vx + vy * vy);
-	//if (len > 0.0f)
+	//// 上下左右どちらも入力されているとき
+	//// 上下か左右どちらかにしか入力されているとき
+	//if (m_dDire[0] == DashDirection::NONE || m_dDire[1] == DashDirection::NONE)
 	//{
-	//	vx /= len;
-	//	vy /= len;
+	//	if (m_dDire[0] == DashDirection::UP)
+	//	{
+	//		m_Position.y -= m_dSpeed;
+	//		if (StageCol(tile, ColRes::TOP))m_Position.y += m_dSpeed;
+	//	}
+	//	else if (m_dDire[0] == DashDirection::DOWN)
+	//	{
+	//		m_Position.y += m_dSpeed;
+	//		if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
+	//	}
+	//	else if (m_dDire[1] == DashDirection::RIGHT)
+	//	{
+	//		m_Position.x += m_dSpeed;
+	//		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
+	//	}
+	//	else if (m_dDire[1] == DashDirection::LEFT)
+	//	{
+	//		m_Position.x -= m_dSpeed;
+	//		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
+	//	}
+	//	m_dDistanceCount += m_dSpeed;
+	//}
+	//else
+	//{
+	//	m_dState = DashState::NONE;
+	//	m_dDistanceCount = 0;
+	//	m_dStayCount = 0;
 	//}
 
-	//m_Position.x += vx * m_dSpeed;
-	//m_Position.y += vy * m_dSpeed;
+	//if (m_dDistanceCount >= m_dDistanceMax)
+	//{
+	//	m_dState = DashState::NONE;
+	//	m_dDistanceCount = 0;
+	//	m_dStayCount = 0;
 
-	//m_dDistanceCount += m_dSpeed;
+	//}
+
+	float vx = 0.0f;
+	float vy = 0.0f;
+
+	if (m_dDire[0] == DashDirection::UP)    vy = -1.0f;
+	if (m_dDire[0] == DashDirection::DOWN)  vy = 1.0f;
+	if (m_dDire[1] == DashDirection::LEFT)  vx = -1.0f;
+	if (m_dDire[1] == DashDirection::RIGHT) vx = 1.0f;
+
+	// 正規化（斜めが速くならないように）
+	float len = sqrtf(vx * vx + vy * vy);
+	if (len > 0.0f)
+	{
+		vx /= len;
+		vy /= len;
+	}
+
+	m_Position.x += vx * m_dSpeed;
+	m_Position.y += vy * m_dSpeed;
+
+	m_dDistanceCount += m_dSpeed;
 
 
 	if (m_dDistanceCount >= m_dDistanceMax)
