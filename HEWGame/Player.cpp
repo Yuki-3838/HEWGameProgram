@@ -32,70 +32,102 @@ Player::Player()
 	m_AttackTotalFrame = 30; 
 	m_AttackHitStart = 1;
 	m_AttackHitEnd = 30;
+
+	m_sGauge = 3.0f;
+	m_sGaugeMAX = 3.0f;
+	m_sQpush = false;
 }
 
 Player::~Player()
 {
 }
 
-
+float s; //gauge確認用
 void Player::Update(const TileMap& tile, Character** charaList)
 {
+	
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //待機状態に戻す
 
 	// 移動キーが押されているかチェック (左右どちらか)
 	bool isMoving = false;
+	//空中にいるかのチェック
+	bool isAir = (m_JumpState != State::JumpState::NONE);
+	
+	s = m_sGauge;
 
+	//ゲージチャージ
 	if (GetAsyncKeyState(VK_V) & 0x8000 && m_dState != DashState::DASH)
 	{
-		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = true;
-		m_charDir = State::CharDir::LEFT;
-		m_dState = DashState::STAY;
-		m_dStayCount++;
-		m_JumpState = State::JumpState::NONE;
-		if (m_dStayCount < m_dStayMax)
+		m_sGauge += 1.0f/60.0f;
+
+		if (m_sGauge > m_sGaugeMAX)
 		{
-			// 上下の処理
-			if (GetAsyncKeyState(VK_W) & 0x8000)
-			{
-				m_dDire[0] = DashDirection::UP;
-			}
-			else if (GetAsyncKeyState(VK_S) & 0x8000)
-			{
-				m_dDire[0] = DashDirection::DOWN;
-			}
-			else
-			{
-				m_dDire[0] = DashDirection::NONE;
-			}
-			// 左右の処理
-			if (GetAsyncKeyState(VK_A) & 0x8000)
-			{
-				m_dDire[1] = DashDirection::LEFT;
-			}
-			else if (GetAsyncKeyState(VK_D) & 0x8000)
-			{
-				m_dDire[1] = DashDirection::RIGHT;
-			}
-			else
-			{
-				m_dDire[1] = DashDirection::NONE;
-			}
-		}
-		// 待機時間経過で強制発動
-		else
-		{
-			m_dState = DashState::DASH;
+			m_sGauge = m_sGaugeMAX;
 		}
 	}
-	else if (m_dState == DashState::STAY)
-	{
-		m_dState = DashState::DASH;
-	}
-	else if (m_dState == DashState::NONE)
+	
+
+	DashInput();
+
+	//旧ダッシュ処理
+	//if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH && m_sGauge >= 1.0f)
+	//{
+	//	m_MoveState = State::MoveState::LEFT;
+	//	m_FlipX = true;
+	//	m_charDir = State::CharDir::LEFT;
+	//	m_dState = DashState::STAY;
+	//	m_dStayCount++;
+	//	m_JumpState = State::JumpState::NONE;
+	//	m_sQpush = true;
+	//	if (m_dStayCount < m_dStayMax)
+	//	{
+	//		 //上下の処理
+	//		if (GetAsyncKeyState(VK_W) & 0x8000)
+	//		{
+	//			m_dDire[0] = DashDirection::UP;
+	//			
+	//		}
+	//		else if (GetAsyncKeyState(VK_S) & 0x8000)
+	//		{
+	//			m_dDire[0] = DashDirection::DOWN;
+	//		}
+	//		else
+	//		{
+	//			m_dDire[0] = DashDirection::NONE;
+	//		}
+	//		 //左右の処理
+	//		if (GetAsyncKeyState(VK_A) & 0x8000)
+	//		{
+	//			m_dDire[1] = DashDirection::LEFT;
+	//			
+	//		}
+	//		else if (GetAsyncKeyState(VK_D) & 0x8000)
+	//		{
+	//			m_dDire[1] = DashDirection::RIGHT;
+	//		}
+	//		else
+	//		{
+	//			m_dDire[1] = DashDirection::NONE;
+	//		}
+	//	}
+	//	 //待機時間経過で強制発動
+	//	else
+	//	{
+	//		m_dState = DashState::DASH;
+	//		
+	//	}
+	//}
+	//
+	//else if (m_dState == DashState::STAY)
+	//{
+	//	m_dState = DashState::DASH;
+	//}
+	//
+
+	//通常移動
+	 if(m_dState == DashState::NONE)
 	{
 
 		//m_MoveState = State::MoveState::RIGHT;
@@ -241,6 +273,20 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			m_pRunningEffect = nullptr;
 			m_pRunningEffect = nullptr;
 		}
+	}
+
+	//空中ジャンプの判定
+	if (isAir)
+	{
+		m_canAirDash = true;
+	}
+
+	//空中での一時停止
+	if (isAir && GetAsyncKeyState(VK_Q) & 0x8000 && m_dState == DashState::NONE)
+	{
+		m_Stats.m_AccelY = 0.0f;
+
+		return;
 	}
 }
 
@@ -424,6 +470,7 @@ void Player::Attack(Character** charaList)
 		{
 			//敵にダメージを与える
 			obj->TakeDamage();
+			m_sGauge += 0.5f;
 			//ここではenemyをdeleteしない！
 		}
 	}
@@ -457,6 +504,8 @@ void Player::GetBlink()
 {
 }
 
+//void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack,
+	                            ID3D11ShaderResourceView* dash, ID3D11ShaderResourceView* dashstay, ID3D11ShaderResourceView* dasheffect)
 void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
 {
 	m_pTexIdle = idle;
@@ -464,6 +513,11 @@ void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceVie
 	m_pTexJump = jump;
 	m_pTexFall = fall;
 	m_pTexAttack = attack;
+	//m_pTexDash = dash;
+	//m_pTexDashStay = dashstay;
+	//m_pTexDashEffect = dasheffect;
+
+	
 	m_pTexAbilityA = abilityA;
 	m_pTexAbilityB = abilityB;
 
@@ -513,6 +567,22 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexAbilityB;
 		m_Animator.Init(20, 5, w, h-30, 0.02f, 0.0f, false);
 		break;
+
+	case 4: //ダッシュ
+		m_pTexture = m_pTexDash;
+		m_Animator.Init(4, 4, w, h, 0.06f, 0.0f);
+		break;
+
+	case 5: //ダッシュ待機
+		m_pTexture = m_pTexDashStay;
+		m_Animator.Init(4, 4, w, h, 0.06f, 0.0f);
+		break;
+
+	case 6: //ダッシュエフェクト
+		m_pTexture = m_pTexDashEffect;
+		m_Animator.Init(4, 4, w, h, 0.06f, 0.0f);
+		break;
+
 	}
 }
 
@@ -567,18 +637,88 @@ void Player::DashMove(const TileMap& tile)
 			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
 		}
 		if (m_dDire[1] == DashDirection::LEFT)
+
+	if (m_dDistanceCount >= m_dDistanceMax)
+	{
+		EndDash();
+	}
+}
+
+int q; //関数チェック用
+void Player::DashInput()
+{
+	bool nowQ = (GetAsyncKeyState(VK_Q) & 0x8000);
+	q++;
+
+	m_charDir = State::CharDir::LEFT;
+	// =========================
+	// Q押した瞬間 → STAYへ
+	// =========================
+	if (nowQ && !m_sQpush &&
+		m_dState == DashState::NONE &&
+		m_sGauge >= 1.0f &&
+		(m_JumpState == State::JumpState::NONE || m_canAirDash))
+	{
+		m_dState = DashState::STAY;
+		m_dStayCount = 0;
+		m_dDire[0] = DashDirection::NONE;
+		m_dDire[1] = DashDirection::NONE;
+	}
+
+	// =========================
+	// STAY：方向入力待ち
+	// =========================
+	if (m_dState == DashState::STAY)
+	{
+		m_dStayCount++;
+
+		// 方向入力（斜めOK）
+		if (GetAsyncKeyState(VK_W) & 0x8000) m_dDire[0] = DashDirection::UP;
+		else if (GetAsyncKeyState(VK_S) & 0x8000) m_dDire[0] = DashDirection::DOWN;
+
+		if (GetAsyncKeyState(VK_A) & 0x8000) m_dDire[1] = DashDirection::LEFT;
+		else if (GetAsyncKeyState(VK_D) & 0x8000) m_dDire[1] = DashDirection::RIGHT;
+
+
+		// 方向確定 or 猶予切れ
+		if (m_dDire[0] != DashDirection::NONE ||
+			m_dDire[1] != DashDirection::NONE ||
+			m_dStayCount >= m_dStayMax)
+
 		{
-			m_Position.x -= m_dSpeed;
-			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
+			StartDash();
 		}
+	}
+
+	m_sQpush = nowQ;
+}
+
+void Player::StartDash()
+{
+	m_dState = DashState::DASH;
+	m_sGauge -= 1.0f;
+	m_dDistanceCount = 0.0f;
+
+	// 入力なし → 向いている方向
+	if (m_dDire[0] == DashDirection::NONE &&
+		m_dDire[1] == DashDirection::NONE)
+	{
+		m_dDire[1] = m_FlipX ? DashDirection::LEFT : DashDirection::RIGHT;
 	}
 	m_dDistanceCount += m_dSpeed;
 
 
-	if (m_dDistanceCount >= m_dDistanceMax)
+	if (m_JumpState != State::JumpState::NONE)
 	{
-		m_dState = DashState::NONE;
-		m_dDistanceCount = 0;
-		m_dStayCount = 0;
+		m_canAirDash = false;  // ★ 空中ダッシュを使い切る
 	}
+}
+
+void Player::EndDash()
+{
+	m_dState = DashState::NONE;
+	m_dStayCount = 0;
+	m_dDistanceCount = 0;
+	m_dDire[0] = DashDirection::NONE;
+	m_dDire[1] = DashDirection::NONE;
 }

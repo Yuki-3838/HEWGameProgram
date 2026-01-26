@@ -32,9 +32,21 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexAbilityA;
     ID3D11ShaderResourceView* m_pPlayerTexAbilityB;
 
+    ID3D11ShaderResourceView* m_pPlayerTexDash;
+    ID3D11ShaderResourceView* m_pPlayerTexDashStay;
+    ID3D11ShaderResourceView* m_pPlayerTexDashEffect;
+
     ID3D11ShaderResourceView* m_pEnemyTexIdle;
     ID3D11ShaderResourceView* m_pEnemyTexWalk;
     ID3D11ShaderResourceView* m_pEnemyTexJump;
+
+    ID3D11ShaderResourceView* m_pEnemyGunTexIdle;
+    ID3D11ShaderResourceView* m_pEnemyGunTexWalk;
+    ID3D11ShaderResourceView* m_pEnemyGunTexJump;
+
+    ID3D11ShaderResourceView* m_pEnemySeTexIdle;
+    ID3D11ShaderResourceView* m_pEnemySeTexWalk;
+    ID3D11ShaderResourceView* m_pEnemySeTexJump;
 
     // testetstest kesite iiyo
     // 背景用テクスチャ（手前・中・奥）

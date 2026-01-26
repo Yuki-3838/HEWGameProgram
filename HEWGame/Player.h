@@ -45,11 +45,16 @@ private:
     DashState m_dState;
     DashDirection m_dDire[2];// ダッシュ方向
 
-    static constexpr int m_dStayMax = 120;     // ダッシュ待機時間上限
-    int m_dStayCount = 0;           // ダッシュ待機時間カウント
-    static constexpr int m_dDistanceMax = 1000;   // ダッシュ距離上限
-    int m_dDistanceCount = 0;       // ダッシュ距離カウント
-    float m_dSpeed = 63;
+	static constexpr int m_dStayMax = 300;     // ダッシュ待機時間上限
+	int m_dStayCount = 0;           // ダッシュ待機時間カウント
+	static constexpr int m_dDistanceMax = 1000;   // ダッシュ距離上限
+	int m_dDistanceCount = 0;       // ダッシュ距離カウント
+	float m_dSpeed = 63;
+    float m_sGauge ; //スキルのゲージ
+    float m_sGaugeMAX; //ダッシュのゲージ最大値
+    float m_sChage;  //1f当たりのチャージ量
+    bool m_sChageF; // チャージオンオフフラグ
+    bool m_sQpush; //Q(ダッシュボタン)を押している間のフラグ
 
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
@@ -71,8 +76,13 @@ public:
     void Attack(Character** charaList)override;
     int TakeDamage()override;
 
-    // ダッシュ処理
-    void DashMove(const TileMap& tile);
+	// ダッシュ処理
+	void DashMove(const TileMap& tile);
+    void DashInput();  
+    void StartDash();  
+    void EndDash();    
+    bool  m_canAirDash = true; // 空中ダッシュ用
+    
 
     void WallJump();
     void Blink();
