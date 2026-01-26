@@ -235,8 +235,8 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
 	// 描画位置とサイズ
-	float drawX = m_Position.x + f.renderOffsetX;
-	float drawY = m_Position.y + f.renderOffsetY;
+	float drawX = m_Position.x;
+	float drawY = m_Position.y;
 	float drawW = f.w;
 	float drawH = f.h;
 
@@ -374,10 +374,7 @@ void Player::SetAnimation(int stateIndex)
 		animW = w - 80;
 		animH = h + 80;
 		// Init呼び出しは後でまとめて行う
-		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true,
-			(m_Size.x - animW) / 2.0f,  // Xオフセット：中心合わせ
-			(m_Size.y - animH)          // Yオフセット：下底合わせ
-		);
+		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_pTexWalk;
