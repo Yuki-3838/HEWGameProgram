@@ -235,10 +235,10 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
 	// 描画位置とサイズ
-	float drawX = m_Position.x;
-	float drawY = m_Position.y;
-	float drawW = f.w;
-	float drawH = f.h;
+	float drawX = m_Position.x + f.renderOffsetX;
+	float drawY = m_Position.y + f.renderOffsetY;
+	float drawW = f.w * f.scale;
+	float drawH = f.h * f.scale;
 
 
 	// SpriteRendererで描画
@@ -365,6 +365,12 @@ void Player::SetAnimation(int stateIndex)
 	float animW = 0; // 今回設定するアニメの幅
 	float animH = 0; // 今回設定するアニメの高さ
 	float uvOffsetY = 0.0f; // UVのYオフセット
+	float scale = 1.0f;
+	float finalW = animW * scale;
+	float finalH = animH * scale;
+
+	float offX = (m_Size.x - finalW) / 2;
+	float offY = (m_Size.y - finalH);
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
@@ -373,8 +379,9 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexIdle;
 		animW = w - 80;
 		animH = h + 80;
+
 		// Init呼び出しは後でまとめて行う
-		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true);
+		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true,offX,offY,scale);
 		break;
 	case 1: //移動
 		m_pTexture = m_pTexWalk;
