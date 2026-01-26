@@ -301,112 +301,6 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	float drawW = m_Size.x;
 	float drawH = m_Size.y;
 
-	//// アニメーション状態ごとに描画サイズと位置を調整
-	//if (m_CurrentAnimState == 0) // 待機
-	//{
-	//	drawW = 240.0f;
-	//	drawH = 320.0f;
-
-	//	if (m_FlipX)
-	//	{
-	//		drawX = m_Position.x - (drawW - m_Size.x) + 56.0f;
-	//	}
-	//	else
-	//	{
-	//		drawX = m_Position.x - 56.0f;
-	//	}
-	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	//}
-	//else if (m_CurrentAnimState == 1) // 移動
-	//{
-	//	drawW = 320.0f;
-	//	drawH = 240.0f;
-
-	//	if (m_FlipX)
-	//	{
-	//		drawX = m_Position.x - (drawW - m_Size.x) + 96.0f;
-	//	}
-	//	else
-	//	{
-	//		drawX = m_Position.x - 96.0f;
-	//	}
-	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	//}
-	//else if (m_CurrentAnimState == 2) // ジャンプ上昇
-	//{
-	//	drawW = 280.0f;
-	//	drawH = 320.0f;
-
-	//	if (m_FlipX)
-	//	{
-	//		drawX = m_Position.x - (drawW - m_Size.x) + 76.0f;
-	//	}
-	//	else
-	//	{
-	//		drawX = m_Position.x - 76.0f;
-	//	}
-	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	//}
-	//else if (m_CurrentAnimState == 3) // 攻撃
-	//{
-	//	drawW = 320.0f;
-	//	drawH = 240.0f;
-
-	//	if (m_FlipX)
-	//	{
-	//		drawX = m_Position.x - (drawW - m_Size.x) + 64.0f;
-	//	}
-	//	else
-	//	{
-	//		drawX = m_Position.x - 64.0f;
-	//	}
-	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	//}
-	//else if (m_CurrentAnimState == 4) // 落下
-	//{
-	//	drawW = 240.0f;
-	//	drawH = 320.0f;
-
-	//	if (m_FlipX)
-	//	{
-	//		drawX = m_Position.x - (drawW - m_Size.x) + 56.0f;
-	//	}
-	//	else
-	//	{
-	//		drawX = m_Position.x - 56.0f;
-	//	}
-	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	//}
-	//else if (m_CurrentAnimState == 5) // 溜め（AbilityA）
-	//{
-	//	drawW = 256.0f;
-	//	drawH = 256.0f;
-
-	//	if (m_FlipX)
-	//	{
-	//		drawX = m_Position.x - (drawW - m_Size.x) + 64.0f;
-	//	}
-	//	else
-	//	{
-	//		drawX = m_Position.x - 64.0f;
-	//	}
-	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	//}
-	//else if (m_CurrentAnimState == 6) // ダッシュ（AbilityB）
-	//{
-	//	drawW = 256.0f;
-	//	drawH = 256.0f;
-
-	//	if (m_FlipX)
-	//	{
-	//		drawX = m_Position.x - (drawW - m_Size.x) + 64.0f;
-	//	}
-	//	else
-	//	{
-	//		drawX = m_Position.x - 64.0f;
-	//	}
-	//	drawY = m_Position.y - (drawH - m_Size.y) + 16.0f;
-	//}
 
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
@@ -505,7 +399,7 @@ void Player::GetBlink()
 }
 
 //void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack,
-	                            ID3D11ShaderResourceView* dash, ID3D11ShaderResourceView* dashstay, ID3D11ShaderResourceView* dasheffect)
+	                            //ID3D11ShaderResourceView* dash, ID3D11ShaderResourceView* dashstay, ID3D11ShaderResourceView* dasheffect)
 void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
 {
 	m_pTexIdle = idle;
@@ -568,21 +462,6 @@ void Player::SetAnimation(int stateIndex)
 		m_Animator.Init(20, 5, w, h-30, 0.02f, 0.0f, false);
 		break;
 
-	case 4: //ダッシュ
-		m_pTexture = m_pTexDash;
-		m_Animator.Init(4, 4, w, h, 0.06f, 0.0f);
-		break;
-
-	case 5: //ダッシュ待機
-		m_pTexture = m_pTexDashStay;
-		m_Animator.Init(4, 4, w, h, 0.06f, 0.0f);
-		break;
-
-	case 6: //ダッシュエフェクト
-		m_pTexture = m_pTexDashEffect;
-		m_Animator.Init(4, 4, w, h, 0.06f, 0.0f);
-		break;
-
 	}
 }
 
@@ -638,17 +517,19 @@ void Player::DashMove(const TileMap& tile)
 		}
 		if (m_dDire[1] == DashDirection::LEFT)
 
-	if (m_dDistanceCount >= m_dDistanceMax)
-	{
-		EndDash();
+		{
+			if (m_dDistanceCount >= m_dDistanceMax)
+			{
+				EndDash();
+			}
+		}
+	
 	}
 }
 
-int q; //関数チェック用
 void Player::DashInput()
 {
 	bool nowQ = (GetAsyncKeyState(VK_Q) & 0x8000);
-	q++;
 
 	m_charDir = State::CharDir::LEFT;
 	// =========================
