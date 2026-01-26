@@ -1,21 +1,27 @@
-#include "CollisionDate.h"
+#include "CollisionData.h"
 
-CollisionDate::CollisionDate()
+
+CollisionData::CollisionData()
 {
+
 }
 
-CollisionDate::~CollisionDate()
+CollisionData::~CollisionData()
 {
+
 }
 
-void CollisionDate::Init(ID3D11ShaderResourceView* pTexture, float x, float y, float width, float height)
+void CollisionData::Init(ID3D11ShaderResourceView* pTexture, float x, float y, float width, float height)
 {
 	GameObject::Init(pTexture);
+
 	SetPosition(x, y);
 	SetSize(width, height);
 }
 
-void CollisionDate::UpdatePos(float parentX, float parentY, float offsetX, float offsetY)
+void CollisionData::UpdatePos(float parentX, float parentY, float offsetX, float offsetY)
 {
 	SetPosition(parentX + offsetX, parentY + offsetY);
 }
+
+

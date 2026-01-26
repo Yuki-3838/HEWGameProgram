@@ -175,7 +175,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Collision.h" />
-    <ClInclude Include="CollisionDate.h" />
+    <ClInclude Include="CollisionData.h" />
     <ClInclude Include="DemoReelScene.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectManager.h" />

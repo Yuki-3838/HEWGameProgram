@@ -1,14 +1,13 @@
 #pragma once
 #include "GameObject.h"
 
-class CollisionDate : public GameObject
+class CollisionData : public GameObject
 {
 public:
-	CollisionDate();
-	~CollisionDate();
-
+	CollisionData();
+	~CollisionData();
 	//サイズ・ポジション・テクスチャの初期化
-	void Init(ID3D11ShaderResourceView* pTexture, float x, float y, float width, float height);
+	void Init(ID3D11ShaderResourceView* pTexture,float x, float y, float width, float height);
 
 	//更新処理
 	void UpdatePos(float parentX, float parentY, float offsetX, float offsetY);

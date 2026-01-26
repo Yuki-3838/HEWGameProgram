@@ -3,7 +3,7 @@
 #include"Animator.h"
 #include"Sound.h"
 #include "EffectManager.h"
-#include "CollisionDate.h"
+#include "CollisionData.h"
 
 
 enum class DashDirection
@@ -60,7 +60,7 @@ private:
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
     Effect* m_pRunningEffect = nullptr;
-    CollisionDate m_Collider;
+    CollisionData* m_Collider = nullptr;
 public:
     // コンストラクタ・デストラクタ
     Player();
