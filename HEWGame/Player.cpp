@@ -42,7 +42,6 @@ Player::~Player()
 {
 }
 
-float s; //gauge確認用
 void Player::Update(const TileMap& tile, Character** charaList)
 {
 	
@@ -55,9 +54,8 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//空中にいるかのチェック
 	bool isAir = (m_JumpState != State::JumpState::NONE);
 	
-	s = m_sGauge;
 
-	//ゲージチャージ
+	//ｖを教えている間ダッシュゲージをチャージする　仕様と違うので削除する
 	if (GetAsyncKeyState(VK_V) & 0x8000 && m_dState != DashState::DASH)
 	{
 		m_sGauge += 1.0f/60.0f;
@@ -71,68 +69,9 @@ void Player::Update(const TileMap& tile, Character** charaList)
 
 	DashInput();
 
-	//旧ダッシュ処理
-	//if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH && m_sGauge >= 1.0f)
-	//{
-	//	m_MoveState = State::MoveState::LEFT;
-	//	m_FlipX = true;
-	//	m_charDir = State::CharDir::LEFT;
-	//	m_dState = DashState::STAY;
-	//	m_dStayCount++;
-	//	m_JumpState = State::JumpState::NONE;
-	//	m_sQpush = true;
-	//	if (m_dStayCount < m_dStayMax)
-	//	{
-	//		 //上下の処理
-	//		if (GetAsyncKeyState(VK_W) & 0x8000)
-	//		{
-	//			m_dDire[0] = DashDirection::UP;
-	//			
-	//		}
-	//		else if (GetAsyncKeyState(VK_S) & 0x8000)
-	//		{
-	//			m_dDire[0] = DashDirection::DOWN;
-	//		}
-	//		else
-	//		{
-	//			m_dDire[0] = DashDirection::NONE;
-	//		}
-	//		 //左右の処理
-	//		if (GetAsyncKeyState(VK_A) & 0x8000)
-	//		{
-	//			m_dDire[1] = DashDirection::LEFT;
-	//			
-	//		}
-	//		else if (GetAsyncKeyState(VK_D) & 0x8000)
-	//		{
-	//			m_dDire[1] = DashDirection::RIGHT;
-	//		}
-	//		else
-	//		{
-	//			m_dDire[1] = DashDirection::NONE;
-	//		}
-	//	}
-	//	 //待機時間経過で強制発動
-	//	else
-	//	{
-	//		m_dState = DashState::DASH;
-	//		
-	//	}
-	//}
-	//
-	//else if (m_dState == DashState::STAY)
-	//{
-	//	m_dState = DashState::DASH;
-	//}
-	//
-
 	//通常移動
 	 if(m_dState == DashState::NONE)
 	{
-
-		//m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = false;
-		m_charDir = State:: CharDir::RIGHT;
 		m_dState = DashState::NONE;
 		m_dStayCount = 0;
 
@@ -398,8 +337,6 @@ void Player::GetBlink()
 {
 }
 
-//void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack,
-	                            //ID3D11ShaderResourceView* dash, ID3D11ShaderResourceView* dashstay, ID3D11ShaderResourceView* dasheffect)
 void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
 {
 	m_pTexIdle = idle;
@@ -407,10 +344,6 @@ void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceVie
 	m_pTexJump = jump;
 	m_pTexFall = fall;
 	m_pTexAttack = attack;
-	//m_pTexDash = dash;
-	//m_pTexDashStay = dashstay;
-	//m_pTexDashEffect = dasheffect;
-
 	
 	m_pTexAbilityA = abilityA;
 	m_pTexAbilityB = abilityB;
@@ -467,6 +400,7 @@ void Player::SetAnimation(int stateIndex)
 
 void Player::DashMove(const TileMap& tile)
 {
+	// ダッシュが2方向入力されたら
 	if (m_dDire[0] != DashDirection::NONE && m_dDire[1] != DashDirection::NONE)
 	{
 		DirectX::XMFLOAT2 dir = { m_Position.x,m_Position.y };
@@ -498,7 +432,7 @@ void Player::DashMove(const TileMap& tile)
 			break;
 		}
 	}
-	else
+	else // ダッシュが１方向の場合
 	{
 		if (m_dDire[0] == DashDirection::UP)
 		{
@@ -510,68 +444,58 @@ void Player::DashMove(const TileMap& tile)
 			m_Position.y += m_dSpeed;
 			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
 		}
-		if (m_dDire[1] == DashDirection::RIGHT)
+		if (m_dDire[1] == DashDirection::RIGHT || (m_dDire[1] == DashDirection::NONE && m_charDir == State::CharDir::RIGHT))
 		{
 			m_Position.x += m_dSpeed;
 			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
 		}
-		if (m_dDire[1] == DashDirection::LEFT)
-
+		if (m_dDire[1] == DashDirection::LEFT || (m_dDire[1] == DashDirection::NONE && m_charDir == State::CharDir::LEFT))
 		{
-			if (m_dDistanceCount >= m_dDistanceMax)
-			{
-				EndDash();
-			}
+			m_Position.x -= m_dSpeed;
+			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
 		}
-	
+	}
+	m_dDistanceCount += m_dSpeed;
+	if (m_dDistanceCount >= m_dDistanceMax)
+	{
+		EndDash();
 	}
 }
 
 void Player::DashInput()
 {
-	bool nowQ = (GetAsyncKeyState(VK_Q) & 0x8000);
-
-	m_charDir = State::CharDir::LEFT;
-	// =========================
-	// Q押した瞬間 → STAYへ
-	// =========================
-	if (nowQ && !m_sQpush &&
-		m_dState == DashState::NONE &&
-		m_sGauge >= 1.0f &&
-		(m_JumpState == State::JumpState::NONE || m_canAirDash))
+	bool inputQ = GetAsyncKeyState(VK_Q);
+	// ダッシュキーを押しており、ダッシュ状態でなければ、ダッシュ発動処理を行う
+	if (inputQ && m_dState != DashState::DASH)
 	{
-		m_dState = DashState::STAY;
-		m_dStayCount = 0;
-		m_dDire[0] = DashDirection::NONE;
-		m_dDire[1] = DashDirection::NONE;
+		if (m_sGauge >= 1.0f && (m_JumpState == State::JumpState::NONE || m_canAirDash))
+		{
+			m_dState = DashState::STAY;
+			m_dStayCount = 0;
+			m_dDire[0] = DashDirection::NONE;
+			m_dDire[1] = DashDirection::NONE;
+		}
 	}
-
-	// =========================
-	// STAY：方向入力待ち
-	// =========================
-	if (m_dState == DashState::STAY)
+	if (inputQ && m_dState == DashState::STAY)
 	{
-		m_dStayCount++;
 
-		// 方向入力（斜めOK）
 		if (GetAsyncKeyState(VK_W) & 0x8000) m_dDire[0] = DashDirection::UP;
 		else if (GetAsyncKeyState(VK_S) & 0x8000) m_dDire[0] = DashDirection::DOWN;
 
 		if (GetAsyncKeyState(VK_A) & 0x8000) m_dDire[1] = DashDirection::LEFT;
 		else if (GetAsyncKeyState(VK_D) & 0x8000) m_dDire[1] = DashDirection::RIGHT;
 
+		m_dStayCount++;
 
-		// 方向確定 or 猶予切れ
-		if (m_dDire[0] != DashDirection::NONE ||
-			m_dDire[1] != DashDirection::NONE ||
-			m_dStayCount >= m_dStayMax)
-
+		if (m_dStayCount >= m_dStayMax)
 		{
-			StartDash();
+			m_dState = DashState::DASH;
 		}
 	}
-
-	m_sQpush = nowQ;
+	if (!inputQ && m_dState == DashState::STAY)
+	{
+		m_dState = DashState::DASH;
+	}
 }
 
 void Player::StartDash()
@@ -586,7 +510,7 @@ void Player::StartDash()
 	{
 		m_dDire[1] = m_FlipX ? DashDirection::LEFT : DashDirection::RIGHT;
 	}
-	m_dDistanceCount += m_dSpeed;
+	
 
 
 	if (m_JumpState != State::JumpState::NONE)

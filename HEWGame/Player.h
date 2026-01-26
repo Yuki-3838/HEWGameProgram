@@ -45,7 +45,7 @@ private:
     DashState m_dState;
     DashDirection m_dDire[2];// ダッシュ方向
 
-	static constexpr int m_dStayMax = 300;     // ダッシュ待機時間上限
+	static constexpr int m_dStayMax = 60;     // ダッシュ待機時間上限
 	int m_dStayCount = 0;           // ダッシュ待機時間カウント
 	static constexpr int m_dDistanceMax = 1000;   // ダッシュ距離上限
 	int m_dDistanceCount = 0;       // ダッシュ距離カウント
