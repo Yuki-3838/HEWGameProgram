@@ -46,6 +46,29 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		Jump();
 	}
 
+	if (m_IsAttack == false && GetAsyncKeyState(VK_Z) & 0x8000)
+	{
+		m_IsAttack = true;
+		m_AttackFrame = 0;
+	}
+
+	//攻撃処理
+	if (m_IsAttack)
+	{
+		m_AttackFrame++;
+		//攻撃判定のあるフレームならAttack関数を呼び出す
+		if (m_AttackFrame >= m_AttackHitStart && m_AttackFrame <= m_AttackHitEnd)
+		{
+			Attack(charaList);
+		}
+		//攻撃アニメ終了判定
+		if (m_AttackFrame >= m_AttackTotalFrame)
+		{
+			m_IsAttack = false;
+			m_AttackFrame = 0;
+		}
+	}
+
 	//非発見状態
 	if (isDetection == false)
 	{
@@ -149,8 +172,37 @@ void Enemy::Draw()
 
 void Enemy::Attack(Character** charaList)
 {
+	//攻撃範囲設定
+	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
+	DirectX::XMFLOAT2 attackPos;
+	if (m_charDir == State::CharDir::RIGHT)//右向き
+	{
+		attackPos.x = GetPosition().x + GetSize().x;
+	}
+	if (m_charDir == State::CharDir::LEFT)//左向き
+	{
+		attackPos.x = GetPosition().x - attackSize.x;
+	}
+	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
 
+	for (int i = 0; charaList[i] != nullptr; ++i)
+	{
+		auto obj = charaList[i];
+		//オブジェクトじゃなかったらスキップする
+		if (!obj)continue;
+
+		if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
+
+		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
+		if (Col::Any(hit))
+		{
+			//敵にダメージを与える
+			obj->TakeDamage();
+			//ここではplayerをdeleteしない！
+		}
+	}
 }
+
 int Enemy::TakeDamage()
 {
 	int damage = 1;

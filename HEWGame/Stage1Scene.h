@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "GameObject.h"
 #include "Enemy.h"
+#include <DirectXMath.h>
+
 #include "EffectManager.h"
 class Stage1Scene : public Scene
 {
@@ -25,7 +27,10 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexIdle;
     ID3D11ShaderResourceView* m_pPlayerTexWalk;
     ID3D11ShaderResourceView* m_pPlayerTexJump;
+    ID3D11ShaderResourceView* m_pPlayerTexFall;
     ID3D11ShaderResourceView* m_pPlayerTexAttack;
+    ID3D11ShaderResourceView* m_pPlayerTexAbilityA;
+    ID3D11ShaderResourceView* m_pPlayerTexAbilityB;
 
     ID3D11ShaderResourceView* m_pPlayerTexDash;
     ID3D11ShaderResourceView* m_pPlayerTexDashStay;
@@ -44,6 +49,18 @@ private:
     ID3D11ShaderResourceView* m_pEnemySeTexJump;
 
     // testetstest kesite iiyo
+    // 背景用テクスチャ（手前・中・奥）
+    ID3D11ShaderResourceView* m_pBGTexFront = nullptr; // 手前
+    ID3D11ShaderResourceView* m_pBGTexMid = nullptr;   // 中
+    ID3D11ShaderResourceView* m_pBGTexBack = nullptr;  // 奥
+
+    // パララックス係数（手前→中→奥：手前が大きい）
+    float m_BGParallaxU[3] = { 1.0f, 1.0f, 1.0f }; // 横追従度
+	float m_BGParallaxV[3] = { 1.0f, 1.0f, 1.0f }; // 縦追従度
+
+    // 画面サイズ（Camera と合わせる）
+    int m_ScreenWidth = 1920;
+    int m_ScreenHeight = 1080;
 
     bool m_IsFinished;
     Sound* m_pSound = nullptr;
@@ -56,6 +73,9 @@ public:
     void Uninit() override;
     bool ShouldChangeScene() const override { return m_IsFinished; }
     void CameraSeting();
+
+    // 背景描画（Stage1Scene.cpp の DrawBackground 実装を使う）
+    void DrawBackground(DirectX::XMMATRIX viewProj);
 
     // リストに関係する
     void CreateList(int num);                   // リストを作成
