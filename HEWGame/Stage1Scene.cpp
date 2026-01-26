@@ -32,6 +32,8 @@ void Stage1Scene::Init()
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
+    pDebugTex = m_pResourceManager->LoadTexture("asset/texture/debug_box.png", m_pRenderer->GetDevice());
+
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
     m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Idol.png", m_pRenderer->GetDevice());
@@ -89,7 +91,7 @@ void Stage1Scene::Init()
         player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack, m_pPlayerTexAbilityA, m_pPlayerTexAbilityB);
 
         // �ŏ��̏����� (Init) ���Ă�ł���
-        player->Init(m_pPlayerTexIdle); //Idle��n��
+        player->Init(m_pPlayerTexIdle,pDebugTex); //Idle��n��
 
         player->SetSound(m_pSound);
         player->SetEffectManager(m_pEffectManager);
