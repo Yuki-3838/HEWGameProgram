@@ -41,6 +41,12 @@ Player::Player()
 Player::~Player()
 {
 }
+void Player::Init(ID3D11ShaderResourceView* pTexture, ID3D11ShaderResourceView* pDebugTex)
+{
+	GameObject::Init(pTexture);
+
+	m_Collider.Init(pDebugTex, m_Position.x, m_Position.y, 40.0f, 80.0f);
+}
 float s; //gauge確認用
 void Player::Update(const TileMap& tile, Character** charaList)
 {
@@ -48,6 +54,9 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //待機状態に戻す
+
+	//コリジョンの位置をプレイヤーを追従させる
+	m_Collider.Update(m_Position.x, m_Position.y,10.0f,0.0f);
 	// 移動キーが押されているかチェック (左右どちらか)
 	bool isMoving = false;
 	//空中にいるかのチェック
@@ -314,6 +323,8 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 			m_FlipX  // 反転フラグ
 		);
 	}
+	// コライダーの描画
+	m_Collider.Draw(pContext, pSR, viewProj);
 }
 
 
