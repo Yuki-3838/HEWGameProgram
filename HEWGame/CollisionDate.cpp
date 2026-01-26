@@ -1,5 +1,9 @@
 #include "CollisionDate.h"
 
+CollisionDate::CollisionDate()
+{
+}
+
 CollisionDate::~CollisionDate()
 {
 }
