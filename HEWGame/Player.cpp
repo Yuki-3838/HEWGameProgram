@@ -428,7 +428,7 @@ void Player::DashMove(const TileMap& tile)
 			break;
 		case DashDirection::LEFT:
 			m_Position.x -= DirectX::XMVectorGetX(v);
-			if (StageCol(tile, ColRes::RIGHT))m_Position.x += DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::LEFT))m_Position.x += DirectX::XMVectorGetX(v);
 			break;
 		}
 	}
