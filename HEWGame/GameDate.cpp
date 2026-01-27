@@ -1,12 +1,12 @@
-#include "GameDate.h"
+#include "GameData.h"
 
 // 実体の定義
-int GameDate::m_Score = 0;
-float GameDate::m_Time = 60.0f;
+int GameData::m_Score = 0;
+float GameData::m_Time = 60.0f;
 float m_SkillPoints[(int)SkillType::Count];
 float m_MaxSkillPoints[(int)SkillType::Count];
 
-void GameDate::Reset()
+void GameData::Reset()
 {
 	m_Score = 0;
 	m_Time = 60.0f;
@@ -18,27 +18,27 @@ void GameDate::Reset()
 	}
 }
 
-void GameDate::AddScore(int score)
+void GameData::AddScore(int score)
 {
 	m_Score += score;
 }
 
-int GameDate::GetScore()
+int GameData::GetScore()
 {
 	return m_Score;
 }
 
-void GameDate::SetTime(float time)
+void GameData::SetTime(float time)
 {
 	m_Time = time;
 }
 
-float GameDate::GetTime()
+float GameData::GetTime()
 {
 	return m_Time;
 }
 
-void GameDate::DecreaseTime(float deltaTime)
+void GameData::DecreaseTime(float deltaTime)
 {
 	m_Time -= deltaTime;
 	if (m_Time < 0.0f)
@@ -47,18 +47,18 @@ void GameDate::DecreaseTime(float deltaTime)
 	}
 }
 
-bool GameDate::IsTimeUp()
+bool GameData::IsTimeUp()
 {
 	return m_Time <= 0.0f;;
 }
 
-void GameDate::SetSkill(SkillType type, float current, float max)
+void GameData::SetSkill(SkillType type, float current, float max)
 {
 	m_SkillPoints[(int)type] = current;
 	m_MaxSkillPoints[(int)type] = max;
 }
 
-void GameDate::AddSkill(SkillType type, float amount)
+void GameData::AddSkill(SkillType type, float amount)
 {
 	int index = (int)type;
 	m_MaxSkillPoints[index] += amount;
@@ -68,7 +68,7 @@ void GameDate::AddSkill(SkillType type, float amount)
 	}
 }
 
-void GameDate::UseSkill(SkillType type, float amount)
+void GameData::UseSkill(SkillType type, float amount)
 {
 	int index = (int)type;
 	m_SkillPoints[index] -= amount;
@@ -78,12 +78,12 @@ void GameDate::UseSkill(SkillType type, float amount)
 	}
 }
 
-float GameDate::GetSkill(SkillType type)
+float GameData::GetSkill(SkillType type)
 {
 	return m_SkillPoints[(int)type];
 }
 
-float GameDate::GetMaxSkill(SkillType type)
+float GameData::GetMaxSkill(SkillType type)
 {
 	return m_MaxSkillPoints[(int)type];
 }

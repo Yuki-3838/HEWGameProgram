@@ -186,7 +186,7 @@
     <ClInclude Include="EnemyShielder.h" />
     <ClInclude Include="EnemyShooter.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameDate.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameUI.h" />
     <ClInclude Include="HewStd.h" />

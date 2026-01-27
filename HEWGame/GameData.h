@@ -6,7 +6,7 @@ enum class SkillType
 	Dash,//スキル用
 	Count//種類の数
 };
-class GameDate
+class GameData
 {
 private:
 	static int m_Score;
