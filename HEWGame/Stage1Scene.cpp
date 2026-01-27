@@ -44,9 +44,9 @@ void Stage1Scene::Init()
     m_BGParallaxU[2] = 0.3f; // 奥（横）
 
     // 縦追従度
-    m_BGParallaxV[0] = 1.0f; // 手前（縦）
-    m_BGParallaxV[1] = 1.0f; // 中（縦）
-    m_BGParallaxV[2] = 1.0f; // 奥（縦）
+    //m_BGParallaxV[0] = 1.0f; // 手前（縦）
+    //m_BGParallaxV[1] = 1.0f; // 中（縦）
+    //m_BGParallaxV[2] = 1.0f; // 奥（縦）
 
 
     m_IsFinished = false;
