@@ -123,4 +123,6 @@ public:
     bool IsDead() const { return m_IsDead; }
 
     void SetPos(float x, float y) { m_Position.x = x;m_Position.y = y; }
+
+    State::CharDir ReverseDir(State::CharDir now);
 };

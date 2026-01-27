@@ -183,3 +183,16 @@ void Character::Move(const TileMap& tile)
 		m_Stats.m_DefPosY = m_Position.y;
 	}
 }
+
+State::CharDir Character::ReverseDir(State::CharDir now)
+{
+	switch (now)
+	{
+	case State::CharDir::LEFT:
+		return State::CharDir::RIGHT;
+		break;
+	case State::CharDir::RIGHT:
+		return State::CharDir::LEFT;
+		break;
+	}
+}
