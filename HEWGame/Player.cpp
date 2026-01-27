@@ -9,7 +9,7 @@ Player::Player()
 {
 	// プレイヤー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 30;
+	m_Stats.m_Speed = 20;
 	m_Stats.m_Gravity = 1;
 	m_Stats.m_JumpPw = 25;
 

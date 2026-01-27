@@ -4,7 +4,7 @@ EnemyShielder::EnemyShielder()
 {
 	// エネミー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 15;
+	m_Stats.m_Speed = 7.5;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
@@ -30,10 +30,12 @@ EnemyShielder::~EnemyShielder()
 
 void EnemyShielder::Update(const TileMap& tile, Character** charaList)
 {
-	//アニメーション更新
+	// アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 
+	// 移動状態の初期化
 	m_MoveState = State::MoveState::NONE;
+	
 	// 移動入力処理
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
@@ -76,32 +78,35 @@ void EnemyShielder::Update(const TileMap& tile, Character** charaList)
 	//非発見状態
 	if (isDetection == false)
 	{
+		// 索敵中は移動速度を半分にする
+		m_Stats.m_Speed = 5;
+
 		//左右移動にする予定
 		SCount++;
 
-		if (SCount == 200)
+		// 方向転換
+		if (SCount == 100)
 		{
-			m_MoveState = State::MoveState::RIGHT;
-			m_charDir = State::CharDir::RIGHT; //右を見る
-		}
+			if (m_charDir == State::CharDir::RIGHT)
+			{
+				m_charDir = State::CharDir::LEFT; //左を見る
+			} else {
 
-		if (SCount == 400)
-		{
-			m_MoveState = State::MoveState::LEFT;
-			m_charDir = State::CharDir::LEFT; //左を見る
-
+				m_charDir = State::CharDir::RIGHT; //右を見る
+			}
 			SCount = 0;
 		}
-
 
 		if (m_charDir == State::CharDir::RIGHT)//右向き
 		{
 			searchPos.x = GetPosition().x - searchSize.x;
+			m_MoveState = State::MoveState::RIGHT;
 		}
 		else//左向き
 		{
 			// attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
 			searchPos.x = GetPosition().x + GetSize().x;
+			m_MoveState = State::MoveState::LEFT;
 		}
 		//attackPos.y += m_Size.y / 4;
 		searchPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
@@ -133,6 +138,8 @@ void EnemyShielder::Update(const TileMap& tile, Character** charaList)
 				}
 			}
 		}
+		// 速度を戻す
+		m_Stats.m_Speed = 10;
 	}
 
 	//発見状態時

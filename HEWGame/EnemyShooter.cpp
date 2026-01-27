@@ -4,7 +4,7 @@ EnemyShooter::EnemyShooter()
 {
 	// エネミー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 15;
+	m_Stats.m_Speed = 10;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
