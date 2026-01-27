@@ -13,64 +13,29 @@ void Stage1Scene::Init()
         {true,false,false},     // 壁
         {false,false,true}      // ゴール
     };
-    // リスト作成
-    CreateList(maxChara);
 
     // 1. 各種マネージャー・マップの生成
+    // タイル
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
+    // レンダー
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(m_ScreenWidth, m_ScreenHeight);
-
+    // サウンド
     m_pSound = new Sound();
     m_pSound->Init();
     m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
-
+    // エフェクト
     m_pEffectManager = new EffectManager();
     m_pEffectManager->Init();
     m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(), m_pResourceManager);
-    // 2. �v���C���[�̐����Ə�����
+    // リスト作成
+    CreateList(maxChara);
+    // Playerキャラ作成　キャラクターは０番
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
-    m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
-
-    // 3. テクスチャのロード
-    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
-    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Idol.png", m_pRenderer->GetDevice());
-    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Dash.png", m_pRenderer->GetDevice());
-    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Jump.png", m_pRenderer->GetDevice());
-    m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Fall.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Attack_S.png", m_pRenderer->GetDevice());
-    m_pPlayerTexFlyAttack = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAbilityA = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAbilityB = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
-    m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
-
-
-    m_pPlayerTexDash = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
-    m_pPlayerTexDashStay = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
-    m_pPlayerTexDashEffect = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityC.png", m_pRenderer->GetDevice());
-
-    //3-2. エネミー
-    m_pEnemyTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
-
-    m_pEnemyGunTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyGunTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyGunTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
-
-    m_pEnemySeTexIdle = m_pResourceManager->LoadTexture("asset/texture/Se_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemySeTexWalk = m_pResourceManager->LoadTexture("asset/texture/Se_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemySeTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
-
-
-    
-    //m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
-
-    // 背景テクスチャ
-    m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/bg_front.png", m_pRenderer->GetDevice()); // 手前
-    m_pBGTexMid =   m_pResourceManager->LoadTexture("asset/texture/bg_mid.png", m_pRenderer->GetDevice());   // 中
-    m_pBGTexBack =  m_pResourceManager->LoadTexture("asset/texture/bg_back.png", m_pRenderer->GetDevice());  // 奥
+    // テクスチャの読込
+    SetAnimations();
+    SetPlayerTexture();
 
     // 背景パララックス係数（必要ならレイヤ別に調整）
     // 横追従度
@@ -83,33 +48,8 @@ void Stage1Scene::Init()
     m_BGParallaxV[1] = 1.0f; // 中（縦）
     m_BGParallaxV[2] = 1.0f; // 奥（縦）
 
-    // プレイヤーにテクスチャを渡す
-    Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
-    if (player)
-    {
-        // ★ここで7枚セットで渡す
-        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack, m_pPlayerTexFlyAttack, m_pPlayerTexAbilityA, m_pPlayerTexAbilityB);
-
-        // �ŏ��̏����� (Init) ���Ă�ł���
-        player->Init(m_pPlayerTexIdle); //Idle��n��
-
-        player->SetSound(m_pSound);
-        player->SetEffectManager(m_pEffectManager);
-    }
-
-    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
-    {
-        // ★ここで3枚セットで渡す
-        enemy->SetTextures(m_pEnemyTexIdle, m_pEnemyTexWalk, m_pEnemyTexJump);
-
-        // 最初の初期化 (Init) も呼んでおく
-        enemy->Init(m_pEnemyTexIdle); //Idleを渡す
-    }
 
     m_IsFinished = false;
-
-    //エネミーにプレイヤーの位置情報を渡す
-    enemy->SetTarget(*player);
 }
 
 void Stage1Scene::Update()
@@ -117,14 +57,8 @@ void Stage1Scene::Update()
     EnemySpawn();
 
     CameraSeting();
-    // 現在のキャラクターの数だけ更新
-    for (int i = 0; i < m_currentCharaNum; i++)
-    {
-        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
-        {
-            m_pCharaList[i]->Update(*m_pTileMap, m_pCharaList);
-        }
-    }
+
+    UpdateList();
     // シーン終了判定
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
@@ -161,10 +95,6 @@ void Stage1Scene::Draw()
         {
             m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
         }
-    }
-    if (m_pPlayer)
-    {
-        m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
     }
     if (m_pEffectManager)
     {
@@ -237,7 +167,6 @@ void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
 void Stage1Scene::Uninit()
 {
     // メモリ解放
-    if (m_pPlayer) { delete m_pPlayer; m_pPlayer = nullptr; }
     if (m_pTileMap) { delete m_pTileMap; m_pTileMap = nullptr; }
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
@@ -370,14 +299,7 @@ void Stage1Scene::EnemySpawn()
                     {
                         m_pCharaList[num] = AddList(State::CharaType::t_Enemy);
                         m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
-                        Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[num]);
-                        {
-                            // ★ここで3枚セットで渡す
-                            enemy->SetTextures(m_pEnemyTexIdle, m_pEnemyTexWalk, m_pEnemyTexJump);
-
-                            // 最初の初期化 (Init) も呼んでおく
-                            enemy->Init(m_pEnemyTexIdle); //Idleを渡す
-                        }
+                        SetEnemyTexture(num);
                     }
                 }
             }
@@ -404,5 +326,76 @@ int Stage1Scene::GetEmptyListNum()
     else
     {
         return -1;
+    }
+}
+
+void Stage1Scene::SetAnimations()
+{
+    // 3. テクスチャのロード
+    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/object/block.png", m_pRenderer->GetDevice());
+    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Idol.png", m_pRenderer->GetDevice());
+    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
+    m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Fall.png", m_pRenderer->GetDevice());
+    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillStay = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityStay.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillDash = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityDash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillEffect = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityEfect.png", m_pRenderer->GetDevice());
+
+    //3-2. エネミー
+    m_pEnemySwTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySwTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+
+    m_pEnemyGunTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemyGunTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyGunTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+
+    m_pEnemySeTexIdle = m_pResourceManager->LoadTexture("asset/texture/Se_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySeTexWalk = m_pResourceManager->LoadTexture("asset/texture/Se_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySeTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+
+    // 背景テクスチャ
+    m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/Back/bg_front.png", m_pRenderer->GetDevice()); // 手前
+    m_pBGTexMid = m_pResourceManager->LoadTexture("asset/texture/Back/bg_mid.png", m_pRenderer->GetDevice());   // 中
+    m_pBGTexBack = m_pResourceManager->LoadTexture("asset/texture/Back/bg_back.png", m_pRenderer->GetDevice());  // 奥
+}
+
+void Stage1Scene::SetPlayerTexture()
+{
+    // プレイヤーにテクスチャを渡す
+    Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
+    if (player)
+    {
+        // ★ここで7枚セットで渡す
+        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack, m_pPlayerTexSkillStay, m_pPlayerTexSkillDash);
+        player->SetSound(m_pSound);
+        player->SetEffectManager(m_pEffectManager);
+    }
+}
+
+void Stage1Scene::SetEnemyTexture(int num)
+{
+    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[num]);
+    {
+        // ★ここで3枚セットで渡す
+        enemy->SetTextures(m_pEnemySwTexIdle, m_pEnemySwTexWalk, m_pEnemySwTexJump);
+
+        // 最初の初期化 (Init) も呼んでおく
+        enemy->Init(m_pEnemySwTexIdle); //Idleを渡す
+    }
+    //エネミーにプレイヤーの位置情報を渡す
+    enemy->SetTarget(*m_pCharaList[0]);
+}
+
+void Stage1Scene::UpdateList()
+{
+    // 現在のキャラクターの数だけ更新
+    for (int i = 0; i < m_currentCharaNum; i++)
+    {
+        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
+        {
+            m_pCharaList[i]->Update(*m_pTileMap, m_pCharaList);
+        }
     }
 }
