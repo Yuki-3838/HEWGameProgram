@@ -7,27 +7,27 @@ void MapRenderer::Draw(
     ID3D11ShaderResourceView* pTexture,
     DirectX::XMMATRIX viewProj)
 {
-    // ‰æ‘œiƒeƒNƒXƒ`ƒƒj‚ªƒZƒbƒg‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+    // ç”»åƒï¼ˆãƒ†ã‚¯ã‚¹ãƒãƒ£ï¼‰ãŒã‚»ãƒƒãƒˆã•ã‚Œã¦ã„ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
     if (!pTexture) return;
 
-    // ƒ}ƒbƒv‚ÌcE‰¡ƒ‹[ƒv
+    // ãƒãƒƒãƒ—ã®ç¸¦ãƒ»æ¨ªãƒ«ãƒ¼ãƒ—
     for (int y = 0; y < tileMap.GetHeight(); ++y)
     {
         for (int x = 0; x < tileMap.GetWidth(); ++x)
         {
-            // Œ»İ‚ÌƒZƒ‹‚Ìƒ^ƒCƒ‹ID‚ğæ“¾
+            // ç¾åœ¨ã®ã‚»ãƒ«ã®ã‚¿ã‚¤ãƒ«IDã‚’å–å¾—
             int tileID = tileMap.GetTileID(x, y);
 
-            // 0ˆÈ‰ºi‹ó”’j‚Ìê‡‚Í•`‰æ‚ğƒXƒLƒbƒv
-            if (tileID <= 0) continue;
+            // 0ä»¥ä¸‹ï¼ˆç©ºç™½ï¼‰ã®å ´åˆã¯æç”»ã‚’ã‚¹ã‚­ãƒƒãƒ—
+            if (tileID != 1) continue;
 
-            // •`‰æˆÊ’u‚ğŒvZ
-            // ƒ^ƒCƒ‹ƒTƒCƒYi32px‚È‚Çj‚ğŠ|‚¯‚ÄA”z’uêŠ‚ğ‚¸‚ç‚µ‚Ä‚¢‚­
+            // æç”»ä½ç½®ã‚’è¨ˆç®—
+            // ã‚¿ã‚¤ãƒ«ã‚µã‚¤ã‚ºï¼ˆ32pxãªã©ï¼‰ã‚’æ›ã‘ã¦ã€é…ç½®å ´æ‰€ã‚’ãšã‚‰ã—ã¦ã„ã
             float drawX = x * m_TileSize;
             float drawY = y * m_TileSize;
 
-            // SpriteRenderer‚É•`‰æ‚ğˆË—Š
-            // ¦Œ»óA‚·‚×‚Ä‚Ìƒ^ƒCƒ‹‚É“¯‚¶‰æ‘œiƒeƒNƒXƒ`ƒƒ‘S‘Ìj‚ª•\¦‚³‚ê‚Ü‚·
+            // SpriteRendererã«æç”»ã‚’ä¾é ¼
+            // â€»ç¾çŠ¶ã€ã™ã¹ã¦ã®ã‚¿ã‚¤ãƒ«ã«åŒã˜ç”»åƒï¼ˆãƒ†ã‚¯ã‚¹ãƒãƒ£å…¨ä½“ï¼‰ãŒè¡¨ç¤ºã•ã‚Œã¾ã™
             pSpriteRenderer->Draw(
                 pContext,
                 pTexture,
