@@ -3,31 +3,31 @@
 #include "Collision.h"
 #include "MapRenderer.h"
 #include "TileMap.h"
-#include"Input.h"
+#include "Input.h"
 
 namespace State
 {
-    struct collisionState   // true‚Å‚ ‚ê‚ÎÕ“Ë
+    struct collisionState   // trueã§ã‚ã‚Œã°è¡çª
     {
-        bool isOnGround;    // İ’u”»’è
-        bool isOnCeling;    // “Vˆä”»’è
-        bool isOnWallLeft;  // •Ç”»’è¶
-        bool isOnWallRight; // •Ç”»’è‰E
+        bool isOnGround;    // è¨­ç½®åˆ¤å®š
+        bool isOnCeling;    // å¤©äº•åˆ¤å®š
+        bool isOnWallLeft;  // å£åˆ¤å®šå·¦
+        bool isOnWallRight; // å£åˆ¤å®šå³
     };
 
     struct AttackFrame
     {
-        int TotalFrame;      //‘S‘ÌƒtƒŒ[ƒ€”
-        int StartUpFrame;    //”­¶
-        int ActiveFrame;     //‘±
-        int RecorveryFrame;  //ŒãŒ„
+        int TotalFrame;      //å…¨ä½“ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+        int StartUpFrame;    //ç™ºç”Ÿ
+        int ActiveFrame;     //æŒç¶š
+        int RecorveryFrame;  //å¾Œéš™
     };
 
     enum class MoveState
     {
         NONE,
-        LEFT,   // ¶
-        RIGHT,  // ‰E
+        LEFT,   // å·¦
+        RIGHT,  // å³
         TOP,
         BOTTOM
     };
@@ -45,33 +45,49 @@ namespace State
         t_Player = 0,
         t_Enemy = 1
     };
+
+    enum class CharDir
+    {
+        LEFT,
+        RIGHT
+    };
+
 }
+
 
 struct Stats
 {
-    int m_HP;           // ‘Ì—Í
-    float m_Speed;      // XˆÚ“®‘¬“x
-    float m_Gravity;    // d—Í
-    float m_JumpPw;     // ƒWƒƒƒ“ƒv—Í
-    float m_AccelX = 0;     // X²‚Ì‰Á‘¬“x
-    float m_AccelY = 0;     // Y²‚Ì‰Á‘¬“x
-    float m_AccelYMax = 63; // Y²‚ÌÅ‘å‰Á‘¬“x
-    float m_AttackDamage;  //UŒ‚—pƒƒ“ƒo•Ï”
-    float m_DefPosY;        // ƒWƒƒƒ“ƒv‚µ‚Ä‚¢‚È‚¢‚ÌY²
+    int m_HP;                // ä½“åŠ›
+    float m_Speed;           // Xç§»å‹•é€Ÿåº¦
+    float m_Gravity;         // é‡åŠ›
+    float m_JumpPw;          // ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+    float m_AccelX = 0;      // Xè»¸ã®åŠ é€Ÿåº¦
+    float m_AccelY = 0;      // Yè»¸ã®åŠ é€Ÿåº¦
+    float m_AccelYMax = 63;  // Yè»¸ã®æœ€å¤§åŠ é€Ÿåº¦
+    float m_AttackDamage;    // æ”»æ’ƒç”¨ãƒ¡ãƒ³ãƒå¤‰æ•°
+    float m_DefPosY;         // ã‚¸ãƒ£ãƒ³ãƒ—ã—ã¦ã„ãªã„æ™‚ã®Yè»¸
 };
 
 class Character : public GameObject
 {
 protected:
-    Stats m_Stats;  // ƒXƒe[ƒ^ƒX    
-    State::collisionState m_colState{ false,false,false,false };    // l•ûŒü‚ÌÕ“Ëó‘Ô
-    State::MoveState m_MoveState = State::MoveState::RIGHT;          // l•ûŒü‚Ö‚Ì‚Ç‚±‚ÖˆÚ“®‚µ‚Ä‚¢‚é‚©
-    State::JumpState m_JumpState = State::JumpState::NONE;          // ƒWƒƒƒ“ƒv‚â~‰º‚È‚Ç‚Ìó‘Ô
-    State::CharaType m_charaType;                                   // ƒLƒƒƒ‰ƒNƒ^[‚Ìƒ^ƒCƒv
+
+    Stats m_Stats;  // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹    
+    State::collisionState m_colState{ false,false,false,false };    // å››æ–¹å‘ã®è¡çªçŠ¶æ…‹
+    State::MoveState m_MoveState = State::MoveState::RIGHT;          // å››æ–¹å‘ã¸ã®ã©ã“ã¸ç§»å‹•ã—ã¦ã„ã‚‹ã‹
+    State::JumpState m_JumpState = State::JumpState::NONE;          // ã‚¸ãƒ£ãƒ³ãƒ—ã‚„é™ä¸‹ãªã©ã®çŠ¶æ…‹
+    State::CharaType m_charaType;                                   // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ã‚¿ã‚¤ãƒ—
+
+    //æ”»æ’ƒåˆ¤å®šç”¨å¤‰æ•°
+    bool m_IsAttack;
+    bool m_IsDead;  //æ­»äº¡ã—ãŸã‹ã©ã†ã‹
+    int m_AttackFrame;
+    int m_AttackTotalFrame;  //æ”»æ’ƒã‚¢ãƒ‹ãƒ¡ã®ç·ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+    int m_AttackHitStart;     //æ”»æ’ƒåˆ¤å®šãŒç™ºç”Ÿã™ã‚‹é–‹å§‹ãƒ•ãƒ¬ãƒ¼ãƒ 
+    int m_AttackHitEnd;      //æ”»æ’ƒåˆ¤å®šãŒç™ºç”Ÿã™ã‚‹çµ‚äº†ãƒ•ãƒ¬ãƒ¼ãƒ 
+	State::CharDir m_charDir; //ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®å‘ã  
 
     GameObject* object;
-
-    bool m_IsDead;  //€–S‚µ‚½‚©‚Ç‚¤‚©
 
 public:
     Character();
@@ -79,8 +95,8 @@ public:
 
     virtual void UnInit() = 0;
 
-     void Move(const TileMap& tile) ;
-    virtual void  Attack(Character** charaList) = 0;
+    void Move(const TileMap& tile);
+    virtual void Attack(Character** charaList) = 0;
     virtual int TakeDamage() = 0;
     virtual void Jump() = 0;
 
@@ -88,19 +104,21 @@ public:
 
     virtual void Update(const TileMap& tile, Character** charaList) = 0;
 
-    State::CharaType GetCharaType() { return m_charaType; }
-    State::JumpState GetJumpState() { return m_JumpState; }
+    State::CharaType GetCharaType() const { return m_charaType; }
+    State::JumpState GetJumpState() const { return m_JumpState; }
 
-    // ƒQƒbƒ^[
+    // ã‚²ãƒƒã‚¿ãƒ¼
     float GetAcceleY() { return m_Stats.m_AccelY; }
     float GetDefPosY() { return m_Stats.m_DefPosY; }
 
-    // ƒLƒƒƒ‰ƒNƒ^[‹¤’Ê‚Ì‰Šú‰»i•K—v‚Å‚ ‚ê‚Îj
+    // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å…±é€šã®åˆæœŸåŒ–ï¼ˆå¿…è¦ã§ã‚ã‚Œã°ï¼‰
     virtual void Init(ID3D11ShaderResourceView* pTexture) override 
     {
         GameObject::Init(pTexture);
     }
 
-	// €–S‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©æ“¾
+	// æ­»äº¡ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹å–å¾—
     bool IsDead() const { return m_IsDead; }
+
+    void SetPos(float x, float y) { m_Position.x = x;m_Position.y = y; }
 };
