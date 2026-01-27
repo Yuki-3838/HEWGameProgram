@@ -117,7 +117,14 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//攻撃中か
 	else if (m_IsAttack)
 	{
-		nextAnim = 3; //攻撃用アニメ
+		if (isAir)
+		{
+			nextAnim = 7; //空中攻撃用アニメ
+		}
+		else
+		{
+			nextAnim = 3; //攻撃用アニメ
+		}
 	}
 	// ジャンプ上昇中か
 	else if (m_JumpState == State::JumpState::RISE)
@@ -337,13 +344,14 @@ void Player::GetBlink()
 {
 }
 
-void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
+void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* flyattack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
 {
 	m_pTexIdle = idle;
 	m_pTexWalk = walk;
 	m_pTexJump = jump;
 	m_pTexFall = fall;
 	m_pTexAttack = attack;
+	m_pTexFlyAttack = flyattack;
 	
 	m_pTexAbilityA = abilityA;
 	m_pTexAbilityB = abilityB;
@@ -434,7 +442,16 @@ void Player::SetAnimation(int stateIndex)
 		scale = 0.7;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
-		m_Animator.Init(16, 4, animW, animH, 0.02f, 0.0f, false, offX, offY, scale);
+		m_Animator.Init(16, 8, animW, animH, 0.02f, 0.0f, false, offX, offY, scale);
+		break;
+	case 7: //空中攻撃
+		m_pTexture = m_pTexFlyAttack;
+		animW = w;
+		animH = h;
+		scale = 0.75;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(6, 3, animW, animH, 0.03f, 0.0f, false, offX, offY, scale);
 		break;
 
 	}
