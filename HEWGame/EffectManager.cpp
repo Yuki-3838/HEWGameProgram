@@ -3,17 +3,31 @@ void EffectManager::Init()
 {
     m_EffectDefs[EffectType::Smoke] = 
     {
-    EffectType::Smoke,              // 1. �G�t�F�N�g�̎��
-    18,                             // 3. ���R�}�� (�S���ŉ��R�}���邩)
-    6,                              // 4. ���̕����� (���ɉ��R�}����ł��邩)
-    320.0f,                         // 5. 1�R�}�̕� (TexW)
-    320.0f,                         // 6. 1�R�}�̍��� (TexH)
-    0.05f,                          // 7. �A�j���[�V�������x (1�R�}�̕b��)
-    0.0f,                          // 8. �����ʒu�̉��Y�� (OffsetX: �v���C���[���S���牡�ɂǂꂾ�����炷��)
-    0.0f,                          // 9. �����ʒu�̏c�Y�� (OffsetY: �����ɍ��킹�邽�߂̒���)
-    0.5f,                           // 10. �T�C�Y�{�� 
-    320.0f,                         // 11. �摜�̓ǂݎ��J�n�ʒuX (StartTexX: �摜�̉E�����g������320����J�n)
-    0.0f                            // 12. �摜�̓ǂݎ��J�n�ʒuY (StartTexY)
+    EffectType::Smoke,              // 1. エフェクトの種類
+    18,                             // 3. 総コマ数 (全部で何コマあるか)
+    6,                              // 4. 横の分割数 (横に何コマ並んでいるか)
+    320.0f,                         // 5. 1コマの幅 (TexW)
+    320.0f,                         // 6. 1コマの高さ (TexH)
+    0.05f,                          // 7. アニメーション速度 (1コマの秒数)
+    0.0f,                          // 8. 発生位置の横ズレ (OffsetX: プレイヤー中心から横にどれだけずらすか)
+    0.0f,                          // 9. 発生位置の縦ズレ (OffsetY: 足元に合わせるための調整)
+    0.5f,                           // 10. サイズ倍率 
+    320.0f,                         // 11. 画像の読み取り開始位置X (StartTexX: 画像の右側を使うため320から開始)
+    0.0f                            // 12. 画像の読み取り開始位置Y (StartTexY)
+    };
+    m_EffectDefs[EffectType::Dash] =
+    {
+    EffectType::Dash,              // 1. エフェクトの種類
+    16,                             // 3. 総コマ数 (全部で何コマあるか)
+    4,                              // 4. 横の分割数 (横に何コマ並んでいるか)
+    640.0f,                         // 5. 1コマの幅 (TexW)
+    320.0f,                         // 6. 1コマの高さ (TexH)
+    0.05f,                          // 7. アニメーション速度 (1コマの秒数)
+    0.0f,                          // 8. 発生位置の横ズレ (OffsetX: プレイヤー中心から横にどれだけずらすか)
+    0.0f,                          // 9. 発生位置の縦ズレ (OffsetY: 足元に合わせるための調整)
+    0.5f,                           // 10. サイズ倍率 
+    640.0f,                         // 11. 画像の読み取り開始位置X (StartTexX: 画像の右側を使うため320から開始)
+    0.0f                            // 12. 画像の読み取り開始位置Y (StartTexY)
     };
 }
 
@@ -60,15 +74,15 @@ Effect* EffectManager::Play(EffectType type, float x, float y, bool flipX, float
     {
         if (!m_Effects[i].IsActive())
         {
-            // --- ���W�̌v�Z ---
-            // �v���C���[�����](isFlip)���Ă�����AX�����̃Y�����t�ɂ���
+            // --- 座標の計算 ---
+            // プレイヤーが反転(isFlip)していたら、X方向のズレを逆にする
             float useOffsetX = flipX ? -def.offsetX : def.offsetX;
 
             float finalX = x + useOffsetX;
             float finalY = y + def.offsetY;
 
-            // ������ (����: tex, x, y, scale, count, divX, w, h, speed, flip, angle)
-            // ��Effect.h/cpp��Init�����ɍ��킹�ďC���ς݂Ɖ���
+            // 初期化 (引数: tex, x, y, scale, count, divX, w, h, speed, flip, angle)
+            // ※Effect.h/cppのInit引数に合わせて修正済みと仮定
             m_Effects[i].Init(
                 tex, finalX, finalY, def.scale,
                 def.frameCount, def.divX, def.texW, def.texH, def.speed,

@@ -514,6 +514,10 @@ void Player::DashMove(const TileMap& tile)
 			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
 		}
 	}
+	if (m_pDashEffect)
+	{
+		m_pDashEffect->SetPosition(m_Position.x, m_Position.y);
+	}
 	m_dDistanceCount += m_dSpeed;
 	if (m_dDistanceCount >= m_dDistanceMax)
 	{
@@ -548,17 +552,31 @@ void Player::DashInput()
 
 		if (m_dStayCount >= m_dStayMax)
 		{
-			m_dState = DashState::DASH;
+			StartDash();
 		}
 	}
 	if (!inputQ && m_dState == DashState::STAY)
 	{
-		m_dState = DashState::DASH;
+		StartDash();
 	}
 }
 
 void Player::StartDash()
 {
+	if (m_pEffectManager)
+	{
+		if (m_pDashEffect)
+		{
+			m_pDashEffect->Stop();
+		}
+		// ダッシュエフェクトを発生させる
+		m_pDashEffect = m_pEffectManager->Play(EffectType::Dash, m_Position.x, m_Position.y, m_FlipX);
+
+		if (m_pDashEffect)
+		{
+			m_pDashEffect->SetLoop(true);
+		}
+	}
 	m_dState = DashState::DASH;
 	m_sGauge -= 1.0f;
 	m_dDistanceCount = 0.0f;
@@ -580,6 +598,11 @@ void Player::StartDash()
 
 void Player::EndDash()
 {
+	if (m_pDashEffect)
+	{
+		m_pDashEffect->Stop();
+		m_pDashEffect = nullptr;
+	}
 	m_dState = DashState::NONE;
 	m_dStayCount = 0;
 	m_dDistanceCount = 0;
