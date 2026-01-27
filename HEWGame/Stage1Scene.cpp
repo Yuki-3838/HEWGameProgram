@@ -345,11 +345,9 @@ void Stage1Scene::CameraSeting()
 
 void Stage1Scene::EnemySpawn()
 {
-    // カメラ＋上下左右search分探索する
-    int search = 5;
     // 探索開始範囲
-    int X = m_pCharaList[0]->GetPosition().x / m_pTileMap->GetTileSize() - search;
-    int Y = m_pCharaList[0]->GetPosition().y / m_pTileMap->GetTileSize() - search;
+    int X = m_pCharaList[0]->GetPosition().x / m_pTileMap->GetTileSize();
+    int Y = m_pCharaList[0]->GetPosition().y / m_pTileMap->GetTileSize();
     // 探索終了範囲
     int Xmax = m_pCharaList[0]->GetPosition().x + m_ScreenWidth / m_pTileMap->GetTileSize();
     int Ymax = m_pCharaList[0]->GetPosition().y + m_ScreenHeight / m_pTileMap->GetTileSize();
