@@ -102,10 +102,11 @@ public:
     void DrawBackground(DirectX::XMMATRIX viewProj);
 
     // リストに関係する
-    void CreateList(int num);                   // リストを作成
-    void ClearList(Character* list);            // リストの一部を解放
-    void AllClearList(Character** list);        // リストを全て解放
-    Character* AddList(State::CharaType e_name);   // リストにオブジェクトを追加
+    void CreateList(int num);                       // リストを作成
+    void ClearList(Character* list);                // リストの一部を解放
+    void AllClearList(Character** list);            // リストを全て解放
+    Character* AddList(State::CharaType e_name);    // リストにオブジェクトを追加
+    int GetEmptyListNum();                          // リストの空きを取得
 
     // 当たり判定
     void TileCollision(int charaName);

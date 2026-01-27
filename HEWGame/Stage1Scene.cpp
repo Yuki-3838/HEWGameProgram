@@ -341,63 +341,69 @@ void Stage1Scene::CameraSeting()
     {
         m_pCamera->SetPosition(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 696);
     }
-    // ジャンプ上昇、降下のカメラ処理
-   /* else if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
-    {
-        m_pCamera->SetPosition(defCameraPos.x, m_pCharaList[0]->GetDefPosY() - 696);
-    }
-    else
-    {
-        m_pCamera->SetPosition(defCameraPos.x, defCameraPos.y);
-    }
-
-    else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
-    {
-        m_pCamera->SetPosition(0, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99 + m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetAcceleY());
-    }
-    else if(m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
-    {
-        m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99);
-    }
-    else
-    {
-        m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240,0);
-    }*/
 }
 
 void Stage1Scene::EnemySpawn()
 {
+    // カメラ＋上下左右search分探索する
     int search = 5;
+    // 探索開始範囲
     int X = m_pCharaList[0]->GetPosition().x / m_pTileMap->GetTileSize() - search;
     int Y = m_pCharaList[0]->GetPosition().y / m_pTileMap->GetTileSize() - search;
-	for (int x = X;x < m_ScreenWidth / m_pTileMap->GetTileSize() + search;x++)
+    // 探索終了範囲
+    int Xmax = m_pCharaList[0]->GetPosition().x + m_ScreenWidth / m_pTileMap->GetTileSize();
+    int Ymax = m_pCharaList[0]->GetPosition().y + m_ScreenHeight / m_pTileMap->GetTileSize();
+    // キャラクターポジション　+ ScreenWidth
+	for (int x = X;x < Xmax;x++)
     {
-        for (int y = Y;y < m_ScreenHeight / m_pTileMap->GetTileSize() + search;y++)
+        for (int y = Y;y < Ymax;y++)
         {
+            // 探索したタイルが敵スポーンタイルである
             if (m_pTileMap->GetTileID(x, y) == TILE_SPAWN)
             {
+                // スポーン位置を保存し、重複していなければ敵を出現
                 SpawnPoint p{ x,y };
                 if (exploredPoint.insert(p).second)
                 {
-                    int num = 1;
-                    for (; num < maxChara; num++)
+                    // 配列を探索
+                    int num = GetEmptyListNum();
+                    if (num != -1)
                     {
-                        if (m_pCharaList[num] == nullptr)
+                        m_pCharaList[num] = AddList(State::CharaType::t_Enemy);
+                        m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
+                        Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[num]);
                         {
-                            break;
+                            // ★ここで3枚セットで渡す
+                            enemy->SetTextures(m_pEnemyTexIdle, m_pEnemyTexWalk, m_pEnemyTexJump);
+
+                            // 最初の初期化 (Init) も呼んでおく
+                            enemy->Init(m_pEnemyTexIdle); //Idleを渡す
                         }
                     }
-                    m_pCharaList[num] = AddList(State::CharaType::t_Enemy);
-                    m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
                 }
-       
-
             }
         }
     }
 }
 
-
-//State::CharaType GetCharaType() const { return m_charaType; }
-// Character.hでアクセス違反のエラーがでる
-// まだ未探索
+int Stage1Scene::GetEmptyListNum()
+{
+    // プレイヤー以上の範囲
+    int num = 1;
+    for (; num < maxChara; num++)
+    {
+        if (m_pCharaList[num] == nullptr)
+        {
+            break;
+        }
+    }
+    // 最大キャラ以下であれば数値を返し、最大キャラを越えるとー１を返す
+    if (num < maxChara)
+    {
+        return num;
+    }
+    else
+    {
+        return -1;
+    }
+}
