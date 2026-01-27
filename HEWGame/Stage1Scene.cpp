@@ -328,6 +328,7 @@ int Stage1Scene::GetEmptyListNum()
         return -1;
     }
 }
+// test
 
 void Stage1Scene::SetAnimations()
 {
