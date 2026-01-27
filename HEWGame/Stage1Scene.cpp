@@ -38,7 +38,7 @@ void Stage1Scene::Init()
     m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Dash.png", m_pRenderer->GetDevice());
     m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Jump.png", m_pRenderer->GetDevice());
     m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Fall.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
+    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_Attack_S.png", m_pRenderer->GetDevice());
     m_pPlayerTexAbilityA = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
     m_pPlayerTexAbilityB = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
     m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
