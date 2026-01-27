@@ -33,7 +33,6 @@ class Stage1Scene : public Scene
 private:
     TileMap* m_pTileMap;
     MapRenderer* m_pMapRenderer;
-    Player* m_pPlayer;
 
     // キャラクターに関する変数
     Character** m_pCharaList = nullptr; // キャラクターリスト
@@ -49,17 +48,13 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexJump;
     ID3D11ShaderResourceView* m_pPlayerTexFall;
     ID3D11ShaderResourceView* m_pPlayerTexAttack;
-    ID3D11ShaderResourceView* m_pPlayerTexFlyAttack;
-    ID3D11ShaderResourceView* m_pPlayerTexAbilityA;
-    ID3D11ShaderResourceView* m_pPlayerTexAbilityB;
+    ID3D11ShaderResourceView* m_pPlayerTexSkillDash;
+    ID3D11ShaderResourceView* m_pPlayerTexSkillStay;
+    ID3D11ShaderResourceView* m_pPlayerTexSkillEffect;
 
-    ID3D11ShaderResourceView* m_pPlayerTexDash;
-    ID3D11ShaderResourceView* m_pPlayerTexDashStay;
-    ID3D11ShaderResourceView* m_pPlayerTexDashEffect;
-
-    ID3D11ShaderResourceView* m_pEnemyTexIdle;
-    ID3D11ShaderResourceView* m_pEnemyTexWalk;
-    ID3D11ShaderResourceView* m_pEnemyTexJump;
+    ID3D11ShaderResourceView* m_pEnemySwTexIdle;
+    ID3D11ShaderResourceView* m_pEnemySwTexWalk;
+    ID3D11ShaderResourceView* m_pEnemySwTexJump;
 
     ID3D11ShaderResourceView* m_pEnemyGunTexIdle;
     ID3D11ShaderResourceView* m_pEnemyGunTexWalk;
@@ -90,6 +85,9 @@ private:
     // 敵の出現処理に関する変数
     std::unordered_set<SpawnPoint,SpawnPointHash> exploredPoint;
 
+    
+    
+
 public:
     using Scene::Scene;
     void Init() override;
@@ -109,10 +107,15 @@ public:
     Character* AddList(State::CharaType e_name);    // リストにオブジェクトを追加
     int GetEmptyListNum();                          // リストの空きを取得
 
+    void UpdateList();                              
+
     // 当たり判定
     void TileCollision(int charaName);
 
     // 敵の出現に関する処理  
     void EnemySpawn();
-    
+
+    void SetAnimations();
+    void SetPlayerTexture();
+    void SetEnemyTexture(int num);
 };

@@ -38,12 +38,39 @@ void LoadScene::BackgroundLoad()
         // ResourceManagerは「すでに読んだものはキャッシュする」ので、
         // ここで読んでおけば、Stage1Scene::Init() の時は一瞬で終わります。
 
-        m_pResourceManager->LoadTexture("asset/texture/card.jpg", device);
-        m_pResourceManager->LoadTexture("asset/texture/T_Stand_B.png", device);
-        m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", device);
-        m_pResourceManager->LoadTexture("asset/texture/testSP.png", device);
-        m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", device);
-        m_pResourceManager->LoadTexture("asset/texture/Test_dash_Effect.png", device);
+        //m_pResourceManager->LoadTexture("asset/texture/card.jpg", device);
+        //m_pResourceManager->LoadTexture("asset/texture/T_Stand_B.png", device);
+        //m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", device);
+        //m_pResourceManager->LoadTexture("asset/texture/testSP.png", device);
+        //m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", device);
+        //m_pResourceManager->LoadTexture("asset/texture/Test_dash_Effect.png", device);
+        //=== テクスチャの読込 ===//
+        // プレイヤー
+        m_pResourceManager->LoadTexture("asset/texture/object/block.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Idol.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Dash.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Jump.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Fall.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Attack_D.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityStay.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityDash.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityStay.png",device);
+        // エネミー
+        m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", device);
+
+        m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", device);
+
+        m_pResourceManager->LoadTexture("asset/texture/Se_Idole.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Se_Walk.png", device);
+        m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", device);
+        // 背景
+        m_pResourceManager->LoadTexture("asset/texture/Back/bg_front.png", device); // 手前
+        m_pResourceManager->LoadTexture("asset/texture/Back/bg_mid.png", device);   // 中
+        m_pResourceManager->LoadTexture("asset/texture/Back/bg_back.png", device);  // 奥
 
         // ※必要ならSoundなどもここで先読みできまる
     }
