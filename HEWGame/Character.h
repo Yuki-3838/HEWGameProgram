@@ -43,7 +43,9 @@ namespace State
     enum class CharaType
     {
         t_Player = 0,
-        t_Enemy = 1
+        t_EnemySword = 1,
+        t_EnemyShooter = 2,
+        t_EnemyShielder =3
     };
 
     enum class CharDir

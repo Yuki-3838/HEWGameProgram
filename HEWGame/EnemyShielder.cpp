@@ -1,7 +1,6 @@
-#include "EnemyShooter.h"
+#include "EnemyShielder.h"
 
-
-EnemyShooter::EnemyShooter()
+EnemyShielder::EnemyShielder()
 {
 	// エネミー固有の初期設定
 	m_Stats.m_HP = 1;
@@ -11,18 +10,18 @@ EnemyShooter::EnemyShooter()
 
 	m_Size.x = 128.0f;
 	m_Size.y = 256.0f;
-	m_Position.x = 800.0f;
+	m_Position.x = 600.0f;
 	m_Position.y = 0.0f;
 
 	searchSize = { 500.f, 128.0f };
 
-	m_charaType = State::CharaType::t_EnemyShooter;
+	m_charaType = State::CharaType::t_EnemyShielder;
 
 	isDetection = false; //プレイヤーの発見状態
 	m_FlipX = true;   // 左右反転フラグ(最初は左向き)
 }
 
-void EnemyShooter::Update(const TileMap& tile, Character** charaList)
+void EnemyShielder::Update(const TileMap& tile, Character** charaList)
 {
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
@@ -191,7 +190,7 @@ void EnemyShooter::Update(const TileMap& tile, Character** charaList)
 	}
 }
 
-void EnemyShooter::Jump()
+void EnemyShielder::Jump()
 {
 	//Y軸の加速度がなければ追加
 // ジャンプ　→　地面についていたら可能
@@ -203,7 +202,7 @@ void EnemyShooter::Jump()
 	}
 }
 
-void EnemyShooter::SetTarget(const Character& target)
+void EnemyShielder::SetTarget(const Character& target)
 {
 	m_pTarget = &target;
 }
@@ -212,7 +211,7 @@ void EnemyShooter::SetTarget(const Character& target)
 // こうげき関係の関数
 // =========================
 
-void EnemyShooter::Attack(Character** charaList)
+void EnemyShielder::Attack(Character** charaList)
 {
 	//攻撃範囲設定
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
@@ -245,7 +244,7 @@ void EnemyShooter::Attack(Character** charaList)
 	}
 }
 
-int EnemyShooter::TakeDamage()
+int EnemyShielder::TakeDamage()
 {
 	int damage = 1;
 	m_Stats.m_HP -= damage;
@@ -261,7 +260,7 @@ int EnemyShooter::TakeDamage()
 // =========================
 // 描画関係の関数
 // =========================
-void EnemyShooter::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump)
+void EnemyShielder::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump)
 {
 	m_eTexIdle = idle;
 	m_eTexWalk = walk;
@@ -272,7 +271,7 @@ void EnemyShooter::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResou
 }
 
 //アニメーションさせるための描画
-void EnemyShooter::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
+void EnemyShielder::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
 {
 	// アニメーターから今のコマ情報を取得
 	AnimFrame f = m_Animator.GetCurrentFrame();
@@ -299,26 +298,26 @@ void EnemyShooter::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, Dire
 	}
 }
 
-void EnemyShooter::SetAnimation(int stateIndex)
+void EnemyShielder::SetAnimation(int stateIndex)
 {
 	m_CurrentAnimState = stateIndex;
 	// 初期状態として待機画像をセットしておく
 	m_pTexture = m_eTexIdle;
 	m_CurrentAnimState = stateIndex;
 	//画像の構成に合わせて数値を変更してね
-	float w = 220.0f;
-	float h = 370.0f;
+	float w = 320.0f;
+	float h = 320.0f;
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(32, 8, w , h , 1.0f, 0.0f, true);
+		m_Animator.Init(32, 8, w -130, h + 40, 1.0f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(32, 8, w +100, h -20 , 1.0f, 0.0f, true);
+		m_Animator.Init(32, 8, w, h + 30, 0.02f, 0.0f, true);
 		break;
 	case 2:
 		m_pTexture = m_eTexJump;
@@ -327,12 +326,13 @@ void EnemyShooter::SetAnimation(int stateIndex)
 	}
 }
 
-void EnemyShooter::UnInit()
+void EnemyShielder::UnInit()
 {
 
 }
 
-EnemyShooter::~EnemyShooter()
+EnemyShielder::~EnemyShielder()
 {
 
 }
+

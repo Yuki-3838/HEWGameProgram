@@ -30,7 +30,10 @@ void Stage1Scene::Init()
     m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(), m_pResourceManager);
     // 2. �v���C���[�̐����Ə�����
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
-    m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
+    m_pCharaList[1] = AddList(State::CharaType::t_EnemySword);
+    m_pCharaList[2] = AddList(State::CharaType::t_EnemyShooter);
+    m_pCharaList[3] = AddList(State::CharaType::t_EnemyShielder);
+
 
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
@@ -96,12 +99,33 @@ void Stage1Scene::Init()
     }
 
     Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
+    if(enemy)
     {
         // ★ここで3枚セットで渡す
         enemy->SetTextures(m_pEnemyTexIdle, m_pEnemyTexWalk, m_pEnemyTexJump);
 
         // 最初の初期化 (Init) も呼んでおく
         enemy->Init(m_pEnemyTexIdle); //Idleを渡す
+    }
+
+    EnemyShooter* enemyshooter = dynamic_cast<EnemyShooter*>(m_pCharaList[2]);
+    if(enemyshooter)
+    {
+        // ★ここで3枚セットで渡す
+        enemyshooter->SetTextures(m_pEnemyGunTexIdle, m_pEnemyGunTexWalk, m_pEnemyGunTexJump);
+
+        // 最初の初期化 (Init) も呼んでおく
+        enemyshooter->Init(m_pEnemyGunTexIdle); //Idleを渡す
+    }
+    
+    EnemyShielder* enemyshielder = dynamic_cast<EnemyShielder*>(m_pCharaList[3]);
+    if (enemyshielder)
+    {
+        // ★ここで4枚セットで渡す
+        enemyshielder->SetTextures(m_pEnemySeTexIdle, m_pEnemySeTexWalk, m_pEnemySeTexJump);
+
+        // 最初の初期化 (Init) も呼んでおく
+        enemyshielder->Init(m_pEnemySeTexIdle); //Idleを渡す
     }
 
     m_IsFinished = false;
@@ -149,7 +173,7 @@ void Stage1Scene::Draw()
     //1. マップの描画
     m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
 
-    //
+    
     // 2. プレイヤーの描画
     for (int i = 0; i < m_currentCharaNum; i++)
     {
@@ -158,14 +182,7 @@ void Stage1Scene::Draw()
             m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
         }
     }
-    if (m_pPlayer)
-    {
-        m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
-    }
-    if (m_pEffectManager)
-    {
-        m_pEffectManager->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
-    }
+   
     m_pRenderer->EndFrame();
 }
 
@@ -286,8 +303,14 @@ Character* Stage1Scene::AddList(State::CharaType e_name)
     case State::CharaType::t_Player:
         return new Player;
         break;
-    case State::CharaType::t_Enemy:
+    case State::CharaType::t_EnemySword:
         return new Enemy;
+        break;
+    case State::CharaType::t_EnemyShooter:
+        return new EnemyShooter;
+        break;
+    case State::CharaType::t_EnemyShielder:
+        return new EnemyShielder;
         break;
     };
 

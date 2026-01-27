@@ -121,10 +121,13 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="EffectManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\オブジェクト関連</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyShielder.cpp">
+      <Filter>ソース ファイル\オブジェクト関連</Filter>
     </ClCompile>
     <ClCompile Include="EnemyShooter.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\オブジェクト関連</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

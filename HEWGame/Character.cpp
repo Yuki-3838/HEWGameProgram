@@ -5,10 +5,10 @@ Character::Character()
 	
 }
 
-// 当たり判定作成中
+// 蠖薙◆繧雁愛螳壻ｽ懈・荳ｭ
 bool Character::StageCol(const TileMap& tile, const ColRes direction)
 {
-	// 周囲のタイルを探索
+	// 蜻ｨ蝗ｲ縺ｮ繧ｿ繧､繝ｫ繧呈爾邏｢
 	float left = GetPosition().x;
 	float right = GetPosition().x + GetSize().x;
 	float top = GetPosition().y;
@@ -19,7 +19,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	int tileY_T = static_cast<int>(top / 64);
 	int tileY_B = static_cast<int>(bottom / 64);
 	ColRes res;
-	// 引き渡された方向に対して、当たっていればtrue 当たっていなければfalseを返す
+	// 蠑輔″貂｡縺輔ｌ縺滓婿蜷代↓蟇ｾ縺励※縲∝ｽ薙◆縺｣縺ｦ縺・ｌ縺ｰtrue 蠖薙◆縺｣縺ｦ縺・↑縺代ｌ縺ｰfalse繧定ｿ斐☆
 	switch (direction)
 	{
 	case ColRes::TOP:
@@ -108,21 +108,21 @@ void Character::Move(const TileMap& tile)
 		break;
 	}
 
-	// 高度に関する処理
+	// 鬮伜ｺｦ縺ｫ髢｢縺吶ｋ蜃ｦ逅・
 	switch (m_JumpState)
 	{
-		// 上昇処理
+		// 荳頑・蜃ｦ逅・
 	case State::JumpState::RISE:
-		//　上昇し、１ｆずつ上昇加速度を１減速する
+		//縲荳頑・縺励・ｼ托ｽ・★縺､荳頑・蜉騾溷ｺｦ繧抵ｼ第ｸ幃溘☆繧・
 		m_Position.y -= m_Stats.m_AccelY;
 		m_Stats.m_AccelY--;
-		// 天井に衝突した場合、下降に移行する
+		// 螟ｩ莠輔↓陦晉ｪ√＠縺溷ｴ蜷医∽ｸ矩剄縺ｫ遘ｻ陦後☆繧・
 		if (StageCol(tile, ColRes::TOP))
 		{
 			m_JumpState = State::JumpState::DESC;
 			m_Stats.m_AccelY = -1;
 		}
-		// 上昇加速度が０になった場合、下降に移行する
+		// 荳頑・蜉騾溷ｺｦ縺鯉ｼ舌↓縺ｪ縺｣縺溷ｴ蜷医∽ｸ矩剄縺ｫ遘ｻ陦後☆繧・
 		if (m_Stats.m_AccelY == 0)
 		{
 			m_JumpState = State::JumpState::DESC;
@@ -130,11 +130,11 @@ void Character::Move(const TileMap& tile)
 		}
 		break;
 
-		// 下降処理
+		// 荳矩剄蜃ｦ逅・
 	case State::JumpState::DESC:
-		// 下降する
+		// 荳矩剄縺吶ｋ
 		m_Position.y -= m_Stats.m_AccelY;
-		// 最大下降加速度出ない場合、下降加速度を１加速
+		// 譛螟ｧ荳矩剄蜉騾溷ｺｦ蜃ｺ縺ｪ縺・ｴ蜷医∽ｸ矩剄蜉騾溷ｺｦ繧抵ｼ大刈騾・
 		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
 		{
 			m_Stats.m_AccelY -= m_Stats.m_Gravity;
@@ -150,11 +150,11 @@ void Character::Move(const TileMap& tile)
 		}
 		break;
 
-		// 落下処理
+		// 關ｽ荳句・逅・
 	case State::JumpState::FALLING:
-		// 下降する
+		// 荳矩剄縺吶ｋ
 		m_Position.y -= m_Stats.m_AccelY;
-		// 最大下降加速度出ない場合、下降加速度を１加速
+		// 譛螟ｧ荳矩剄蜉騾溷ｺｦ蜃ｺ縺ｪ縺・ｴ蜷医∽ｸ矩剄蜉騾溷ｺｦ繧抵ｼ大刈騾・
 		if (m_Stats.m_AccelY > -m_Stats.m_AccelYMax)
 		{
 			m_Stats.m_AccelY -= m_Stats.m_Gravity;
@@ -170,9 +170,9 @@ void Character::Move(const TileMap& tile)
 		}
 		break;
 
-		// 通常時処理
+		// 騾壼ｸｸ譎ょ・逅・
 	case State::JumpState::NONE:
-		// 重力を与え、地面に着地していなければ下降に移行
+		// 驥榊鴨繧剃ｸ弱∴縲∝慍髱｢縺ｫ逹蝨ｰ縺励※縺・↑縺代ｌ縺ｰ荳矩剄縺ｫ遘ｻ陦・
 		m_Position.y += m_Stats.m_Gravity;
 		if (!StageCol(tile, ColRes::BOTTOM))
 		{

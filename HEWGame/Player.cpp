@@ -129,7 +129,6 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//通常移動
 	 if(m_dState == DashState::NONE)
 	{
-
 		//m_MoveState = State::MoveState::RIGHT;
 		m_FlipX = false;
 		m_charDir = State:: CharDir::RIGHT;
@@ -290,35 +289,6 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	}
 }
 
-void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
-{
-	// アニメーターから今のコマ情報を取得
-	AnimFrame f = m_Animator.GetCurrentFrame();
-
-	// 描画位置とサイズ
-	float drawX = m_Position.x;
-	float drawY = m_Position.y;
-	float drawW = m_Size.x;
-	float drawH = m_Size.y;
-
-
-	// SpriteRendererで描画
-	if (m_pTexture && pSR)
-	{
-		pSR->Draw(
-			pContext,
-			m_pTexture,
-			drawX, drawY,
-			drawW, drawH,
-			viewProj,
-			f.x, f.y, f.w, f.h, // UV座標
-			0.0f,    // 回転なし
-			m_FlipX  // 反転フラグ
-		);
-	}
-}
-
-
 void Player::UnInit()
 {
 }
@@ -356,7 +326,7 @@ void Player::Attack(Character** charaList)
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
-		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
+		if (obj->GetCharaType() != State::CharaType::t_EnemySword)continue;  //enemy以外だったらスキップする
 
 		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
 		
@@ -418,6 +388,37 @@ void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceVie
 	// 初期状態として待機画像をセットしておく
 	SetAnimation(m_CurrentAnimState);
 }
+
+
+void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
+{
+	// アニメーターから今のコマ情報を取得
+	AnimFrame f = m_Animator.GetCurrentFrame();
+
+	// 描画位置とサイズ
+	float drawX = m_Position.x;
+	float drawY = m_Position.y;
+	float drawW = m_Size.x;
+	float drawH = m_Size.y;
+
+
+	// SpriteRendererで描画
+	if (m_pTexture && pSR)
+	{
+		pSR->Draw(
+			pContext,
+			m_pTexture,
+			drawX, drawY,
+			drawW, drawH,
+			viewProj,
+			f.x, f.y, f.w, f.h, // UV座標
+			0.0f,    // 回転なし
+			m_FlipX  // 反転フラグ
+		);
+	}
+}
+
+
 
 void Player::SetAnimation(int stateIndex)
 {

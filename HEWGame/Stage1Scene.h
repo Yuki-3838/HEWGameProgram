@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "GameObject.h"
 #include "Enemy.h"
+#include "EnemyShooter.h"
+#include "EnemyShielder.h"
 #include <DirectXMath.h>
 
 #include "EffectManager.h"
@@ -14,6 +16,9 @@ private:
     TileMap* m_pTileMap;
     MapRenderer* m_pMapRenderer;
     Player* m_pPlayer;
+    Enemy* m_pEnemy;
+    EnemyShooter* m_EnemyShooter;
+    EnemyShielder*m_pEnemyShielder;
 
     // キャラクターに関する変数
     Character** m_pCharaList = nullptr; // キャラクターリスト

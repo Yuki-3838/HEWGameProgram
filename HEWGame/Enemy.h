@@ -3,9 +3,16 @@
 #include"Animator.h"
 
 
+enum class EnemyState
+{
+	NONE,
+	STAY,
+	DASH
+};
+
 class Enemy :public Character
 {
-private:
+protected:
 
 	// 各状態のテクスチャを保持しておく変数
 	ID3D11ShaderResourceView* m_eTexIdle = nullptr; // 待機用
@@ -17,10 +24,8 @@ private:
 
 	//現在再生中のアニメーション状態
 	int m_CurrentAnimState = -1;
-
-	//アニメーション切り替え関数
-	void SetAnimation(int stateIndex);
-
+	
+	EnemyState m_eState;
 
 	const Character* m_pTarget = nullptr; //ターゲット（プレイヤー）の
 	bool isDetection; //プレイヤーの発見状態
@@ -37,7 +42,6 @@ public:
 
 	void Update(const TileMap& tile, Character** charaList)override;
 	void UnInit()override;
-	void Draw();
 
 	void Attack(Character** charaList)override;
 	int TakeDamage() override;
@@ -47,4 +51,7 @@ public:
 
 	//アニメーションさせるための描画
 	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
+
+	//アニメーション切り替え関数
+	void SetAnimation(int stateIndex);
 };
