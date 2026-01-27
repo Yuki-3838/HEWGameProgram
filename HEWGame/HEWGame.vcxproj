@@ -151,6 +151,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LoadScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapRenderer.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="HewStd.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="LoadScene.h" />
     <ClInclude Include="MapRenderer.h" />
     <ClInclude Include="Object.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
