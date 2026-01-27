@@ -377,7 +377,7 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexIdle;
 		animW = w;
 		animH = h;
-		scale = 1.0f;
+		scale = 0.7f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true, offX, offY, scale);
@@ -386,7 +386,7 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexWalk;
 		animW = w;
 		animH = h;
-		scale = 1.0f;
+		scale = 0.7;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(18, 9, animW, animH, 0.05f, 0.0f, true, offX, offY, scale);
@@ -395,6 +395,7 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexJump;
 		animW = w;
 		animH = h;
+		scale = 0.65;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(14, 7, animW, animH, 0.1f, 0.0f, false, offX, offY, scale);
@@ -403,7 +404,7 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexAttack;
 		animW = w;
 		animH = h;
-		scale = 1.0f;
+		scale = 0.7;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(6, 3, animW, animH, 0.03f, 0.0f, false, offX, offY, scale);
@@ -412,6 +413,7 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexFall;
 		animW = w;
 		animH = h;
+		scale = 0.65;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(14, 7, animW, animH, 0.01f, 0.0f, false, offX, offY, scale);
@@ -420,7 +422,7 @@ void Player::SetAnimation(int stateIndex)
 		m_pTexture = m_pTexAbilityA;
 		animW = w;
 		animH = h;
-		scale = 1.0f;
+		scale = 0.7;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, animW, animH, 0.05f, 0.0f, true, offX, offY, scale);
@@ -428,8 +430,8 @@ void Player::SetAnimation(int stateIndex)
 	case 6: //ダッシュ（AbilityB）
 		m_pTexture = m_pTexAbilityB;
 		animW = w;
-		animH = h;
-		scale = 1.0f;
+		animH = h - 110;
+		scale = 0.7;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(16, 4, animW, animH, 0.02f, 0.0f, false, offX, offY, scale);
