@@ -34,25 +34,20 @@ void Stage1Scene::Init()
     m_pCharaList[1] = AddList(State::CharaType::t_Enemy);
 
     // 3. テクスチャのロード
-    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
-    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Idol.png", m_pRenderer->GetDevice());
-    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
-    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
-    m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Fall.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAbilityA = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAbilityB = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
-    m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
-
-
-    m_pPlayerTexDash = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
-    m_pPlayerTexDashStay = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
-    m_pPlayerTexDashEffect = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityC.png", m_pRenderer->GetDevice());
+    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/object/block.png", m_pRenderer->GetDevice());
+    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Idol.png", m_pRenderer->GetDevice());
+    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
+    m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Fall.png", m_pRenderer->GetDevice());
+    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillStay = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityStay.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillDash = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityDash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillEffect = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityEfect.png", m_pRenderer->GetDevice());
 
     //3-2. エネミー
-    m_pEnemyTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySwTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
 
     m_pEnemyGunTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
     m_pEnemyGunTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
@@ -67,9 +62,9 @@ void Stage1Scene::Init()
     //m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
 
     // 背景テクスチャ
-    m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/bg_front.png", m_pRenderer->GetDevice()); // 手前
-    m_pBGTexMid =   m_pResourceManager->LoadTexture("asset/texture/bg_mid.png", m_pRenderer->GetDevice());   // 中
-    m_pBGTexBack =  m_pResourceManager->LoadTexture("asset/texture/bg_back.png", m_pRenderer->GetDevice());  // 奥
+    m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/Back/bg_front.png", m_pRenderer->GetDevice()); // 手前
+    m_pBGTexMid =   m_pResourceManager->LoadTexture("asset/texture/Back/bg_mid.png", m_pRenderer->GetDevice());   // 中
+    m_pBGTexBack =  m_pResourceManager->LoadTexture("asset/texture/Back/bg_back.png", m_pRenderer->GetDevice());  // 奥
 
     // 背景パララックス係数（必要ならレイヤ別に調整）
     // 横追従度
@@ -87,8 +82,8 @@ void Stage1Scene::Init()
     if (player)
     {
         // ★ここで7枚セットで渡す
-        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack, m_pPlayerTexAbilityA, m_pPlayerTexAbilityB);
-
+        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack, m_pPlayerTexSkillStay, m_pPlayerTexSkillDash);
+            
         // �ŏ��̏����� (Init) ���Ă�ł���
         player->Init(m_pPlayerTexIdle); //Idle��n��
 
@@ -99,10 +94,10 @@ void Stage1Scene::Init()
     Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
     {
         // ★ここで3枚セットで渡す
-        enemy->SetTextures(m_pEnemyTexIdle, m_pEnemyTexWalk, m_pEnemyTexJump);
+        enemy->SetTextures(m_pEnemySwTexIdle, m_pEnemySwTexWalk, m_pEnemySwTexJump);
 
         // 最初の初期化 (Init) も呼んでおく
-        enemy->Init(m_pEnemyTexIdle); //Idleを渡す
+        enemy->Init(m_pEnemySwTexIdle); //Idleを渡す
     }
 
     m_IsFinished = false;
@@ -372,10 +367,10 @@ void Stage1Scene::EnemySpawn()
                         Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[num]);
                         {
                             // ★ここで3枚セットで渡す
-                            enemy->SetTextures(m_pEnemyTexIdle, m_pEnemyTexWalk, m_pEnemyTexJump);
+                            enemy->SetTextures(m_pEnemySwTexIdle, m_pEnemySwTexWalk, m_pEnemySwTexJump);
 
                             // 最初の初期化 (Init) も呼んでおく
-                            enemy->Init(m_pEnemyTexIdle); //Idleを渡す
+                            enemy->Init(m_pEnemySwTexIdle); //Idleを渡す
                         }
                     }
                 }
