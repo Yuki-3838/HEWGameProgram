@@ -48,6 +48,7 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexJump;
     ID3D11ShaderResourceView* m_pPlayerTexFall;
     ID3D11ShaderResourceView* m_pPlayerTexAttack;
+    ID3D11ShaderResourceView* m_pPlayerTexFlyAttack;
     ID3D11ShaderResourceView* m_pPlayerTexSkillDash;
     ID3D11ShaderResourceView* m_pPlayerTexSkillStay;
     ID3D11ShaderResourceView* m_pPlayerTexSkillEffect;

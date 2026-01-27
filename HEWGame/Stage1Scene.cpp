@@ -334,14 +334,15 @@ void Stage1Scene::SetAnimations()
 {
     // 3. テクスチャのロード
     m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/object/block.png", m_pRenderer->GetDevice());
-    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Idol.png", m_pRenderer->GetDevice());
-    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
-    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
-    m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Fall.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
-    m_pPlayerTexSkillStay = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityStay.png", m_pRenderer->GetDevice());
-    m_pPlayerTexSkillDash = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityDash.png", m_pRenderer->GetDevice());
-    m_pPlayerTexSkillEffect = m_pResourceManager->LoadTexture("asset/texture/Player/Anime_Hero_AbilityEfect.png", m_pRenderer->GetDevice());
+    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Idol.png", m_pRenderer->GetDevice());
+    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Dash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Jump.png", m_pRenderer->GetDevice());
+    m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Fall.png", m_pRenderer->GetDevice());
+    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Attack_S.png", m_pRenderer->GetDevice());
+    m_pPlayerTexFlyAttack = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillStay = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_AbilityStay.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillDash = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_AbilityDash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillEffect = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_AbilityEfect.png", m_pRenderer->GetDevice());
 
     //3-2. エネミー
     m_pEnemySwTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
@@ -369,7 +370,7 @@ void Stage1Scene::SetPlayerTexture()
     if (player)
     {
         // ★ここで7枚セットで渡す
-        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack, m_pPlayerTexSkillStay, m_pPlayerTexSkillDash);
+        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack,m_pPlayerTexFlyAttack, m_pPlayerTexSkillStay, m_pPlayerTexSkillDash);
         player->SetSound(m_pSound);
         player->SetEffectManager(m_pEffectManager);
     }
