@@ -25,7 +25,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	case ColRes::TOP:
 		for (int x = tileX_L; x <= tileX_R; x++)
 		{
-			if (tile.GetTileID(x, tileY_T) == Kaneda::TILE_WALL)
+			if (tile.GetTileID(x, tileY_T) == TILE_WALL)
 			{
 				DirectX::XMFLOAT2 XMPos(x * 64, tileY_T * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
@@ -42,7 +42,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	case ColRes::BOTTOM:
 		for (int x = tileX_L; x <= tileX_R; x++)
 		{
-			if (tile.GetTileID(x, tileY_B) == Kaneda::TILE_WALL)
+			if (tile.GetTileID(x, tileY_B) == TILE_WALL)
 			{
 				DirectX::XMFLOAT2 XMPos(x * 64, tileY_B * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
@@ -59,7 +59,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	case ColRes::LEFT:
 		for (int y = tileY_T; y <= tileY_B; y++)
 		{
-			if (tile.GetTileID(tileX_L, y) == Kaneda::TILE_WALL)
+			if (tile.GetTileID(tileX_L, y) == TILE_WALL)
 			{
 				DirectX::XMFLOAT2 XMPos(tileX_L * 64, y * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
@@ -76,7 +76,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	case ColRes::RIGHT:
 		for (int y = tileY_T; y <= tileY_B; y++)
 		{
-			if (tile.GetTileID(tileX_R, y) == Kaneda::TILE_WALL)
+			if (tile.GetTileID(tileX_R, y) == TILE_WALL)
 			{
 				DirectX::XMFLOAT2 XMPos(tileX_R * 64, y * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
