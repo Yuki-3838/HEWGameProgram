@@ -29,6 +29,7 @@ private:
     ID3D11ShaderResourceView* m_pTexJump = nullptr; // ジャンプ上昇用
     ID3D11ShaderResourceView* m_pTexFall = nullptr; // ジャンプ下降用
     ID3D11ShaderResourceView* m_pTexAttack = nullptr; //攻撃用
+    ID3D11ShaderResourceView* m_pTexFlyAttack = nullptr; //空中攻撃用
     ID3D11ShaderResourceView* m_pTexAbilityA = nullptr; // 溜め用
     ID3D11ShaderResourceView* m_pTexAbilityB = nullptr; // ダッシュ用
 
