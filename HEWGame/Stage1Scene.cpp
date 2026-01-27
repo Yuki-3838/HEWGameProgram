@@ -128,6 +128,9 @@ void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
     float cameraX = m_pCamera->GetX();
     float cameraY = m_pCamera->GetY();
 
+    // 画面右端/下端のワールド座標（ワールド＝カメラ位置 + スクリーン幅/高さ）
+    float worldRight = cameraX + static_cast<float>(m_ScreenWidth);
+
     for (int i = 0; i < 3; ++i)
     {
         ID3D11ShaderResourceView* srv = layers[i];
@@ -136,30 +139,30 @@ void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
         auto [texW, texH] = GetTexSize(srv);
         if (texW <= 0.0f || texH <= 0.0f) continue;
 
-        // 横/縦パララックス係数（layers array は back, mid, front）
+        // 横パララックス係数（layers array は back, mid, front）
         float parallaxH = m_BGParallaxU[2 - i];
-        float parallaxV = m_BGParallaxV[2 - i];
-
-        // テクスチャを画面高さに合わせてスケール（縦比を画面に合わせる）
+        // 縦は「カメラ追従のみ」にする -> parallaxV を使わない（縦はループ不可のため）
+        
+        // スケール：画像の高さを画面高さに合わせる（縦は画面を覆す想定）
         float scale = static_cast<float>(m_ScreenHeight) / texH;
         float drawW = texW * scale;
         float drawH = static_cast<float>(m_ScreenHeight);
 
-        // 横オフセット（テクスチャ単位 → ピクセル）
-        float offsetTexX = std::fmod(cameraX * parallaxH, texW);
-        if (offsetTexX < 0.0f) offsetTexX += texW;
-        float offsetPixelsX = offsetTexX * scale;
+        // --- 横オフセット（画面ピクセル単位での滑らかなループ） ---
+        // raw はスクリーン上のオフセット（マイナス方向で動く）
+        float raw = -cameraX * parallaxH;
+        float offset = std::fmod(raw, drawW);
+        if (offset > 0.0f) offset -= drawW; // 範囲を [-drawW, 0)
+        // world 領域での開始 x（ワールド座標）
+        float startWorldX = cameraX + offset - drawW;
+        float endWorldX = worldRight + drawW;
 
-        // 横開始位置：左に余分な1枚分を確保して見切れを防止
-        float startX = -offsetPixelsX - drawW;
+        // --- 縦はカメラに合わせて固定（パララックスしない） ---
+        float drawY = cameraY; // これでビュー行列適用後にスクリーン上で常に top=0 になる
 
-        // 縦はタイルせず、カメラに追従させる（1枚）
-        float drawY = cameraY * parallaxV;
-
-        // 横だけ繰り返して描画（上下は単一表示）
-        for (float x = startX; x < static_cast<float>(m_ScreenWidth) + drawW; x += drawW)
+        for (float wx = startWorldX; wx < endWorldX; wx += drawW)
         {
-            m_pSpriteRenderer->Draw(ctx, srv, x, drawY, drawW, drawH, viewProj);
+            m_pSpriteRenderer->Draw(ctx, srv, wx, drawY, drawW, drawH, viewProj);
         }
     }
 }

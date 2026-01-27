@@ -72,8 +72,7 @@ private:
     ID3D11ShaderResourceView* m_pBGTexBack = nullptr;  // 奥
 
     // パララックス係数（手前→中→奥：手前が大きい）
-    float m_BGParallaxU[3] = { 1.0f, 1.0f, 1.0f }; // 横追従度
-	float m_BGParallaxV[3] = { 1.0f, 1.0f, 1.0f }; // 縦追従度
+    float m_BGParallaxU[3] = { 0.5f, 0.3f, 0.1f }; // 横追従度
 
     // 画面サイズ（Camera と合わせる）
     int m_ScreenWidth = 1920;
