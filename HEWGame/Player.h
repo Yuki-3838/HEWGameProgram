@@ -29,6 +29,7 @@ private:
     ID3D11ShaderResourceView* m_pTexJump = nullptr; // ジャンプ上昇用
     ID3D11ShaderResourceView* m_pTexFall = nullptr; // ジャンプ下降用
     ID3D11ShaderResourceView* m_pTexAttack = nullptr; //攻撃用
+    ID3D11ShaderResourceView* m_pTexFlyAttack = nullptr; //空中攻撃用
     ID3D11ShaderResourceView* m_pTexAbilityA = nullptr; // 溜め用
     ID3D11ShaderResourceView* m_pTexAbilityB = nullptr; // ダッシュ用
 
@@ -87,7 +88,6 @@ public:
     void WallJump();
     void Blink();
     void GetBlink();
-    void LoadTexture();
     void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA = nullptr, ID3D11ShaderResourceView* abilityB = nullptr);
     void SetSound(Sound* pSound) { m_pSound = pSound; }
     void SetEffectManager(EffectManager* em) { m_pEffectManager = em; }
