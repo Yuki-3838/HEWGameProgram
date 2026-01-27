@@ -33,7 +33,6 @@ class Stage1Scene : public Scene
 private:
     TileMap* m_pTileMap;
     MapRenderer* m_pMapRenderer;
-    Player* m_pPlayer;
 
     // キャラクターに関する変数
     Character** m_pCharaList = nullptr; // キャラクターリスト
@@ -86,6 +85,9 @@ private:
     // 敵の出現処理に関する変数
     std::unordered_set<SpawnPoint,SpawnPointHash> exploredPoint;
 
+    
+    
+
 public:
     using Scene::Scene;
     void Init() override;
@@ -105,10 +107,15 @@ public:
     Character* AddList(State::CharaType e_name);    // リストにオブジェクトを追加
     int GetEmptyListNum();                          // リストの空きを取得
 
+    void UpdateList();                              
+
     // 当たり判定
     void TileCollision(int charaName);
 
     // 敵の出現に関する処理  
     void EnemySpawn();
-    
+
+    void SetAnimations();
+    void SetPlayerTexture();
+    void SetEnemyTexture(int num);
 };
