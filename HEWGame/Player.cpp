@@ -430,7 +430,7 @@ void Player::SetAnimation(int stateIndex)
 	case 6: //ダッシュ（AbilityB）
 		m_pTexture = m_pTexAbilityB;
 		animW = w;
-		animH = h - 110;
+		animH = h;
 		scale = 0.7;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);

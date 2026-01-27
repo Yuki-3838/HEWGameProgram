@@ -44,7 +44,7 @@ void Stage1Scene::Init()
     m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
 
 
-    m_pPlayerTexDash = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
+    m_pPlayerTexDash = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
     m_pPlayerTexDashStay = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
     m_pPlayerTexDashEffect = m_pResourceManager->LoadTexture("asset/texture/2_Anime_Hero_AbilityC.png", m_pRenderer->GetDevice());
 
