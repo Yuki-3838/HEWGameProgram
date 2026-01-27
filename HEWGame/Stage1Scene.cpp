@@ -377,9 +377,9 @@ void Stage1Scene::SetAnimations()
     m_pPlayerTexSkillEffect = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_AbilityEfect.png", m_pRenderer->GetDevice());
 
     //3-2. エネミー
-    m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sword_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sword_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Sword_Walk.png", m_pRenderer->GetDevice());
 
     m_pEnemyShooterTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
     m_pEnemyShooterTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
@@ -410,7 +410,7 @@ void Stage1Scene::SetPlayerTexture()
 
 void Stage1Scene::SetEnemyTexture(int num)
 {
-    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[num]);
+    EnemySword* enemy = dynamic_cast<EnemySword*>(m_pCharaList[num]);
     {
         // ★ここで3枚セットで渡す
         enemy->SetTextures(m_pEnemySwordTexIdle, m_pEnemySwordTexWalk, m_pEnemySwordTexJump);
