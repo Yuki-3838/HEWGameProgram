@@ -3,16 +3,16 @@
 
 class EnemyShooter : public Enemy
 {
-
-private:
-	// 各状態のテクスチャを保持しておく変数
-	ID3D11ShaderResourceView* m_eTexIdle = nullptr; // 待機用
-	ID3D11ShaderResourceView* m_eTexWalk = nullptr; // 移動用
-	ID3D11ShaderResourceView* m_eTexJump = nullptr; // ジャンプ用
+protected:
+	void SetAnimation(int stateIndex) override;
+	
 public:
 	EnemyShooter();
-	~EnemyShooter();
+	~EnemyShooter() override;
 
+	void Update(const TileMap& tile, Character** charaList) override;
+	void UnInit() override;
+	void Attack(Character** charaList) override;
 };
 
 

@@ -1,34 +1,34 @@
-#include "EnemyShooter.h"
+#include "EnemySword.h"
 
-EnemyShooter::EnemyShooter()
+
+EnemySword::EnemySword()
 {
 	// エネミー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 10;
+	m_Stats.m_Speed = 15;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
 	m_Size.x = 128.0f;
 	m_Size.y = 256.0f;
-	m_Position.x = 1600.0f;
+	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
 
 	searchSize = { 500.f, 128.0f };
 
-	m_charaType = State::CharaType::t_EnemyShooter;
+	m_charaType = State::CharaType::t_EnemySword;
 
 	isDetection = false; //プレイヤーの発見状態
 	m_charDir = State::CharDir::LEFT; // エネミーの向き
 }
 
-
-EnemyShooter::~EnemyShooter()
+EnemySword::~EnemySword()
 {
+
 }
 
-void EnemyShooter::Update(const TileMap& tile, Character** charaList)
+void EnemySword::Update(const TileMap& tile, Character** charaList)
 {
-
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 
@@ -190,13 +190,15 @@ void EnemyShooter::Update(const TileMap& tile, Character** charaList)
 	{
 		SetAnimation(nextAnim);
 	}
+
 }
 
-void EnemyShooter::UnInit()
+void EnemySword::UnInit()
 {
+
 }
 
-void EnemyShooter::Attack(Character** charaList)
+void EnemySword::Attack(Character** charaList)
 {
 	//攻撃範囲設定
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
@@ -229,7 +231,7 @@ void EnemyShooter::Attack(Character** charaList)
 	}
 }
 
-void EnemyShooter::SetAnimation(int stateIndex)
+void EnemySword::SetAnimation(int stateIndex)
 {
 	m_CurrentAnimState = stateIndex;
 	// 初期状態として待機画像をセットしておく
@@ -244,11 +246,11 @@ void EnemyShooter::SetAnimation(int stateIndex)
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(32, 8, w - 100, h + 50, 0.01f, 0.0f, true);
+		m_Animator.Init(32, 8, w - 20, h + 50, 0.01f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(32, 8, w, h + 30, 0.02f, 0.0f, true);
+		m_Animator.Init(32, 8, w, h - 55, 0.02f, 0.0f, true);
 		break;
 	case 2:
 		m_pTexture = m_eTexJump;
@@ -256,6 +258,3 @@ void EnemyShooter::SetAnimation(int stateIndex)
 		break;
 	}
 }
-
-
-

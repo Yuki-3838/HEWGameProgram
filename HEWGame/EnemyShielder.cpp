@@ -1,38 +1,41 @@
-#include "EnemyShooter.h"
+#include "EnemyShielder.h"
 
-EnemyShooter::EnemyShooter()
+EnemyShielder::EnemyShielder()
 {
 	// エネミー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 10;
+	m_Stats.m_Speed = 7.5;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
 	m_Size.x = 128.0f;
 	m_Size.y = 256.0f;
-	m_Position.x = 1600.0f;
+	m_Position.x = 1300.0f;
 	m_Position.y = 0.0f;
 
 	searchSize = { 500.f, 128.0f };
 
-	m_charaType = State::CharaType::t_EnemyShooter;
+	m_charaType = State::CharaType::t_EnemyShielder;
 
 	isDetection = false; //プレイヤーの発見状態
 	m_charDir = State::CharDir::LEFT; // エネミーの向き
 }
 
 
-EnemyShooter::~EnemyShooter()
+EnemyShielder::~EnemyShielder()
 {
+
+
 }
 
-void EnemyShooter::Update(const TileMap& tile, Character** charaList)
+void EnemyShielder::Update(const TileMap& tile, Character** charaList)
 {
-
-	//アニメーション更新
+	// アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 
+	// 移動状態の初期化
 	m_MoveState = State::MoveState::NONE;
+	
 	// 移動入力処理
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
@@ -75,32 +78,35 @@ void EnemyShooter::Update(const TileMap& tile, Character** charaList)
 	//非発見状態
 	if (isDetection == false)
 	{
+		// 索敵中は移動速度を半分にする
+		m_Stats.m_Speed = 5;
+
 		//左右移動にする予定
 		SCount++;
 
-		if (SCount == 200)
+		// 方向転換
+		if (SCount == 100)
 		{
-			m_MoveState = State::MoveState::RIGHT;
-			m_charDir = State::CharDir::RIGHT; //右を見る
-		}
+			if (m_charDir == State::CharDir::RIGHT)
+			{
+				m_charDir = State::CharDir::LEFT; //左を見る
+			} else {
 
-		if (SCount == 400)
-		{
-			m_MoveState = State::MoveState::LEFT;
-			m_charDir = State::CharDir::LEFT; //左を見る
-
+				m_charDir = State::CharDir::RIGHT; //右を見る
+			}
 			SCount = 0;
 		}
-
 
 		if (m_charDir == State::CharDir::RIGHT)//右向き
 		{
 			searchPos.x = GetPosition().x - searchSize.x;
+			m_MoveState = State::MoveState::RIGHT;
 		}
 		else//左向き
 		{
 			// attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
 			searchPos.x = GetPosition().x + GetSize().x;
+			m_MoveState = State::MoveState::LEFT;
 		}
 		//attackPos.y += m_Size.y / 4;
 		searchPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
@@ -132,6 +138,8 @@ void EnemyShooter::Update(const TileMap& tile, Character** charaList)
 				}
 			}
 		}
+		// 速度を戻す
+		m_Stats.m_Speed = 10;
 	}
 
 	//発見状態時
@@ -190,13 +198,15 @@ void EnemyShooter::Update(const TileMap& tile, Character** charaList)
 	{
 		SetAnimation(nextAnim);
 	}
+
 }
 
-void EnemyShooter::UnInit()
+void EnemyShielder::UnInit()
 {
+
 }
 
-void EnemyShooter::Attack(Character** charaList)
+void EnemyShielder::Attack(Character** charaList)
 {
 	//攻撃範囲設定
 	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
@@ -229,7 +239,7 @@ void EnemyShooter::Attack(Character** charaList)
 	}
 }
 
-void EnemyShooter::SetAnimation(int stateIndex)
+void EnemyShielder::SetAnimation(int stateIndex)
 {
 	m_CurrentAnimState = stateIndex;
 	// 初期状態として待機画像をセットしておく
@@ -244,7 +254,7 @@ void EnemyShooter::SetAnimation(int stateIndex)
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(32, 8, w - 100, h + 50, 0.01f, 0.0f, true);
+		m_Animator.Init(32, 8, w - 130, h + 40, 0.01f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
@@ -256,6 +266,4 @@ void EnemyShooter::SetAnimation(int stateIndex)
 		break;
 	}
 }
-
-
 

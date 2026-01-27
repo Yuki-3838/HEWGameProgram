@@ -34,7 +34,7 @@ private:
     ID3D11ShaderResourceView* m_pTexAbilityB = nullptr; // ダッシュ用
 
     Animator m_Animator;//アニメーション管理
-    bool m_FlipX = false; // 左右反転フラグ
+    bool m_FlipX = false; // テクスチャの左右反転フラグ
 
     //現在再生中のアニメーション状態
     int m_CurrentAnimState = -1;

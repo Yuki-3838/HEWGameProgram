@@ -9,7 +9,7 @@ Player::Player()
 {
 	// プレイヤー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 30;
+	m_Stats.m_Speed = 20;
 	m_Stats.m_Gravity = 1;
 	m_Stats.m_JumpPw = 25;
 
@@ -302,7 +302,7 @@ void Player::Attack(Character** charaList)
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
-		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
+		if (obj->GetCharaType() == State::CharaType::t_Player)continue;  //playerだったらスキップする
 
 		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
 		

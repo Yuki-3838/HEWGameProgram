@@ -3,23 +3,7 @@
 
 Enemy::Enemy()
 {
-	// エネミー固有の初期設定
-	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 15;
-	m_Stats.m_Gravity = 5;
-	m_Stats.m_JumpPw = 25;
 
-	m_Size.x = 128.0f;
-	m_Size.y = 256.0f;
-	m_Position.x = 1000.0f;
-	m_Position.y = 0.0f;
-
-	searchSize = { 500.f, 128.0f };
-
-	m_charaType = State::CharaType::t_Enemy;
-
-	isDetection = false; //プレイヤーの発見状態
-	m_FlipX = true;   // 左右反転フラグ(最初は左向き)
 }
 
 Enemy::~Enemy()
@@ -29,17 +13,20 @@ Enemy::~Enemy()
 
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
+	//アニメーション更新
+	m_Animator.Update(1.0f / 1.0f);
+
 	m_MoveState = State::MoveState::NONE;
 	// 移動入力処理
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = true;
+		m_charDir = State::CharDir::LEFT;
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = false;
+		m_charDir = State::CharDir::RIGHT;
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
@@ -78,19 +65,19 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		if (SCount == 200)
 		{
 			m_MoveState = State::MoveState::RIGHT;
-			m_FlipX = false; //右を見る
+			m_charDir = State::CharDir::RIGHT; //右を見る
 		}
 
 		if (SCount == 400)
 		{
 			m_MoveState = State::MoveState::LEFT;
-			m_FlipX = true; //左を見る
+			m_charDir = State::CharDir::LEFT; //左を見る
 
 			SCount = 0;
 		}
 
 
-		if (m_FlipX)//右向き
+		if (m_charDir == State::CharDir::RIGHT)//右向き
 		{
 			searchPos.x = GetPosition().x - searchSize.x;
 		}
@@ -147,13 +134,13 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 			if (targetPos.x + 250.0f < enemyPos.x)
 			{
 				m_MoveState = State::MoveState::LEFT;
-				m_FlipX = true;
+				m_charDir = State::CharDir::LEFT;
 			}
 
 			else if (targetPos.x - 250.0f > enemyPos.x)
 			{
 				m_MoveState = State::MoveState::RIGHT;
-				m_FlipX = false;
+				m_charDir = State::CharDir::RIGHT;
 			}
 		}
 	}
@@ -164,11 +151,6 @@ void Enemy::UnInit()
 {
   
 }
-
-void Enemy::Draw()
-{
-}
-
 
 void Enemy::Attack(Character** charaList)
 {
@@ -251,6 +233,8 @@ void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XM
 	////絵をどれくらい下にずらすか
 	//float drawOffsetY = 60.0f;   /*+ drawOffsetY*/
 	
+	// 向きを管理するenumからbollの反転部フラグに変換
+	m_FlipX = (m_charDir == State::CharDir::LEFT);
 
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
@@ -280,14 +264,14 @@ void Enemy::SetAnimation(int stateIndex)
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
-	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
+	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(1, 1, w, h, 0.01f, 0.0f);
+		m_Animator.Init(32, 8, w - 20, h + 50, 0.01f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(1, 1, w, h, 0.2f, 0.0f);
+		m_Animator.Init(32, 8, w, h - 55, 0.02f, 0.0f, true);
 		break;
 	case 2:
 		m_pTexture = m_eTexJump;
