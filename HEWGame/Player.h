@@ -29,6 +29,7 @@ private:
     ID3D11ShaderResourceView* m_pTexJump = nullptr; // ジャンプ上昇用
     ID3D11ShaderResourceView* m_pTexFall = nullptr; // ジャンプ下降用
     ID3D11ShaderResourceView* m_pTexAttack = nullptr; //攻撃用
+    ID3D11ShaderResourceView* m_pTexFlyAttack = nullptr; //空中攻撃用
     ID3D11ShaderResourceView* m_pTexAbilityA = nullptr; // 溜め用
     ID3D11ShaderResourceView* m_pTexAbilityB = nullptr; // ダッシュ用
 
@@ -45,7 +46,7 @@ private:
     DashState m_dState;
     DashDirection m_dDire[2];// ダッシュ方向
 
-	static constexpr int m_dStayMax = 300;     // ダッシュ待機時間上限
+	static constexpr int m_dStayMax = 60;     // ダッシュ待機時間上限
 	int m_dStayCount = 0;           // ダッシュ待機時間カウント
 	static constexpr int m_dDistanceMax = 1000;   // ダッシュ距離上限
 	int m_dDistanceCount = 0;       // ダッシュ距離カウント
@@ -87,7 +88,7 @@ public:
     void WallJump();
     void Blink();
     void GetBlink();
-    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA = nullptr, ID3D11ShaderResourceView* abilityB = nullptr);
+    void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* flyattack, ID3D11ShaderResourceView* abilityA = nullptr, ID3D11ShaderResourceView* abilityB = nullptr);
     void SetSound(Sound* pSound) { m_pSound = pSound; }
     void SetEffectManager(EffectManager* em) { m_pEffectManager = em; }
 };

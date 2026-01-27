@@ -9,14 +9,33 @@
 #include "EnemyShooter.h"
 #include "EnemyShielder.h"
 #include <DirectXMath.h>
-
+#include <unordered_set>
 #include "EffectManager.h"
+
+struct SpawnPoint
+{
+    int x;
+    int y;
+
+    bool operator==(const SpawnPoint& other)const
+    {
+        return x == other.x && y == other.y;
+    }
+};
+
+struct SpawnPointHash
+{
+    std::size_t operator()(const SpawnPoint& p)const
+    {
+        return std::hash<int>()(p.x) ^ (std::hash<int>()(p.y) << 1);
+    }
+};
+
 class Stage1Scene : public Scene
 {
 private:
     TileMap* m_pTileMap;
     MapRenderer* m_pMapRenderer;
-    Player* m_pPlayer;
 
     // キャラクターに関する変数
     Character** m_pCharaList = nullptr; // キャラクターリスト
@@ -32,12 +51,10 @@ private:
     ID3D11ShaderResourceView* m_pPlayerTexJump;
     ID3D11ShaderResourceView* m_pPlayerTexFall;
     ID3D11ShaderResourceView* m_pPlayerTexAttack;
-    ID3D11ShaderResourceView* m_pPlayerTexAbilityA;
-    ID3D11ShaderResourceView* m_pPlayerTexAbilityB;
-
-    ID3D11ShaderResourceView* m_pPlayerTexDash;
-    ID3D11ShaderResourceView* m_pPlayerTexDashStay;
-    ID3D11ShaderResourceView* m_pPlayerTexDashEffect;
+    ID3D11ShaderResourceView* m_pPlayerTexFlyAttack;
+    ID3D11ShaderResourceView* m_pPlayerTexSkillDash;
+    ID3D11ShaderResourceView* m_pPlayerTexSkillStay;
+    ID3D11ShaderResourceView* m_pPlayerTexSkillEffect;
 
     ID3D11ShaderResourceView* m_pEnemySwordTexIdle;
     ID3D11ShaderResourceView* m_pEnemySwordTexWalk;
@@ -58,8 +75,7 @@ private:
     ID3D11ShaderResourceView* m_pBGTexBack = nullptr;  // 奥
 
     // パララックス係数（手前→中→奥：手前が大きい）
-    float m_BGParallaxU[3] = { 1.0f, 1.0f, 1.0f }; // 横追従度
-	float m_BGParallaxV[3] = { 1.0f, 1.0f, 1.0f }; // 縦追従度
+    float m_BGParallaxU[3] = { 0.5f, 0.3f, 0.1f }; // 横追従度
 
     // 画面サイズ（Camera と合わせる）
     int m_ScreenWidth = 1920;
@@ -68,6 +84,13 @@ private:
     bool m_IsFinished;
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
+
+    // 敵の出現処理に関する変数
+    std::unordered_set<SpawnPoint,SpawnPointHash> exploredPoint;
+
+    
+    
+
 public:
     using Scene::Scene;
     void Init() override;
@@ -81,11 +104,21 @@ public:
     void DrawBackground(DirectX::XMMATRIX viewProj);
 
     // リストに関係する
-    void CreateList(int num);                   // リストを作成
-    void ClearList(Character* list);            // リストの一部を解放
-    void AllClearList(Character** list);        // リストを全て解放
-    Character* AddList(State::CharaType e_name);   // リストにオブジェクトを追加
+    void CreateList(int num);                       // リストを作成
+    void ClearList(Character* list);                // リストの一部を解放
+    void AllClearList(Character** list);            // リストを全て解放
+    Character* AddList(State::CharaType e_name);    // リストにオブジェクトを追加
+    int GetEmptyListNum();                          // リストの空きを取得
+
+    void UpdateList();                              
 
     // 当たり判定
     void TileCollision(int charaName);
+
+    // 敵の出現に関する処理  
+    void EnemySpawn();
+
+    void SetAnimations();
+    void SetPlayerTexture();
+    void SetEnemyTexture(int num);
 };

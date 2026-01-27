@@ -1,76 +1,41 @@
 #include "Stage1Scene.h"
 #include "iostream"
 #include "Collision.h"
-#include <cmath> // fmod
+#include <cmath> 
+
 
 void Stage1Scene::Init()
 {
     // タイルの情報
-    Kaneda::s_TileInfo tileTable[] =
+    s_TileInfo tileTable[] =
     {
         {false,false,false},    // 空
         {true,false,false},     // 壁
         {false,false,true}      // ゴール
     };
-    // リスト作成
-    CreateList(maxChara);
 
     // 1. 各種マネージャー・マップの生成
+    // タイル
     m_pTileMap = new TileMap();
     m_pTileMap->LoadCSV("asset/map/Stage1.csv");
+    // レンダー
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(m_ScreenWidth, m_ScreenHeight);
-
+    // サウンド
     m_pSound = new Sound();
     m_pSound->Init();
     m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
-
+    // エフェクト
     m_pEffectManager = new EffectManager();
     m_pEffectManager->Init();
     m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(), m_pResourceManager);
-    // 2. �v���C���[�̐����Ə�����
+    // リスト作成
+    CreateList(maxChara);
+    // Playerキャラ作成　キャラクターは０番
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
-    m_pCharaList[1] = AddList(State::CharaType::t_EnemySword);
-    m_pCharaList[2] = AddList(State::CharaType::t_EnemyShooter);
-    m_pCharaList[3] = AddList(State::CharaType::t_EnemyShielder);
-
-    // 3. テクスチャのロード
-    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
-    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Idol.png", m_pRenderer->GetDevice());
-    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Dash.png", m_pRenderer->GetDevice());
-    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Jump.png", m_pRenderer->GetDevice());
-    m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Fall.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAbilityA = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
-    m_pPlayerTexAbilityB = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
-    m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
-
-
-    m_pPlayerTexDash = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityB.png", m_pRenderer->GetDevice());
-    m_pPlayerTexDashStay = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityA.png", m_pRenderer->GetDevice());
-    m_pPlayerTexDashEffect = m_pResourceManager->LoadTexture("asset/texture/Anime_Hero_AbilityC.png", m_pRenderer->GetDevice());
-
-    //3-2. エネミー
-    m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sword_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sword_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
-
-    m_pEnemyShooterTexIdle = m_pResourceManager->LoadTexture("asset/texture/Shooter_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyShooterTexWalk = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyShooterTexJump = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
-
-    m_pEnemyShielderTexIdle = m_pResourceManager->LoadTexture("asset/texture/Shielder_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemyShielderTexWalk = m_pResourceManager->LoadTexture("asset/texture/Shielder_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyShielderTexJump = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
-
-
-    
-    //m_pEnemyTex = m_pResourceManager->LoadTexture("asset/texture/nazuna.jpg", m_pRenderer->GetDevice());
-
-    // 背景テクスチャ
-    m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/bg_front.png", m_pRenderer->GetDevice()); // 手前
-    m_pBGTexMid =   m_pResourceManager->LoadTexture("asset/texture/bg_mid.png", m_pRenderer->GetDevice());   // 中
-    m_pBGTexBack =  m_pResourceManager->LoadTexture("asset/texture/bg_back.png", m_pRenderer->GetDevice());  // 奥
+    // テクスチャの読込
+    SetAnimations();
+    SetPlayerTexture();
 
     // 背景パララックス係数（必要ならレイヤ別に調整）
     // 横追従度
@@ -79,32 +44,10 @@ void Stage1Scene::Init()
     m_BGParallaxU[2] = 0.2f; // 奥（横）
 
     // 縦追従度
-    m_BGParallaxV[0] = 1.0f; // 手前（縦）
-    m_BGParallaxV[1] = 1.0f; // 中（縦）
-    m_BGParallaxV[2] = 1.0f; // 奥（縦）
+    //m_BGParallaxV[0] = 1.0f; // 手前（縦）
+    //m_BGParallaxV[1] = 1.0f; // 中（縦）
+    //m_BGParallaxV[2] = 1.0f; // 奥（縦）
 
-    // プレイヤーにテクスチャを渡す
-    Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
-    if (player)
-    {
-        // ★ここで7枚セットで渡す
-        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack, m_pPlayerTexAbilityA, m_pPlayerTexAbilityB);
-
-        // �ŏ��̏����� (Init) ���Ă�ł���
-        player->Init(m_pPlayerTexIdle); //Idle��n��
-
-        player->SetSound(m_pSound);
-        player->SetEffectManager(m_pEffectManager);
-    }
-
-    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[1]);
-    {
-        // ★ここで3枚セットで渡す
-        enemy->SetTextures(m_pEnemySwordTexIdle, m_pEnemySwordTexWalk, m_pEnemySwordTexJump);
-
-        // 最初の初期化 (Init) も呼んでおく
-        enemy->Init(m_pEnemySwordTexIdle); //Idleを渡す
-    }
 
     Enemy* enemy2 = dynamic_cast<Enemy*>(m_pCharaList[2]);
     {
@@ -126,22 +69,15 @@ void Stage1Scene::Init()
 
 
     m_IsFinished = false;
-
-    //エネミーにプレイヤーの位置情報を渡す
-    enemy->SetTarget(*player);
 }
 
 void Stage1Scene::Update()
 {
+    EnemySpawn();
+
     CameraSeting();
-    // 現在のキャラクターの数だけ更新
-    for (int i = 0; i < m_currentCharaNum; i++)
-    {
-        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
-        {
-            m_pCharaList[i]->Update(*m_pTileMap, m_pCharaList);
-        }
-    }
+
+    UpdateList();
     // シーン終了判定
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
@@ -179,10 +115,6 @@ void Stage1Scene::Draw()
             m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
         }
     }
-    if (m_pPlayer)
-    {
-        m_pPlayer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
-    }
     if (m_pEffectManager)
     {
         m_pEffectManager->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
@@ -215,6 +147,9 @@ void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
     float cameraX = m_pCamera->GetX();
     float cameraY = m_pCamera->GetY();
 
+    // 画面右端/下端のワールド座標（ワールド＝カメラ位置 + スクリーン幅/高さ）
+    float worldRight = cameraX + static_cast<float>(m_ScreenWidth);
+
     for (int i = 0; i < 3; ++i)
     {
         ID3D11ShaderResourceView* srv = layers[i];
@@ -223,30 +158,30 @@ void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
         auto [texW, texH] = GetTexSize(srv);
         if (texW <= 0.0f || texH <= 0.0f) continue;
 
-        // 横/縦パララックス係数（layers array は back, mid, front）
+        // 横パララックス係数（layers array は back, mid, front）
         float parallaxH = m_BGParallaxU[2 - i];
-        float parallaxV = m_BGParallaxV[2 - i];
-
-        // テクスチャを画面高さに合わせてスケール（縦比を画面に合わせる）
+        // 縦は「カメラ追従のみ」にする -> parallaxV を使わない（縦はループ不可のため）
+        
+        // スケール：画像の高さを画面高さに合わせる（縦は画面を覆す想定）
         float scale = static_cast<float>(m_ScreenHeight) / texH;
         float drawW = texW * scale;
         float drawH = static_cast<float>(m_ScreenHeight);
 
-        // 横オフセット（テクスチャ単位 → ピクセル）
-        float offsetTexX = std::fmod(cameraX * parallaxH, texW);
-        if (offsetTexX < 0.0f) offsetTexX += texW;
-        float offsetPixelsX = offsetTexX * scale;
+        // --- 横オフセット（画面ピクセル単位での滑らかなループ） ---
+        // raw はスクリーン上のオフセット（マイナス方向で動く）
+        float raw = -cameraX * parallaxH;
+        float offset = std::fmod(raw, drawW);
+        if (offset > 0.0f) offset -= drawW; // 範囲を [-drawW, 0)
+        // world 領域での開始 x（ワールド座標）
+        float startWorldX = cameraX + offset - drawW;
+        float endWorldX = worldRight + drawW;
 
-        // 横開始位置：左に余分な1枚分を確保して見切れを防止
-        float startX = -offsetPixelsX - drawW;
+        // --- 縦はカメラに合わせて固定（パララックスしない） ---
+        float drawY = cameraY; // これでビュー行列適用後にスクリーン上で常に top=0 になる
 
-        // 縦はタイルせず、カメラに追従させる（1枚）
-        float drawY = cameraY * parallaxV;
-
-        // 横だけ繰り返して描画（上下は単一表示）
-        for (float x = startX; x < static_cast<float>(m_ScreenWidth) + drawW; x += drawW)
+        for (float wx = startWorldX; wx < endWorldX; wx += drawW)
         {
-            m_pSpriteRenderer->Draw(ctx, srv, x, drawY, drawW, drawH, viewProj);
+            m_pSpriteRenderer->Draw(ctx, srv, wx, drawY, drawW, drawH, viewProj);
         }
     }
 }
@@ -254,7 +189,6 @@ void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
 void Stage1Scene::Uninit()
 {
     // メモリ解放
-    if (m_pPlayer) { delete m_pPlayer; m_pPlayer = nullptr; }
     if (m_pTileMap) { delete m_pTileMap; m_pTileMap = nullptr; }
     if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
@@ -340,7 +274,7 @@ void Stage1Scene::TileCollision(int charaName)
     {
         for (int x = left; x <= right; x++)
         {
-            if (m_pTileMap->GetTileID(x, y) == Kaneda::TILE_WALL)
+            if (m_pTileMap->GetTileID(x, y) == TILE_WALL)
             {
 
             }
@@ -365,27 +299,137 @@ void Stage1Scene::CameraSeting()
             m_pCamera->SetPosition(0, defCameraPos.y);
         }
     }
-    //else if(// 左壁に近い処理)
-    // ジャンプ上昇、降下のカメラ処理
-    else if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
+    else if (defCameraPos.y < m_pCharaList[0]->GetPosition().y)
     {
-        m_pCamera->SetPosition(defCameraPos.x, m_pCharaList[0]->GetDefPosY() - 696);
+        m_pCamera->SetPosition(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 696);
     }
-    else
-    {
-        m_pCamera->SetPosition(defCameraPos.x, defCameraPos.y);
-    }
+}
 
-    /*else if (m_pCharaList[0]->GetPosition().x <= 240 && m_pCharaList[0]->GetJumpState() == State::JumpState::RISE)
+void Stage1Scene::EnemySpawn()
+{
+    // 探索開始範囲
+    int X = m_pCharaList[0]->GetPosition().x / m_pTileMap->GetTileSize();
+    int Y = m_pCharaList[0]->GetPosition().y / m_pTileMap->GetTileSize();
+    // 探索終了範囲
+    int Xmax = m_pCharaList[0]->GetPosition().x + m_ScreenWidth / m_pTileMap->GetTileSize();
+    int Ymax = m_pCharaList[0]->GetPosition().y + m_ScreenHeight / m_pTileMap->GetTileSize();
+    // キャラクターポジション　+ ScreenWidth
+	for (int x = X;x < Xmax;x++)
     {
-        m_pCamera->SetPosition(0, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99 + m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetAcceleY());
+        for (int y = Y;y < Ymax;y++)
+        {
+            // 探索したタイルが敵スポーンタイルである
+            if (m_pTileMap->GetTileID(x, y) == TILE_SPAWN)
+            {
+                // スポーン位置を保存し、重複していなければ敵を出現
+                SpawnPoint p{ x,y };
+                if (exploredPoint.insert(p).second)
+                {
+                    // 配列を探索
+                    int num = GetEmptyListNum();
+                    if (num != -1)
+                    {
+                        m_pCharaList[num] = AddList(State::CharaType::t_Enemy);
+                        m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
+                        SetEnemyTexture(num);
+                    }
+                }
+            }
+        }
     }
-    else if(m_pCharaList[0]->GetJumpState() == State::JumpState::NONE)
+}
+
+int Stage1Scene::GetEmptyListNum()
+{
+    // プレイヤー以上の範囲
+    int num = 1;
+    for (; num < maxChara; num++)
     {
-        m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240, m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().y - 540 - 99);
+        if (m_pCharaList[num] == nullptr)
+        {
+            break;
+        }
+    }
+    // 最大キャラ以下であれば数値を返し、最大キャラを越えるとー１を返す
+    if (num < maxChara)
+    {
+        return num;
     }
     else
     {
-        m_pCamera->SetPosition(m_pCharaList[static_cast<int>(State::CharaType::t_Player)]->GetPosition().x - 240,0);
-    }*/
+        return -1;
+    }
+}
+// test
+
+void Stage1Scene::SetAnimations()
+{
+    // 3. テクスチャのロード
+    m_pMapTex = m_pResourceManager->LoadTexture("asset/texture/object/block.png", m_pRenderer->GetDevice());
+    m_pPlayerTexIdle = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Idol.png", m_pRenderer->GetDevice());
+    m_pPlayerTexWalk = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Dash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexJump = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Jump.png", m_pRenderer->GetDevice());
+    m_pPlayerTexFall = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Fall.png", m_pRenderer->GetDevice());
+    m_pPlayerTexAttack = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Attack_S.png", m_pRenderer->GetDevice());
+    m_pPlayerTexFlyAttack = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_Attack_D.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillStay = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_AbilityStay.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillDash = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_AbilityDash.png", m_pRenderer->GetDevice());
+    m_pPlayerTexSkillEffect = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_AbilityEfect.png", m_pRenderer->GetDevice());
+
+    //3-2. エネミー
+    m_pEnemySwTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySwTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+
+    m_pEnemyGunTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemyGunTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyGunTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+
+    m_pEnemySeTexIdle = m_pResourceManager->LoadTexture("asset/texture/Se_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySeTexWalk = m_pResourceManager->LoadTexture("asset/texture/Se_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySeTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+
+    // 背景テクスチャ
+    m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/Back/bg_front.png", m_pRenderer->GetDevice()); // 手前
+    m_pBGTexMid = m_pResourceManager->LoadTexture("asset/texture/Back/bg_mid.png", m_pRenderer->GetDevice());   // 中
+    m_pBGTexBack = m_pResourceManager->LoadTexture("asset/texture/Back/bg_back.png", m_pRenderer->GetDevice());  // 奥
+}
+
+void Stage1Scene::SetPlayerTexture()
+{
+    // プレイヤーにテクスチャを渡す
+    Player* player = dynamic_cast<Player*>(m_pCharaList[0]);
+    if (player)
+    {
+        // ★ここで7枚セットで渡す
+        player->SetTextures(m_pPlayerTexIdle, m_pPlayerTexWalk, m_pPlayerTexJump, m_pPlayerTexFall, m_pPlayerTexAttack,m_pPlayerTexFlyAttack, m_pPlayerTexSkillStay, m_pPlayerTexSkillDash);
+        player->SetSound(m_pSound);
+        player->SetEffectManager(m_pEffectManager);
+    }
+}
+
+void Stage1Scene::SetEnemyTexture(int num)
+{
+    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[num]);
+    {
+        // ★ここで3枚セットで渡す
+        enemy->SetTextures(m_pEnemySwTexIdle, m_pEnemySwTexWalk, m_pEnemySwTexJump);
+
+        // 最初の初期化 (Init) も呼んでおく
+        enemy->Init(m_pEnemySwTexIdle); //Idleを渡す
+    }
+    //エネミーにプレイヤーの位置情報を渡す
+    enemy->SetTarget(*m_pCharaList[0]);
+}
+
+void Stage1Scene::UpdateList()
+{
+    // 現在のキャラクターの数だけ更新
+    for (int i = 0; i < m_currentCharaNum; i++)
+    {
+        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
+        {
+            m_pCharaList[i]->Update(*m_pTileMap, m_pCharaList);
+        }
+    }
 }

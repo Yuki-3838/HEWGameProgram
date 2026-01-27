@@ -42,7 +42,6 @@ Player::~Player()
 {
 }
 
-float s; //gauge確認用
 void Player::Update(const TileMap& tile, Character** charaList)
 {
 	
@@ -55,9 +54,8 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//空中にいるかのチェック
 	bool isAir = (m_JumpState != State::JumpState::NONE);
 	
-	s = m_sGauge;
 
-	//ゲージチャージ
+	//ｖを教えている間ダッシュゲージをチャージする　仕様と違うので削除する
 	if (GetAsyncKeyState(VK_V) & 0x8000 && m_dState != DashState::DASH)
 	{
 		m_sGauge += 1.0f/60.0f;
@@ -71,68 +69,9 @@ void Player::Update(const TileMap& tile, Character** charaList)
 
 	DashInput();
 
-	//旧ダッシュ処理
-	//if (GetAsyncKeyState(VK_Q) & 0x8000 && m_dState != DashState::DASH && m_sGauge >= 1.0f)
-	//{
-	//	m_MoveState = State::MoveState::LEFT;
-	//	m_FlipX = true;
-	//	m_charDir = State::CharDir::LEFT;
-	//	m_dState = DashState::STAY;
-	//	m_dStayCount++;
-	//	m_JumpState = State::JumpState::NONE;
-	//	m_sQpush = true;
-	//	if (m_dStayCount < m_dStayMax)
-	//	{
-	//		 //上下の処理
-	//		if (GetAsyncKeyState(VK_W) & 0x8000)
-	//		{
-	//			m_dDire[0] = DashDirection::UP;
-	//			
-	//		}
-	//		else if (GetAsyncKeyState(VK_S) & 0x8000)
-	//		{
-	//			m_dDire[0] = DashDirection::DOWN;
-	//		}
-	//		else
-	//		{
-	//			m_dDire[0] = DashDirection::NONE;
-	//		}
-	//		 //左右の処理
-	//		if (GetAsyncKeyState(VK_A) & 0x8000)
-	//		{
-	//			m_dDire[1] = DashDirection::LEFT;
-	//			
-	//		}
-	//		else if (GetAsyncKeyState(VK_D) & 0x8000)
-	//		{
-	//			m_dDire[1] = DashDirection::RIGHT;
-	//		}
-	//		else
-	//		{
-	//			m_dDire[1] = DashDirection::NONE;
-	//		}
-	//	}
-	//	 //待機時間経過で強制発動
-	//	else
-	//	{
-	//		m_dState = DashState::DASH;
-	//		
-	//	}
-	//}
-	//
-	//else if (m_dState == DashState::STAY)
-	//{
-	//	m_dState = DashState::DASH;
-	//}
-	//
-
 	//通常移動
 	 if(m_dState == DashState::NONE)
 	{
-
-		//m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = false;
-		m_charDir = State:: CharDir::RIGHT;
 		m_dState = DashState::NONE;
 		m_dStayCount = 0;
 
@@ -178,7 +117,14 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//攻撃中か
 	else if (m_IsAttack)
 	{
-		nextAnim = 3; //攻撃用アニメ
+		if (isAir)
+		{
+			nextAnim = 7; //空中攻撃用アニメ
+		}
+		else
+		{
+			nextAnim = 3; //攻撃用アニメ
+		}
 	}
 	// ジャンプ上昇中か
 	else if (m_JumpState == State::JumpState::RISE)
@@ -296,10 +242,10 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
 	// 描画位置とサイズ
-	float drawX = m_Position.x;
-	float drawY = m_Position.y;
-	float drawW = m_Size.x;
-	float drawH = m_Size.y;
+	float drawX = m_Position.x + f.renderOffsetX;
+	float drawY = m_Position.y + f.renderOffsetY;
+	float drawW = f.w * f.scale;
+	float drawH = f.h * f.scale;
 
 
 	// SpriteRendererで描画
@@ -398,19 +344,14 @@ void Player::GetBlink()
 {
 }
 
-//void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* attack,
-	                            //ID3D11ShaderResourceView* dash, ID3D11ShaderResourceView* dashstay, ID3D11ShaderResourceView* dasheffect)
-void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
+void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* flyattack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
 {
 	m_pTexIdle = idle;
 	m_pTexWalk = walk;
 	m_pTexJump = jump;
 	m_pTexFall = fall;
 	m_pTexAttack = attack;
-	//m_pTexDash = dash;
-	//m_pTexDashStay = dashstay;
-	//m_pTexDashEffect = dasheffect;
-
+	m_pTexFlyAttack = flyattack;
 	
 	m_pTexAbilityA = abilityA;
 	m_pTexAbilityB = abilityB;
@@ -428,38 +369,89 @@ void Player::SetAnimation(int stateIndex)
 	m_CurrentAnimState = stateIndex;
 	//画像の構成に合わせて数値を変更してね
 	float w = 320.0f;
-	float h = 240.0f;
+	float h = 320.0f;
+	float animW = 0; // 今回設定するアニメの幅
+	float animH = 0; // 今回設定するアニメの高さ
+	float uvOffsetY = 0.0f; // UVのYオフセット
+	float scale = 1.0f;
+
+	float offX;
+	float offY;
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置,ループさせるかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_pTexIdle;
-		m_Animator.Init(24, 8, w - 80, h + 80, 0.02f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true, offX, offY, scale);
 		break;
 	case 1: //移動
 		m_pTexture = m_pTexWalk;
-		m_Animator.Init(18, 6, w, h, 0.05f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(18, 9, animW, animH, 0.05f, 0.0f, true, offX, offY, scale);
 		break;
 	case 2: //ジャンプ上昇（ループしない）
 		m_pTexture = m_pTexJump;
-		m_Animator.Init(14, 7, w - 40, h + 80, 0.1f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 0.65;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(14, 7, animW, animH, 0.1f, 0.0f, false, offX, offY, scale);
 		break;
 	case 3: //攻撃
 		m_pTexture = m_pTexAttack;
-		m_Animator.Init(6, 3, w, h, 0.03f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 0.7;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(6, 3, animW, animH, 0.03f, 0.0f, false, offX, offY, scale);
 		break;
 	case 4: //落下
 		m_pTexture = m_pTexFall;
-		m_Animator.Init(14, 7, w - 80, h + 80, 0.01f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 0.65;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(14, 7, animW, animH, 0.01f, 0.0f, false, offX, offY, scale);
 		break;
 	case 5: //溜め（AbilityA）
 		m_pTexture = m_pTexAbilityA;
-		m_Animator.Init(28, 7, w, h+30, 0.05f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, animW, animH, 0.05f, 0.0f, true, offX, offY, scale);
 		break;
 	case 6: //ダッシュ（AbilityB）
 		m_pTexture = m_pTexAbilityB;
-		m_Animator.Init(20, 5, w, h-30, 0.02f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 0.7;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(16, 8, animW, animH, 0.02f, 0.0f, false, offX, offY, scale);
+		break;
+	case 7: //空中攻撃
+		m_pTexture = m_pTexFlyAttack;
+		animW = w;
+		animH = h;
+		scale = 0.75;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(6, 3, animW, animH, 0.03f, 0.0f, false, offX, offY, scale);
 		break;
 
 	}
@@ -467,6 +459,7 @@ void Player::SetAnimation(int stateIndex)
 
 void Player::DashMove(const TileMap& tile)
 {
+	// ダッシュが2方向入力されたら
 	if (m_dDire[0] != DashDirection::NONE && m_dDire[1] != DashDirection::NONE)
 	{
 		DirectX::XMFLOAT2 dir = { m_Position.x,m_Position.y };
@@ -494,11 +487,11 @@ void Player::DashMove(const TileMap& tile)
 			break;
 		case DashDirection::LEFT:
 			m_Position.x -= DirectX::XMVectorGetX(v);
-			if (StageCol(tile, ColRes::RIGHT))m_Position.x += DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::LEFT))m_Position.x += DirectX::XMVectorGetX(v);
 			break;
 		}
 	}
-	else
+	else // ダッシュが１方向の場合
 	{
 		if (m_dDire[0] == DashDirection::UP)
 		{
@@ -510,68 +503,58 @@ void Player::DashMove(const TileMap& tile)
 			m_Position.y += m_dSpeed;
 			if (StageCol(tile, ColRes::BOTTOM))m_Position.y -= m_dSpeed;
 		}
-		if (m_dDire[1] == DashDirection::RIGHT)
+		if (m_dDire[1] == DashDirection::RIGHT || (m_dDire[1] == DashDirection::NONE && m_dDire[0] == DashDirection::NONE && m_charDir == State::CharDir::RIGHT))
 		{
 			m_Position.x += m_dSpeed;
 			if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_dSpeed;
 		}
-		if (m_dDire[1] == DashDirection::LEFT)
-
+		if (m_dDire[1] == DashDirection::LEFT || (m_dDire[1] == DashDirection::NONE && m_dDire[0] == DashDirection::NONE && m_charDir == State::CharDir::LEFT))
 		{
-			if (m_dDistanceCount >= m_dDistanceMax)
-			{
-				EndDash();
-			}
+			m_Position.x -= m_dSpeed;
+			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
 		}
-	
+	}
+	m_dDistanceCount += m_dSpeed;
+	if (m_dDistanceCount >= m_dDistanceMax)
+	{
+		EndDash();
 	}
 }
 
 void Player::DashInput()
 {
-	bool nowQ = (GetAsyncKeyState(VK_Q) & 0x8000);
-
-	m_charDir = State::CharDir::LEFT;
-	// =========================
-	// Q押した瞬間 → STAYへ
-	// =========================
-	if (nowQ && !m_sQpush &&
-		m_dState == DashState::NONE &&
-		m_sGauge >= 1.0f &&
-		(m_JumpState == State::JumpState::NONE || m_canAirDash))
+	bool inputQ = GetAsyncKeyState(VK_Q);
+	// ダッシュキーを押しており、ダッシュ状態でなければ、ダッシュ発動処理を行う
+	if (inputQ && m_dState != DashState::DASH)
 	{
-		m_dState = DashState::STAY;
-		m_dStayCount = 0;
-		m_dDire[0] = DashDirection::NONE;
-		m_dDire[1] = DashDirection::NONE;
+		if (m_sGauge >= 1.0f && (m_JumpState == State::JumpState::NONE || m_canAirDash))
+		{
+			m_dState = DashState::STAY;
+			m_dStayCount = 0;
+			m_dDire[0] = DashDirection::NONE;
+			m_dDire[1] = DashDirection::NONE;
+		}
 	}
-
-	// =========================
-	// STAY：方向入力待ち
-	// =========================
-	if (m_dState == DashState::STAY)
+	if (inputQ && m_dState == DashState::STAY)
 	{
-		m_dStayCount++;
 
-		// 方向入力（斜めOK）
 		if (GetAsyncKeyState(VK_W) & 0x8000) m_dDire[0] = DashDirection::UP;
 		else if (GetAsyncKeyState(VK_S) & 0x8000) m_dDire[0] = DashDirection::DOWN;
 
 		if (GetAsyncKeyState(VK_A) & 0x8000) m_dDire[1] = DashDirection::LEFT;
 		else if (GetAsyncKeyState(VK_D) & 0x8000) m_dDire[1] = DashDirection::RIGHT;
 
+		m_dStayCount++;
 
-		// 方向確定 or 猶予切れ
-		if (m_dDire[0] != DashDirection::NONE ||
-			m_dDire[1] != DashDirection::NONE ||
-			m_dStayCount >= m_dStayMax)
-
+		if (m_dStayCount >= m_dStayMax)
 		{
-			StartDash();
+			m_dState = DashState::DASH;
 		}
 	}
-
-	m_sQpush = nowQ;
+	if (!inputQ && m_dState == DashState::STAY)
+	{
+		m_dState = DashState::DASH;
+	}
 }
 
 void Player::StartDash()
@@ -586,7 +569,7 @@ void Player::StartDash()
 	{
 		m_dDire[1] = m_FlipX ? DashDirection::LEFT : DashDirection::RIGHT;
 	}
-	m_dDistanceCount += m_dSpeed;
+	
 
 
 	if (m_JumpState != State::JumpState::NONE)

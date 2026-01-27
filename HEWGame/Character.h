@@ -121,4 +121,6 @@ public:
 
 	// 死亡しているかどうか取得
     bool IsDead() const { return m_IsDead; }
+
+    void SetPos(float x, float y) { m_Position.x = x;m_Position.y = y; }
 };

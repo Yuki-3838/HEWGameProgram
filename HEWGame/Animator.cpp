@@ -5,7 +5,7 @@
 // xCount: 横に何個並んでいるか（列数）
 // w, h: 1コマあたりの幅と高さ
 // durationPerFrame: 1コマを表示する時間（秒）
-void Animator::Init(int count, int xCount, float w, float h, float durationPerFrame, float offsetY, bool loop)
+void Animator::Init(int count, int xCount, float w, float h, float durationPerFrame, float offsetY, bool loop,float renderOffsetX, float renderOffsetY, float scale)
 {
     // 前のアニメーション設定が残っているとバグの元になるのでクリア
     m_frames.clear();
@@ -28,6 +28,12 @@ void Animator::Init(int count, int xCount, float w, float h, float durationPerFr
         frame.w = w;
         frame.h = h;
         frame.duration = durationPerFrame;
+
+		//位置ずれ補正
+		frame.renderOffsetX = renderOffsetX;
+		frame.renderOffsetY = renderOffsetY;
+
+		frame.scale = scale;
 
         // リストに追加
         m_frames.push_back(frame);
@@ -80,7 +86,7 @@ void Animator::Update(float deltaTime)
 AnimFrame Animator::GetCurrentFrame() const
 {
     // データがない場合の安全対策
-    if (m_frames.empty()) return { 0,0,0,0,0 };
+    if (m_frames.empty()) return { 0,0,0,0,0,0,0,1.0f };
 
     // 現在のインデックスに対応するコマ情報を返す
     return m_frames[m_CurrentFrameIndex];

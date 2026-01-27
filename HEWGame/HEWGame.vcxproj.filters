@@ -126,6 +126,8 @@
     <ClCompile Include="EnemyShielder.cpp">
       <Filter>ソース ファイル\オブジェクト関連</Filter>
     </ClCompile>
+    <ClCompile Include="LoadScene.cpp">
+      <Filter>ソース ファイル\シーン関連</Filter>
     <ClCompile Include="EnemyShooter.cpp">
       <Filter>ソース ファイル\オブジェクト関連</Filter>
     </ClCompile>
@@ -224,6 +226,8 @@
     <ClInclude Include="EnemySword.h">
       <Filter>ヘッダー ファイル\オブジェクト関連</Filter>
     </ClInclude>
+    <ClInclude Include="LoadScene.h">
+      <Filter>ヘッダー ファイル</Filter>
     <ClInclude Include="EnemyShooter.h">
       <Filter>ヘッダー ファイル\オブジェクト関連</Filter>
     </ClInclude>
