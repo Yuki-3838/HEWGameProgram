@@ -55,7 +55,7 @@ void Stage1Scene::Init()
     m_IsFinished = false;
 
     //エネミーにプレイヤーの位置情報を渡す
-    enemy->SetTarget(*player);
+    //enemy->SetTarget(*player);
 
     m_pGameUI = new GameUI();
     m_pGameUI->Init(m_pRenderer->GetDevice(), m_pResourceManager);
