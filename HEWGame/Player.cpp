@@ -516,7 +516,9 @@ void Player::DashMove(const TileMap& tile)
 	}
 	if (m_pDashEffect)
 	{
-		m_pDashEffect->SetPosition(m_Position.x, m_Position.y);
+		float centerX = m_FlipX ? 200.0f : -50.0f;
+		float centerY = m_Position.y + (m_Size.y / 2.0f);
+		m_pDashEffect->SetPosition(m_Position.x + centerX, centerY);
 	}
 	m_dDistanceCount += m_dSpeed;
 	if (m_dDistanceCount >= m_dDistanceMax)
