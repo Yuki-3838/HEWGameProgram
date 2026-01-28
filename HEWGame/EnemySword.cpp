@@ -166,7 +166,7 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 				m_charDir = State::CharDir::RIGHT;
 			}
 		}
-	}
+	}*/
 	Move(tile);
 
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
@@ -196,7 +196,7 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	if (nextAnim != m_CurrentAnimState)
 	{
 		SetAnimation(nextAnim);
-	}*/
+	}
 }
 
 void EnemySword::UnInit()
