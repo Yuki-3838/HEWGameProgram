@@ -10,8 +10,8 @@ EnemySword::EnemySword()
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
-	m_Size.x = 64 * 2;
-	m_Size.y = 64 * 2;
+	m_Size.x = 128.0f;
+	m_Size.y = 256.0f;
 	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
 
