@@ -78,6 +78,8 @@ void Stage1Scene::Update()
     CameraSeting();
 
     UpdateList();
+
+    CollisionResolve();
     // シーン終了判定
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
@@ -377,9 +379,9 @@ void Stage1Scene::SetAnimations()
     m_pPlayerTexSkillEffect = m_pResourceManager->LoadTexture("asset/texture/Player/2_Anime_Hero_AbilityEfect.png", m_pRenderer->GetDevice());
 
     //3-2. エネミー
-    m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sw_Idole.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sw_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sword_Idole.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sword_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Sword_Walk.png", m_pRenderer->GetDevice());
 
     m_pEnemyShooterTexIdle = m_pResourceManager->LoadTexture("asset/texture/Gu_Idole.png", m_pRenderer->GetDevice());
     m_pEnemyShooterTexWalk = m_pResourceManager->LoadTexture("asset/texture/Gu_Walk.png", m_pRenderer->GetDevice());
@@ -410,7 +412,7 @@ void Stage1Scene::SetPlayerTexture()
 
 void Stage1Scene::SetEnemyTexture(int num)
 {
-    Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[num]);
+    EnemySword* enemy = dynamic_cast<EnemySword*>(m_pCharaList[num]);
     {
         // ★ここで3枚セットで渡す
         enemy->SetTextures(m_pEnemySwordTexIdle, m_pEnemySwordTexWalk, m_pEnemySwordTexJump);
@@ -430,6 +432,21 @@ void Stage1Scene::UpdateList()
         if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
         {
             m_pCharaList[i]->Update(*m_pTileMap, m_pCharaList);
+        }
+    }
+}
+
+void Stage1Scene::CollisionResolve()
+{
+    ColRes res;
+    for (int i = 0;i < m_currentCharaNum;i++)
+    {
+        for (int j = i + 1;j < m_currentCharaNum;j++)
+        {
+            if (!m_pCharaList[j]->IsDead())
+            {
+                m_pCharaList[i]->ResolveOverlap(*m_pCharaList[j]);
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
 
 Enemy::Enemy()
 {
-
+	
 }
 
 Enemy::~Enemy()
@@ -11,140 +11,18 @@ Enemy::~Enemy()
 
 }
 
+void Enemy::EnemyInit()
+{
+	m_ActionState = ActionState::SERCH;
+	m_serchDistance = 1000;
+}
+
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
-	//アニメーション更新
-	m_Animator.Update(1.0f / 1.0f);
-
-	m_MoveState = State::MoveState::NONE;
-	// 移動入力処理
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	if (m_ActionState == ActionState::SERCH)
 	{
-		m_MoveState = State::MoveState::LEFT;
-		m_charDir = State::CharDir::LEFT;
+
 	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-	{
-		m_MoveState = State::MoveState::RIGHT;
-		m_charDir = State::CharDir::RIGHT;
-	}
-	if (GetAsyncKeyState(VK_UP) & 0x8000)
-	{
-		Jump();
-	}
-
-	if (m_IsAttack == false && GetAsyncKeyState(VK_Z) & 0x8000)
-	{
-		m_IsAttack = true;
-		m_AttackFrame = 0;
-	}
-
-	//攻撃処理
-	if (m_IsAttack)
-	{
-		m_AttackFrame++;
-		//攻撃判定のあるフレームならAttack関数を呼び出す
-		if (m_AttackFrame >= m_AttackHitStart && m_AttackFrame <= m_AttackHitEnd)
-		{
-			Attack(charaList);
-		}
-		//攻撃アニメ終了判定
-		if (m_AttackFrame >= m_AttackTotalFrame)
-		{
-			m_IsAttack = false;
-			m_AttackFrame = 0;
-		}
-	}
-
-	//非発見状態
-	if (isDetection == false)
-	{
-		//左右移動にする予定
-		SCount++;
-
-		if (SCount == 200)
-		{
-			m_MoveState = State::MoveState::RIGHT;
-			m_charDir = State::CharDir::RIGHT; //右を見る
-		}
-
-		if (SCount == 400)
-		{
-			m_MoveState = State::MoveState::LEFT;
-			m_charDir = State::CharDir::LEFT; //左を見る
-
-			SCount = 0;
-		}
-
-
-		if (m_charDir == State::CharDir::RIGHT)//右向き
-		{
-			searchPos.x = GetPosition().x - searchSize.x;
-		}
-		else//左向き
-		{
-			// attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
-			searchPos.x = GetPosition().x + GetSize().x;
-		}
-		//attackPos.y += m_Size.y / 4;
-		searchPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
-
-		for (int i = 0; charaList[i] != nullptr; ++i)
-		{
-			auto obj = charaList[i];
-			//オブジェクトじゃなかったらスキップする
-			if (!obj)continue;
-
-			//Character* chara = dynamic_cast<Character*>(obj);
-			//if (!chara)continue;
-			if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
-
-			//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
-			ColRes hit = CollisionRect(*obj, searchPos, searchSize);
-
-			if (Col::Any(hit))
-			{
-				//敵にダメージを与える
-				/*obj->TakeDamage();*/
-				//ここではenemyをdeleteしない！
-
-				SCount2++;
-				if (SCount2 == 100) //テスト用に見つけてから一拍おいてます
-				{
-					isDetection = true;
-					SCount2 = 0;
-				}
-			}
-		}
-	}
-
-	//発見状態時
-	if (isDetection == true)
-	{
-		m_MoveState = State::MoveState::NONE;
-		if (m_pTarget)
-		{
-			DirectX::XMFLOAT2 targetPos = m_pTarget->GetPosition();
-			DirectX::XMFLOAT2 enemyPos = GetPosition();
-
-			targetPos.x += m_pTarget->GetSize().x * 0.5f;
-			enemyPos.x += GetSize().x * 0.5f;
-
-
-			if (targetPos.x + 250.0f < enemyPos.x)
-			{
-				m_MoveState = State::MoveState::LEFT;
-				m_charDir = State::CharDir::LEFT;
-			}
-
-			else if (targetPos.x - 250.0f > enemyPos.x)
-			{
-				m_MoveState = State::MoveState::RIGHT;
-				m_charDir = State::CharDir::RIGHT;
-			}
-		}
-	}
-	Move(tile);
 }
 
 void Enemy::UnInit()
@@ -279,3 +157,50 @@ void Enemy::SetAnimation(int stateIndex)
 		break;
 	}
 }
+
+void Enemy::SerchPlayer()
+{
+	int correction;
+
+	int nowSerchDistance = 0;
+	DirectX::XMFLOAT2 startpos;
+	DirectX::XMFLOAT2 endpos;
+	startpos.y = m_Position.y;
+	endpos.y = m_Position.y + m_Size.y;
+	if (m_charDir == State::CharDir::RIGHT)
+	{
+		nowSerchDistance = m_serchDistance;
+		startpos.x = m_Position.x + m_Size.x;
+		endpos.x = startpos.x + nowSerchDistance;
+		for (int x = startpos.x; x < endpos.x; x -= m_Size.x)
+		{
+			for (int y = startpos.y; y < endpos.y; y += 10)
+			{
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					int a = 0;
+				}
+			}
+		}
+	}
+	else if (m_charDir == State::CharDir::LEFT)
+	{
+		nowSerchDistance = m_serchDistance * -1;
+		startpos.x = m_Position.x;
+		endpos.x = startpos.x + nowSerchDistance;
+
+		for (int x = startpos.x; x > endpos.x; x -= m_Size.x)
+		{
+			for (int y = startpos.y; y < endpos.y; y+=10)
+			{
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					int a = 0;
+				}
+			}
+		}
+	}
+	
+	
+}
+
