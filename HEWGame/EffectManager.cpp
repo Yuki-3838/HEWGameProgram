@@ -1,19 +1,19 @@
 #include "EffectManager.h"
 void EffectManager::Init()
 {
-    m_EffectDefs[EffectType::Smoke] = 
+    m_EffectDefs[EffectType::Dash] = 
     {
-    EffectType::Smoke,              // 1. ƒGƒtƒFƒNƒg‚Ìí—Ş
-    18,                             // 3. ‘ƒRƒ}” (‘S•”‚Å‰½ƒRƒ}‚ ‚é‚©)
-    6,                              // 4. ‰¡‚Ì•ªŠ„” (‰¡‚É‰½ƒRƒ}•À‚ñ‚Å‚¢‚é‚©)
-    320.0f,                         // 5. 1ƒRƒ}‚Ì• (TexW)
-    320.0f,                         // 6. 1ƒRƒ}‚Ì‚‚³ (TexH)
-    0.05f,                          // 7. ƒAƒjƒ[ƒVƒ‡ƒ“‘¬“x (1ƒRƒ}‚Ì•b”)
-    0.0f,                          // 8. ”­¶ˆÊ’u‚Ì‰¡ƒYƒŒ (OffsetX: ƒvƒŒƒCƒ„[’†S‚©‚ç‰¡‚É‚Ç‚ê‚¾‚¯‚¸‚ç‚·‚©)
-    0.0f,                          // 9. ”­¶ˆÊ’u‚ÌcƒYƒŒ (OffsetY: ‘«Œ³‚É‡‚í‚¹‚é‚½‚ß‚Ì’²®)
-    0.5f,                           // 10. ƒTƒCƒY”{—¦ 
-    320.0f,                         // 11. ‰æ‘œ‚Ì“Ç‚İæ‚èŠJnˆÊ’uX (StartTexX: ‰æ‘œ‚Ì‰E‘¤‚ğg‚¤‚½‚ß320‚©‚çŠJn)
-    0.0f                            // 12. ‰æ‘œ‚Ì“Ç‚İæ‚èŠJnˆÊ’uY (StartTexY)
+    EffectType::Dash,              // 1. ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ç¨®é¡
+    16,                             // 3. ç·ã‚³ãƒæ•° (å…¨éƒ¨ã§ä½•ã‚³ãƒã‚ã‚‹ã‹)
+    4,                              // 4. æ¨ªã®åˆ†å‰²æ•° (æ¨ªã«ä½•ã‚³ãƒä¸¦ã‚“ã§ã„ã‚‹ã‹)
+    640.0f,                         // 5. 1ã‚³ãƒã®å¹… (TexW)
+    320.0f,                         // 6. 1ã‚³ãƒã®é«˜ã• (TexH)
+    0.05f,                          // 7. ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é€Ÿåº¦ (1ã‚³ãƒã®ç§’æ•°)
+    0.0f,                          // 8. ç™ºç”Ÿä½ç½®ã®æ¨ªã‚ºãƒ¬ (OffsetX: ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä¸­å¿ƒã‹ã‚‰æ¨ªã«ã©ã‚Œã ã‘ãšã‚‰ã™ã‹)
+    0.0f,                          // 9. ç™ºç”Ÿä½ç½®ã®ç¸¦ã‚ºãƒ¬ (OffsetY: è¶³å…ƒã«åˆã‚ã›ã‚‹ãŸã‚ã®èª¿æ•´)
+    0.5f,                           // 10. ã‚µã‚¤ã‚ºå€ç‡ 
+    640.0f,                         // 11. ç”»åƒã®èª­ã¿å–ã‚Šé–‹å§‹ä½ç½®X (StartTexX: ç”»åƒã®å³å´ã‚’ä½¿ã†ãŸã‚320ã‹ã‚‰é–‹å§‹)
+    0.0f                            // 12. ç”»åƒã®èª­ã¿å–ã‚Šé–‹å§‹ä½ç½®Y (StartTexY)
     };
 }
 
@@ -60,15 +60,15 @@ Effect* EffectManager::Play(EffectType type, float x, float y, bool flipX, float
     {
         if (!m_Effects[i].IsActive())
         {
-            // --- À•W‚ÌŒvZ ---
-            // ƒvƒŒƒCƒ„[‚ª”½“](isFlip)‚µ‚Ä‚¢‚½‚çAX•ûŒü‚ÌƒYƒŒ‚ğ‹t‚É‚·‚é
+            // --- åº§æ¨™ã®è¨ˆç®— ---
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒåè»¢(isFlip)ã—ã¦ã„ãŸã‚‰ã€Xæ–¹å‘ã®ã‚ºãƒ¬ã‚’é€†ã«ã™ã‚‹
             float useOffsetX = flipX ? -def.offsetX : def.offsetX;
 
             float finalX = x + useOffsetX;
             float finalY = y + def.offsetY;
 
-            // ‰Šú‰» (ˆø”: tex, x, y, scale, count, divX, w, h, speed, flip, angle)
-            // ¦Effect.h/cpp‚ÌInitˆø”‚É‡‚í‚¹‚ÄC³Ï‚İ‚Æ‰¼’è
+            // åˆæœŸåŒ– (å¼•æ•°: tex, x, y, scale, count, divX, w, h, speed, flip, angle)
+            // â€»Effect.h/cppã®Initå¼•æ•°ã«åˆã‚ã›ã¦ä¿®æ­£æ¸ˆã¿ã¨ä»®å®š
             m_Effects[i].Init(
                 tex, finalX, finalY, def.scale,
                 def.frameCount, def.divX, def.texW, def.texH, def.speed,
