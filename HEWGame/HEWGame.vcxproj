@@ -149,7 +149,7 @@
     </ClCompile>
     <ClCompile Include="EnemyShooter.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameDate.cpp" />
+    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="Input.cpp" />

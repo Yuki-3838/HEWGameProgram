@@ -3,8 +3,8 @@
 // 実体の定義
 int GameData::m_Score = 0;
 float GameData::m_Time = 60.0f;
-float m_SkillPoints[(int)SkillType::Count];
-float m_MaxSkillPoints[(int)SkillType::Count];
+float GameData::m_SkillPoints[(int)SkillType::Count] = {0.0f,0.0f};
+float GameData::m_MaxSkillPoints[(int)SkillType::Count] = {100.0f,100.0f};
 
 void GameData::Reset()
 {

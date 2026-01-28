@@ -6,7 +6,7 @@
 #include "GameObject.h"
 #include "Enemy.h"
 #include <DirectXMath.h>
-
+#include "GameUI.h"
 #include "EffectManager.h"
 class Stage1Scene : public Scene
 {
@@ -65,6 +65,7 @@ private:
     bool m_IsFinished;
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
+    GameUI* m_pGameUI = nullptr;
 public:
     using Scene::Scene;
     void Init() override;
