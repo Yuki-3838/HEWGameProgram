@@ -16,8 +16,8 @@ Player::Player()
 
 	m_Size.x = 64 * 2;
 	m_Size.y = 64 * 2;
-	m_Position.x = 0.0f;
-	m_Position.y = 100.0f;
+	m_Position.x = 100.0f;
+	m_Position.y = 1920.0f;
 
 	// ダッシュに関する初期化
 	m_dState = DashState::NONE;
