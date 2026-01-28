@@ -205,25 +205,52 @@ void Enemy::SetAnimation(int stateIndex)
 	//画像の構成に合わせて数値を変更してね
 	float w = 320.0f;
 	float h = 320.0f;
+	float animW = 0; // 今回設定するアニメの幅
+	float animH = 0; // 今回設定するアニメの高さ
+	float uvOffsetY = 0.0f; // UVのYオフセット
+	float scale = 1.0f;
+
+	float offX;
+	float offY;
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(32, 8, w, h, 0.01f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, animW, animH, 0.01f, 0.0f, true, offX, offY, scale);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true, offX, offY, scale);
 		break;
 	case 2: // 攻撃予備動作
 		m_pTexture = m_eTexAttackTelegraph;
-		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true, offX, offY, scale);
 		break;
 	case 3: // 攻撃
 		m_pTexture = m_eTexAttack;
-		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f);
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);
 		break;
 	}
 }
