@@ -17,7 +17,7 @@ void Stage1Scene::Init()
 
     // 1. 各種マネージャー・マップの生成
     m_pTileMap = new TileMap();
-    m_pTileMap->LoadCSV("asset/map/Stage1.csv");
+    m_pTileMap->LoadCSV("asset/map/HH_stage.csv");
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(m_ScreenWidth, m_ScreenHeight);
 
@@ -211,19 +211,20 @@ void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
         float drawW = texW * scale;
         float drawH = static_cast<float>(m_ScreenHeight);
 
-        // 横オフセット（テクスチャ単位 → ピクセル）
-        float offsetTexX = std::fmod(cameraX * parallaxH, texW);
-        if (offsetTexX < 0.0f) offsetTexX += texW;
-        float offsetPixelsX = offsetTexX * scale;
+        // パララックスオフセット計算（描画幅でループ）
+        float parallaxOffsetX = cameraX * parallaxH;
+        float offsetInTile = std::fmod(parallaxOffsetX, drawW);
+        if (offsetInTile < 0.0f) offsetInTile += drawW;
 
-        // 横開始位置：左に余分な1枚分を確保して見切れを防止
-        float startX = -offsetPixelsX - drawW;
+        // ワールド座標での描画範囲（カメラ位置を基準に）
+        float startX = cameraX - offsetInTile - drawW;
+        float endX = cameraX + static_cast<float>(m_ScreenWidth) + drawW;
 
-        // 縦はタイルせず、カメラに追従させる（1枚）
-        float drawY = cameraY * parallaxV;
+        // 縦位置（カメラに追従）
+        float drawY = cameraY;
 
-        // 横だけ繰り返して描画（上下は単一表示）
-        for (float x = startX; x < static_cast<float>(m_ScreenWidth) + drawW; x += drawW)
+        // 横方向に無限ループ描画
+        for (float x = startX; x < endX; x += drawW)
         {
             m_pSpriteRenderer->Draw(ctx, srv, x, drawY, drawW, drawH, viewProj);
         }

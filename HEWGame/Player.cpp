@@ -221,7 +221,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	}
 
 	//空中での一時停止
-	if (isAir && GetAsyncKeyState(VK_Q) & 0x8000 && m_dState == DashState::NONE)
+	if (isAir && GetAsyncKeyState(VK_G) & 0x8000 && m_dState == DashState::NONE)
 	{
 		m_Stats.m_AccelY = 0.0f;
 
@@ -464,7 +464,7 @@ void Player::DashMove(const TileMap& tile)
 
 void Player::DashInput()
 {
-	bool inputQ = GetAsyncKeyState(VK_Q);
+	bool inputQ = GetAsyncKeyState(VK_G);
 	// ダッシュキーを押しており、ダッシュ状態でなければ、ダッシュ発動処理を行う
 	if (inputQ && m_dState != DashState::DASH)
 	{
