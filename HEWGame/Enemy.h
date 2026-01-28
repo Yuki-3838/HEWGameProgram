@@ -5,8 +5,7 @@
 
 class Enemy :public Character
 {
-private:
-
+protected:
 	// 各状態のテクスチャを保持しておく変数
 	ID3D11ShaderResourceView* m_eTexIdle = nullptr; // 待機用
 	ID3D11ShaderResourceView* m_eTexWalk = nullptr; // 移動用
@@ -19,8 +18,7 @@ private:
 	int m_CurrentAnimState = -1;
 
 	//アニメーション切り替え関数
-	void SetAnimation(int stateIndex);
-
+	virtual void SetAnimation(int stateIndex);
 
 	const Character* m_pTarget = nullptr; //ターゲット（プレイヤー）の
 	bool isDetection; //プレイヤーの発見状態
@@ -35,13 +33,13 @@ public:
 	Enemy();
 	~Enemy() override;
 
-	void Update(const TileMap& tile, Character** charaList)override;
-	void UnInit()override;
+	virtual void Update(const TileMap& tile, Character** charaList)override;
+	virtual  void UnInit()override;
 	void Draw();
 
-	void Attack(Character** charaList)override;
+	virtual void Attack(Character** charaList)override;
 	int TakeDamage() override;
-	void Jump()override;
+	void Jump() override;
 	void SetTarget(const Character& target);
 	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
 

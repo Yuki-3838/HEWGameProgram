@@ -19,7 +19,6 @@ Enemy::Enemy()
 	m_charaType = State::CharaType::t_Enemy;
 
 	isDetection = false; //プレイヤーの発見状態
-	m_FlipX = true;   // 左右反転フラグ(最初は左向き)
 }
 
 Enemy::~Enemy()
@@ -29,17 +28,20 @@ Enemy::~Enemy()
 
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
+	//アニメーション更新
+	m_Animator.Update(1.0f / 1.0f);
+	// 移動状態初期化
 	m_MoveState = State::MoveState::NONE;
 	// 移動入力処理
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = true;
+		m_charDir = State::CharDir::LEFT;
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
 		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = false;
+		m_charDir = State::CharDir::RIGHT;
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
@@ -78,19 +80,19 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		if (SCount == 200)
 		{
 			m_MoveState = State::MoveState::RIGHT;
-			m_FlipX = false; //右を見る
+			m_charDir = State::CharDir::RIGHT;
 		}
 
 		if (SCount == 400)
 		{
 			m_MoveState = State::MoveState::LEFT;
-			m_FlipX = true; //左を見る
+			m_charDir = State::CharDir::LEFT; //左を見る
 
 			SCount = 0;
 		}
 
 
-		if (m_FlipX)//右向き
+		if (m_charDir == State::CharDir::RIGHT)//右向き
 		{
 			searchPos.x = GetPosition().x - searchSize.x;
 		}
@@ -147,17 +149,46 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 			if (targetPos.x + 250.0f < enemyPos.x)
 			{
 				m_MoveState = State::MoveState::LEFT;
-				m_FlipX = true;
+				m_charDir = State::CharDir::LEFT;
 			}
 
 			else if (targetPos.x - 250.0f > enemyPos.x)
 			{
 				m_MoveState = State::MoveState::RIGHT;
-				m_FlipX = false;
+				
 			}
 		}
 	}
 	Move(tile);
+
+	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
+	int nextAnim = 0; // 0:待機 (デフォルト)
+
+	//攻撃中か
+	if (m_IsAttack)
+	{
+		nextAnim = 3; //攻撃用アニメ
+	}
+	// ジャンプ上昇中か
+	else if (m_JumpState == State::JumpState::RISE)
+	{
+		nextAnim = 2; // ジャンプ上昇用アニメ
+	}
+	// 移動中か
+	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
+	{
+		nextAnim = 1; // 移動用アニメ
+	}
+	else
+	{
+		nextAnim = 0; // 待機アニメ
+	}
+
+	// 状態が変わった時だけセットする
+	if (nextAnim != m_CurrentAnimState)
+	{
+		SetAnimation(nextAnim);
+	}
 }
 
 void Enemy::UnInit()
@@ -191,7 +222,7 @@ void Enemy::Attack(Character** charaList)
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
-		if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
+		if (obj->GetCharaType() == State::CharaType::t_Player)continue;  //player以外だったらスキップする
 
 		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
 		if (Col::Any(hit))
@@ -255,6 +286,9 @@ void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XM
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
 	{
+		
+		m_FlipX = (m_charDir != State::CharDir::RIGHT); // enumyの向きに合わせてbool型の反転設定
+
 		pSR->Draw(
 			pContext,
 			m_pTexture,
@@ -280,18 +314,18 @@ void Enemy::SetAnimation(int stateIndex)
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
-	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
+	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(1, 1, w, h, 0.01f, 0.0f);
+		m_Animator.Init(32, 8, w, h, 0.01f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(1, 1, w, h, 0.2f, 0.0f);
+		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true);
 		break;
 	case 2:
 		m_pTexture = m_eTexJump;
-		m_Animator.Init(1, 1, w, h, 0.2f, 0.0f);
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f);
 		break;
 	}
 }
