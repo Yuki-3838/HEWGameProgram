@@ -6,7 +6,8 @@
 class GameUI
 {
 private:
-	ID3D11ShaderResourceView* m_pNumberTex = nullptr;
+	ID3D11ShaderResourceView* m_pTimeNumberTex = nullptr;
+	ID3D11ShaderResourceView* m_pScoreNumberTex = nullptr;
 
 	ID3D11ShaderResourceView* m_pSkillGaugeTex = nullptr;
 	ID3D11ShaderResourceView* m_pUltGaugeTex = nullptr;
@@ -17,8 +18,8 @@ private:
 	//カメラ設定
 	Camera* m_pCamera = nullptr;
 	//数字のサイズの設定
-	const float NUMBER_W = 32.0f;
-	const float NUMBER_H = 32.0f;
+	const float NUMBER_W = 320.0f;
+	const float NUMBER_H = 320.0f;
 
 public:
 	GameUI();

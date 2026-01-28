@@ -7,7 +7,8 @@ GameUI::~GameUI() {}
 void GameUI::Init(ID3D11Device* device, ResourceManager* resMgr)
 {
     // 画像の読み込み
-    m_pNumberTex = resMgr->LoadTexture("asset/texture/numbers.png", device);
+    m_pTimeNumberTex = resMgr->LoadTexture("asset/texture/Number.png", device);
+    //m_pScoreNumberTex = resMgr->LoadTexture("asset/texture/Numbers.png", device);
 
     m_pSkillGaugeTex = resMgr->LoadTexture("asset/texture/UI_skill_meter.png", device);     // 緑や赤のバー
     m_pUltGaugeTex = resMgr->LoadTexture("asset/texture/UI_UI_special_meter.png", device);     // 緑や赤のバー
@@ -40,7 +41,7 @@ void GameUI::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer)
         //スコア表示
     DrawNumber(context, spriteRenderer, GameData::GetScore(), 10.0f, 10.0f, 1.0f);
     //タイム表示
-    DrawNumber(context, spriteRenderer, static_cast<int>(GameData::GetTime()), 10.0f, 50.0f, 500.0f);
+    DrawNumber(context, spriteRenderer, static_cast<int>(GameData::GetTime()), 100.0f, 500.0f, 50.0f);
     ////必殺技
     //float ultVal = GameData::GetSkill(SkillType::Ult);
     //float ultValMax = GameData::GetMaxSkill(SkillType::Ult);
@@ -79,13 +80,13 @@ void GameUI::DrawGauge(ID3D11DeviceContext* context, SpriteRenderer* sprite, ID3
 void GameUI::DrawNumber(ID3D11DeviceContext* context, SpriteRenderer* sprite, int number, float x, float y, float scale)
 {
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
-    if (!m_pNumberTex) return;
+    if (!m_pTimeNumberTex) return;
 
     // 数字を文字列に変換
     std::string numStr = std::to_string(number);
 
     // 各桁を描画
-    for (size_t i = 0; numStr.length(); i++)
+    for (size_t i = 0; i < numStr.length(); i++)
     {
 
         //文字"0"～"9"を数値0～9に変換
@@ -97,7 +98,7 @@ void GameUI::DrawNumber(ID3D11DeviceContext* context, SpriteRenderer* sprite, in
         //1文字分描画して、表示位置を右にずらす
         sprite->Draw(
             context,
-            m_pNumberTex,
+            m_pTimeNumberTex,
             x + i * NUMBER_W * scale,
             y, NUMBER_W * scale,
             NUMBER_H * scale,

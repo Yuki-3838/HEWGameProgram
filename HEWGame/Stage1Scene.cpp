@@ -115,6 +115,8 @@ void Stage1Scene::Init()
 
     m_pGameUI = new GameUI();
     m_pGameUI->Init(m_pRenderer->GetDevice(), m_pResourceManager);
+
+    GameData::SetTime(60.0f);
 }
 
 void Stage1Scene::Update()
