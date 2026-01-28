@@ -30,21 +30,13 @@ void GameUI::Uninit()
 void GameUI::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer)
 {
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
-    //枠(背景)を描画
-//指定されたサイズ(w,h)でそのまま描画
-    if (m_pGaugeBackGroundTex)
-    {
-        spriteRenderer->Draw(context, m_pGaugeBackGroundTex, 640, 600, 500, 500, viewProj);
-    }
-
     //ダッシュゲージ
     float dashVal = GameData::GetSkill(SkillType::Dash);
     float dashValMax = GameData::GetMaxSkill(SkillType::Dash);
-
-    DrawBar(context,spriteRenderer,m_pSkillGaugeTex,6400,600,500,500,dashVal,dashValMax);
     //位置:(640,600)サイズ:幅100,高さ10
     DrawGauge(context, spriteRenderer,m_pGaugeFrameTex, m_pGaugeBackGroundTex, 640.0f, 600.0f, 500.0f, 500.0f, dashVal, dashValMax);
 
+    DrawBar(context, spriteRenderer, m_pSkillGaugeTex, 640, 600, 500, 500, dashVal, dashValMax);
         //スコア表示
     DrawNumber(context, spriteRenderer, GameData::GetScore(), 10.0f, 10.0f, 1.0f);
     //タイム表示

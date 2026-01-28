@@ -6,6 +6,9 @@
 
 void Stage1Scene::Init()
 {
+    GameData::Reset();
+
+    GameData::SetSkill(SkillType::Dash, 100.0f, 100.0f);
     // タイルの情報
     Kaneda::s_TileInfo tileTable[] =
     {
