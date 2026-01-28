@@ -61,7 +61,7 @@ void GameData::SetSkill(SkillType type, float current, float max)
 void GameData::AddSkill(SkillType type, float amount)
 {
 	int index = (int)type;
-	m_MaxSkillPoints[index] += amount;
+	m_SkillPoints[index] += amount;
 	if (m_SkillPoints[index] > m_MaxSkillPoints[index])
 	{
 		m_SkillPoints[index] = m_MaxSkillPoints[index];

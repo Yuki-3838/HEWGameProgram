@@ -1,18 +1,18 @@
 #include "DemoReelScene.h"
-//push‚·‚é‚½‚ß‚ÌƒRƒƒ“ƒg
+//pushã™ã‚‹ãŸã‚ã®ã‚³ãƒ¡ãƒ³ãƒˆ
 void DemoReelScene::Init()
 {
 	m_pCamera = new Camera(1280, 720);
 	m_pVideo = new VideoPlayer();
 	m_pVideo->Init(L"asset/movie/op_1.mp4", m_pRenderer->GetDevice());
-	m_pVideo->SetLoop(true); // ƒ‹[ƒvÄ¶Ý’è
+	m_pVideo->SetLoop(true); // ãƒ«ãƒ¼ãƒ—å†ç”Ÿè¨­å®š
 	m_IsFinished = false;
 }
 
 void DemoReelScene::Update()
 {
 	m_pVideo->Update(1.0f/60.0f, m_pRenderer->GetContext());
-	// ƒXƒy[ƒXƒL[‚ª‰Ÿ‚³‚ê‚½‚çŽŸ‚ÌƒV[ƒ“iStage1j‚Ö
+	// ã‚¹ãƒšãƒ¼ã‚¹ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã‚‰æ¬¡ã®ã‚·ãƒ¼ãƒ³ï¼ˆStage1ï¼‰ã¸
 	if (m_pInput->GetKeyTrigger(VK_SPACE))
 	{
 		m_IsFinished = true;
@@ -21,10 +21,10 @@ void DemoReelScene::Update()
 
 void DemoReelScene::Draw()
 {
-	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // •F
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // é»’è‰²
 	m_pRenderer->StartFrame(clearColor);
 
-	// --- “®‰æ‚Ì•`‰æ ---
+	// --- å‹•ç”»ã®æç”» ---
 	Camera movieCamera(1280, 720);
 	m_pSpriteRenderer->Draw(
 		m_pRenderer->GetContext(),
@@ -39,5 +39,5 @@ void DemoReelScene::Draw()
 void DemoReelScene::Uninit()
 {
 	if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
-	if (m_pVideo) { delete m_pVideo; m_pVideo = nullptr; }
+
 }

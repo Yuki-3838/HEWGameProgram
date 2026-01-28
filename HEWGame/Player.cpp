@@ -531,7 +531,8 @@ void Player::DashInput()
 	// ダッシュキーを押しており、ダッシュ状態でなければ、ダッシュ発動処理を行う
 	if (inputQ && m_dState != DashState::DASH)
 	{
-		if (m_sGauge >= 1.0f && (m_JumpState == State::JumpState::NONE || m_canAirDash))
+		float currentSkill = GameData::GetSkill(SkillType::Dash);
+		if (currentSkill >= 33.0f && (m_JumpState == State::JumpState::NONE || m_canAirDash))
 		{
 			m_dState = DashState::STAY;
 			m_dStayCount = 0;
@@ -552,19 +553,19 @@ void Player::DashInput()
 
 		if (m_dStayCount >= m_dStayMax)
 		{
-			m_dState = DashState::DASH;
+			StartDash();
 		}
 	}
 	if (!inputQ && m_dState == DashState::STAY)
 	{
-		m_dState = DashState::DASH;
+		StartDash();
 	}
 }
 
 void Player::StartDash()
 {
 	m_dState = DashState::DASH;
-	m_sGauge -= 1.0f;
+	GameData::UseSkill(SkillType::Dash, 33.0f);
 	m_dDistanceCount = 0.0f;
 
 	// 入力なし → 向いている方向

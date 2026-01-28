@@ -1,18 +1,20 @@
 #pragma once
 #include "Scene.h"
 #include "BackGround.h"
+#include "VideoPlayer.h"
 class TitleScene :public Scene
 {
 private:
     bool m_IsFinished;
-    // ƒ^ƒCƒgƒ‹‰æ–Ê—p‚ÌƒeƒNƒXƒ`ƒƒƒ|ƒCƒ“ƒ^‚ğ’Ç‰Á
+    // ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒã‚¤ãƒ³ã‚¿ã‚’è¿½åŠ 
     ID3D11ShaderResourceView* m_pTitleTex;
     BackGround* m_pBackground;
+	VideoPlayer* m_pVideo;
 public:
     using Scene::Scene;
     void Init() override;
-    void Update() override; // ƒXƒy[ƒXƒL[‚ª‰Ÿ‚³‚ê‚½‚çƒtƒ‰ƒO‚ğ—§‚Ä‚é
-    void Draw() override;   // ƒ^ƒCƒgƒ‹‰æ‘œ‚ğ•`‰æ
+    void Update() override; // ã‚¹ãƒšãƒ¼ã‚¹ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã‚‰ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
+    void Draw() override;   // ã‚¿ã‚¤ãƒˆãƒ«ç”»åƒã‚’æç”»
     void Uninit() override;
     bool ShouldChangeScene() const override { return m_IsFinished; }
 };

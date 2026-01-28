@@ -3,19 +3,21 @@
 void TitleScene::Init() 
 {
     m_pCamera = new Camera(1920,1080);
-    // ƒ^ƒCƒgƒ‹‰æ‘œ‚Ì“Ç‚Ýž‚Ý
-    m_pBackground = new BackGround(); // ƒƒ“ƒo•Ï”‚Æ‚µ‚Ä•ÛŽ
+    // ã‚¿ã‚¤ãƒˆãƒ«ç”»åƒã®èª­ã¿è¾¼ã¿
+    m_pBackground = new BackGround(); // ãƒ¡ãƒ³ãƒå¤‰æ•°ã¨ã—ã¦ä¿æŒ
     m_pTitleTex = m_pResourceManager->LoadTexture("asset/texture/testSP.png", m_pRenderer->GetDevice());
-
+    m_pVideo = new VideoPlayer();
+    m_pVideo->Init(L"asset/movie/Title_op.mp4", m_pRenderer->GetDevice());
+    m_pVideo->SetLoop(true); // ãƒ«ãƒ¼ãƒ—å†ç”Ÿè¨­å®š
     if (m_pTitleTex) 
     {
-		int animCount = 18;//‰½•ªŠ„‚©
-		int xCount = 6;//‰¡‚É‰½ŒÂ•À‚ñ‚Å‚¢‚é‚©
+		int animCount = 18;//ä½•åˆ†å‰²ã‹
+		int xCount = 6;//æ¨ªã«ä½•å€‹ä¸¦ã‚“ã§ã„ã‚‹ã‹
 		float frameWidth = 320.0f;
 		float frameHeight = 320.0f;
-		float speed = 0.2f; // 1ƒRƒ}‚ ‚½‚è‚Ì•\Ž¦ŽžŠÔi•bj
+		float speed = 0.2f; // 1ã‚³ãƒžã‚ãŸã‚Šã®è¡¨ç¤ºæ™‚é–“ï¼ˆç§’ï¼‰
         m_pBackground->Init(m_pTitleTex, animCount, xCount, frameWidth, frameHeight, speed);
-        m_pBackground->SetSize(1280.0f, 720.0f); // ‰æ–ÊƒTƒCƒY‚É‡‚í‚¹‚é
+        m_pBackground->SetSize(1280.0f, 720.0f); // ç”»é¢ã‚µã‚¤ã‚ºã«åˆã‚ã›ã‚‹
         m_pBackground->SetPosition(0.0f, 0.0f);
     }
     m_IsFinished = false;
@@ -23,11 +25,12 @@ void TitleScene::Init()
 
 void TitleScene::Update() 
 {
+    m_pVideo->Update(1.0f / 60.0f, m_pRenderer->GetContext());
     if (m_pBackground)
     {
         m_pBackground->Update();
     }
-    // ƒXƒy[ƒXƒL[‚ª‰Ÿ‚³‚ê‚½‚çŽŸ‚ÌƒV[ƒ“iStage1j‚Ö
+    // ã‚¹ãƒšãƒ¼ã‚¹ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã‚‰æ¬¡ã®ã‚·ãƒ¼ãƒ³ï¼ˆStage1ï¼‰ã¸
     if (m_pInput->GetKeyTrigger(VK_RETURN))
     {
         m_IsFinished = true;
@@ -36,18 +39,25 @@ void TitleScene::Update()
 
 void TitleScene::Draw()
 {
-    // ”wŒi‚ð•‚ÅƒNƒŠƒA
+    // èƒŒæ™¯ã‚’é»’ã§ã‚¯ãƒªã‚¢
     float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
-    // ƒ^ƒCƒgƒ‹‰æ‘œ‚ð‰æ–Ê’†‰›•t‹ß‚É•\Ž¦
-    DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
-    if (m_pBackground) 
-    {
-        // ”wŒiƒIƒuƒWƒFƒNƒg‚É•`‰æ‚ð”C‚¹‚é
-        m_pBackground->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
-    }
-
+    //// ã‚¿ã‚¤ãƒˆãƒ«ç”»åƒã‚’ç”»é¢ä¸­å¤®ä»˜è¿‘ã«è¡¨ç¤º
+    //DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
+    //if (m_pBackground) 
+    //{
+    //    // èƒŒæ™¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«æç”»ã‚’ä»»ã›ã‚‹
+    //    m_pBackground->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+    //}
+        // --- å‹•ç”»ã®æç”» ---
+    Camera movieCamera(1920, 1080);
+    m_pSpriteRenderer->Draw(
+        m_pRenderer->GetContext(),
+        m_pVideo->GetSRV(),
+        0.0f, 0.0f, 1920.0f, 1080.0f,
+        movieCamera.GetViewProjection()
+    );
     m_pRenderer->EndFrame();
 }
 
@@ -55,4 +65,5 @@ void TitleScene::Uninit()
 {
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
     if (m_pBackground) { delete m_pBackground; m_pBackground = nullptr; }
+    if (m_pVideo) { delete m_pVideo; m_pVideo = nullptr; }
 }
