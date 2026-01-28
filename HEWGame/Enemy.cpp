@@ -28,129 +28,28 @@ Enemy::~Enemy()
 
 void Enemy::EnemyInit()
 {
-	//アニメーション更新
-	m_Animator.Update(1.0f / 1.0f);
-	// 移動状態初期化
-	m_MoveState = State::MoveState::NONE;
-	// 移動入力処理
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-	{
-		m_MoveState = State::MoveState::LEFT;
-		m_charDir = State::CharDir::LEFT;
-	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-	{
-		m_MoveState = State::MoveState::RIGHT;
-		m_charDir = State::CharDir::RIGHT;
-	}
-	if (GetAsyncKeyState(VK_UP) & 0x8000)
-	{
-		Jump();
-	}
-
-	if (m_IsAttack == false && GetAsyncKeyState(VK_Z) & 0x8000)
-	{
-		m_IsAttack = true;
-		m_AttackFrame = 0;
-	}
-
-	//攻撃処理
-	if (m_IsAttack)
-	{
-		m_AttackFrame++;
-		//攻撃判定のあるフレームならAttack関数を呼び出す
-		if (m_AttackFrame >= m_AttackHitStart && m_AttackFrame <= m_AttackHitEnd)
-		{
-			Attack(charaList);
-		}
-		//攻撃アニメ終了判定
-		if (m_AttackFrame >= m_AttackTotalFrame)
-		{
-			m_IsAttack = false;
-			m_AttackFrame = 0;
-		}
-	}
-
-	//非発見状態
-	if (isDetection == false)
-	{
-		//左右移動にする予定
-		SCount++;
-
-		if (SCount == 200)
-		{
-			m_MoveState = State::MoveState::RIGHT;
-			m_charDir = State::CharDir::RIGHT;
-		}
-
-		if (SCount == 400)
-		{
-			m_MoveState = State::MoveState::LEFT;
-			m_charDir = State::CharDir::LEFT; //左を見る
-
-			SCount = 0;
-		}
-
-
-		if (m_charDir == State::CharDir::RIGHT)//右向き
-		{
-			searchPos.x = GetPosition().x - searchSize.x;
-		}
-		else//左向き
-		{
-			// attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
-			searchPos.x = GetPosition().x + GetSize().x;
-		}
-		//attackPos.y += m_Size.y / 4;
-		searchPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
-
-		for (int i = 0; charaList[i] != nullptr; ++i)
-		{
-			auto obj = charaList[i];
-			//オブジェクトじゃなかったらスキップする
-			if (!obj)continue;
-
-			//Character* chara = dynamic_cast<Character*>(obj);
-			//if (!chara)continue;
-			if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
-
-			//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
-			ColRes hit = CollisionRect(*obj, searchPos, searchSize);
-
-			if (Col::Any(hit))
-			{
-				//敵にダメージを与える
-				/*obj->TakeDamage();*/
-				//ここではenemyをdeleteしない！
-
-				SCount2++;
-				if (SCount2 == 100) //テスト用に見つけてから一拍おいてます
-				{
-					isDetection = true;
-					SCount2 = 0;
-				}
-			}
-		}
-	}
+	m_ActionState = ActionState::SERCH;
+	m_serchDistance = 1000;
+}
 
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
-	if (m_ActionState == ActionState::SERCH)
+	/*if (m_ActionState == ActionState::SERCH)
 	{
 
 
-			if (targetPos.x + 250.0f < enemyPos.x)
-			{
-				m_MoveState = State::MoveState::LEFT;
-				m_charDir = State::CharDir::LEFT;
-			}
-
-			else if (targetPos.x - 250.0f > enemyPos.x)
-			{
-				m_MoveState = State::MoveState::RIGHT;
-				
-			}
+		if (targetPos.x + 250.0f < enemyPos.x)
+		{
+			m_MoveState = State::MoveState::LEFT;
+			m_charDir = State::CharDir::LEFT;
 		}
+
+		else if (targetPos.x - 250.0f > enemyPos.x)
+		{
+			m_MoveState = State::MoveState::RIGHT;
+
+		}
+
 	}
 	Move(tile);
 
@@ -181,7 +80,7 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 	if (nextAnim != m_CurrentAnimState)
 	{
 		SetAnimation(nextAnim);
-	}
+	}*/
 }
 
 void Enemy::UnInit()
@@ -218,6 +117,7 @@ void Enemy::Attack(Character** charaList)
 		if (obj->GetCharaType() == State::CharaType::t_Player)continue;  //player以外だったらスキップする
 
 		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
+
 		if (Col::Any(hit))
 		{
 			//敵にダメージを与える

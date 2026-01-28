@@ -5,6 +5,9 @@
 #include "Player.h"
 #include "GameObject.h"
 #include "Enemy.h"
+#include "EnemyShielder.h"
+#include "EnemyShooter.h"
+#include "EnemySword.h"
 #include <DirectXMath.h>
 #include <unordered_set>
 #include "EffectManager.h"

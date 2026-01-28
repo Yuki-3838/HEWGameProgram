@@ -196,7 +196,7 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	if (nextAnim != m_CurrentAnimState)
 	{
 		SetAnimation(nextAnim);
-	}
+	}*/
 }
 
 void EnemySword::UnInit()

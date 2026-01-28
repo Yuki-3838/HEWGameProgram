@@ -225,7 +225,7 @@ Character* Stage1Scene::AddList(State::CharaType e_name)
         return new Player;
         break;
     case State::CharaType::t_EnemySword:
-        return new Enemy;
+        return new EnemySword;
         break;
     };
 
