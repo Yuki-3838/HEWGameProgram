@@ -77,11 +77,11 @@ void EnemyShooter::Update(const TileMap& tile, Character** charaList)
 	{
 		nextAnim = 3; //攻撃用アニメ
 	}
-	// ジャンプ上昇中か
-	else if (m_JumpState == State::JumpState::RISE)
-	{
-		nextAnim = 2; // ジャンプ上昇用アニメ
-	}
+	// 攻撃予備動作中か
+	//else if ()
+	//{
+	//	nextAnim = 2; //攻撃予備動作用アニメ
+	//}
 	// 移動中か
 	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
 	{
@@ -153,8 +153,12 @@ void EnemyShooter::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexWalk;
 		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true);
 		break;
-	case 2:
-		m_pTexture = m_eTexJump;
+	case 2: // 攻撃予備動作
+		m_pTexture = m_eTexAttackTelegraph;
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true);
+		break;
+	case 3: // 攻撃
+		m_pTexture = m_eTexAttack;
 		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f);
 		break;
 	}

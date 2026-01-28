@@ -9,7 +9,8 @@ protected:
 	// 各状態のテクスチャを保持しておく変数
 	ID3D11ShaderResourceView* m_eTexIdle = nullptr; // 待機用
 	ID3D11ShaderResourceView* m_eTexWalk = nullptr; // 移動用
-	ID3D11ShaderResourceView* m_eTexJump = nullptr; // ジャンプ用
+	ID3D11ShaderResourceView* m_eTexAttack = nullptr; // 攻撃用
+	ID3D11ShaderResourceView* m_eTexAttackTelegraph = nullptr; // 攻撃予備動作
 
 	bool m_FlipX = true; // 左右反転フラグ
 	Animator m_Animator;//アニメーション管理
@@ -41,7 +42,7 @@ public:
 	int TakeDamage() override;
 	void Jump() override;
 	void SetTarget(const Character& target);
-	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
+	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* attackTelegraph);
 
 	//アニメーションさせるための描画
 	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;

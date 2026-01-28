@@ -350,15 +350,17 @@ void Stage1Scene::SetAnimations()
     //3-2. エネミー
     m_pEnemySwordTexIdle = m_pResourceManager->LoadTexture("asset/texture/Sword_Idole.png", m_pRenderer->GetDevice());
     m_pEnemySwordTexWalk = m_pResourceManager->LoadTexture("asset/texture/Sword_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemySwordTexJump = m_pResourceManager->LoadTexture("asset/texture/Sword_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexAttack = m_pResourceManager->LoadTexture("asset/texture/Sword_Attack_Action.png", m_pRenderer->GetDevice());
+    m_pEnemySwordTexAttackTelegraph = m_pResourceManager->LoadTexture("asset/texture/Sword_Attack_Standby.png", m_pRenderer->GetDevice());
 
     m_pEnemyShooterTexIdle = m_pResourceManager->LoadTexture("asset/texture/Shooter_Idole.png", m_pRenderer->GetDevice());
     m_pEnemyShooterTexWalk = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyShooterTexJump = m_pResourceManager->LoadTexture("asset/texture/Shooter_Walk.png", m_pRenderer->GetDevice());
+    m_pEnemyShooterTexAttack = m_pResourceManager->LoadTexture("asset/texture/Shooter_Attack_Action.png", m_pRenderer->GetDevice());
+    m_pEnemyShooterTexAttackTelegraph = m_pResourceManager->LoadTexture("asset/texture/Shooter_Attack_Stanby.png", m_pRenderer->GetDevice());
 
     m_pEnemyShielderTexIdle = m_pResourceManager->LoadTexture("asset/texture/Shielder_Idole.png", m_pRenderer->GetDevice());
     m_pEnemyShielderTexWalk = m_pResourceManager->LoadTexture("asset/texture/Shielder_Walk.png", m_pRenderer->GetDevice());
-    m_pEnemyShielderTexJump = m_pResourceManager->LoadTexture("asset/texture/Shielder_Walk.png", m_pRenderer->GetDevice());
+
 
     // 背景テクスチャ
     m_pBGTexFront = m_pResourceManager->LoadTexture("asset/texture/Back/bg_front.png", m_pRenderer->GetDevice()); // 手前
@@ -383,8 +385,8 @@ void Stage1Scene::SetEnemyTexture(int num)
 {
     Enemy* enemy = dynamic_cast<Enemy*>(m_pCharaList[num]);
     {
-        // ★ここで3枚セットで渡す
-        enemy->SetTextures(m_pEnemySwordTexIdle, m_pEnemySwordTexWalk, m_pEnemySwordTexJump);
+        // ★ここで4枚セットで渡す
+        enemy->SetTextures(m_pEnemySwordTexIdle, m_pEnemySwordTexWalk, m_pEnemySwordTexAttack, m_pEnemySwordTexAttackTelegraph);
 
         // 最初の初期化 (Init) も呼んでおく
         enemy->Init(m_pEnemySwordTexIdle); //Idleを渡す
