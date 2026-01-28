@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <Windows.h>
 #include<vector>
+#include "GameData.h"
 
 std::vector<GameObject*> g_GameObjects;
 
@@ -44,7 +45,7 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile, Character** charaList)
 {
-	
+	GameData::AddSkill(SkillType::Dash, 0.5f);
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //待機状態に戻す
@@ -53,24 +54,20 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	bool isMoving = false;
 	//空中にいるかのチェック
 	bool isAir = (m_JumpState != State::JumpState::NONE);
-	
+
 
 	//ｖを教えている間ダッシュゲージをチャージする　仕様と違うので削除する
 	if (GetAsyncKeyState(VK_V) & 0x8000 && m_dState != DashState::DASH)
 	{
-		m_sGauge += 1.0f/60.0f;
-
-		if (m_sGauge > m_sGaugeMAX)
-		{
-			m_sGauge = m_sGaugeMAX;
-		}
+		m_sGauge += 1.0f / 60.0f;
 	}
-	
+
+
 
 	DashInput();
 
 	//通常移動
-	 if(m_dState == DashState::NONE)
+	if (m_dState == DashState::NONE)
 	{
 		m_dState = DashState::NONE;
 		m_dStayCount = 0;
@@ -101,6 +98,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			m_AttackFrame = 0;
 		}
 	}
+
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 
@@ -230,10 +228,16 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//空中での一時停止
 	if (isAir && GetAsyncKeyState(VK_Q) & 0x8000 && m_dState == DashState::NONE)
 	{
-		m_Stats.m_AccelY = 0.0f;
+		m_sGauge = GameData::GetSkill(SkillType::Dash);
+		m_sGaugeMAX = GameData::GetMaxSkill(SkillType::Dash);
 
+		if (m_sGauge > m_sGaugeMAX)
+		{
+			GameData::UseSkill(SkillType::Dash, m_sGaugeMAX);
+		}
 		return;
 	}
+
 }
 
 void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
