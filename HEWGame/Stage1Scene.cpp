@@ -1,11 +1,14 @@
 #include "Stage1Scene.h"
 #include "iostream"
 #include "Collision.h"
-#include <cmath> 
-
+#include <cmath> // fmod
+#include "GameData.h"
 
 void Stage1Scene::Init()
 {
+    GameData::Reset();
+
+    GameData::SetSkill(SkillType::Dash, 100.0f, 100.0f);
     // タイルの情報
     s_TileInfo tileTable[] =
     {
@@ -50,6 +53,14 @@ void Stage1Scene::Init()
 
 
     m_IsFinished = false;
+
+    //エネミーにプレイヤーの位置情報を渡す
+    enemy->SetTarget(*player);
+
+    m_pGameUI = new GameUI();
+    m_pGameUI->Init(m_pRenderer->GetDevice(), m_pResourceManager);
+
+    GameData::SetTime(60.0f);
 }
 
 void Stage1Scene::Update()
@@ -70,6 +81,8 @@ void Stage1Scene::Update()
     {
         m_pEffectManager->Update();
     }
+
+    GameData::DecreaseTime(1.0f / 60.0f);
 }
 
 void Stage1Scene::Draw()
@@ -101,6 +114,10 @@ void Stage1Scene::Draw()
     if (m_pEffectManager)
     {
         m_pEffectManager->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+    }
+    if (m_pGameUI)
+    {
+        m_pGameUI->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer);
     }
     m_pRenderer->EndFrame();
 }
@@ -177,6 +194,7 @@ void Stage1Scene::Uninit()
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
     if (m_pSound) { m_pSound->Uninit(); delete m_pSound; m_pSound = nullptr; }
     if (m_pEffectManager) { m_pEffectManager->Uninit(); delete m_pEffectManager; m_pEffectManager = nullptr; }
+    if(m_pGameUI) { delete m_pGameUI; m_pGameUI = nullptr; }
     AllClearList(m_pCharaList);
 
     // 背景のSRVは ResourceManager が管理している想定のため Release しない。

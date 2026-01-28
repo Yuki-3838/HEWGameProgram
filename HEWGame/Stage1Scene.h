@@ -10,6 +10,7 @@
 #include "EnemySword.h"
 #include <DirectXMath.h>
 #include <unordered_set>
+#include "GameUI.h"
 #include "EffectManager.h"
 
 struct SpawnPoint
@@ -92,6 +93,7 @@ private:
     
     
 
+    GameUI* m_pGameUI = nullptr;
 public:
     using Scene::Scene;
     void Init() override;

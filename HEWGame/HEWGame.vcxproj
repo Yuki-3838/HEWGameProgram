@@ -153,7 +153,9 @@
     <ClCompile Include="EnemyShooter.cpp" />
     <ClCompile Include="EnemySword.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="LoadScene.cpp" />
     <ClCompile Include="main.cpp" />
@@ -190,7 +192,9 @@
     <ClInclude Include="EnemyShooter.h" />
     <ClInclude Include="EnemySword.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameUI.h" />
     <ClInclude Include="HewStd.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="LoadScene.h" />
