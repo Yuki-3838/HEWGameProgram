@@ -1,4 +1,7 @@
 #include "Character.h"
+#include <algorithm>
+#undef min
+#undef max
 
 Character::Character()
 {
@@ -194,5 +197,44 @@ State::CharDir Character::ReverseDir(State::CharDir now)
 	case State::CharDir::RIGHT:
 		return State::CharDir::LEFT;
 		break;
+	}
+}
+
+void Character::ResolveOverlap(const Character& subject)
+{
+	float Aleft = m_Position.x;
+	float Aright = m_Position.x + m_Size.x;
+	float Atop = m_Position.y;
+	float Abottom = m_Position.y + m_Size.y;
+
+	float Bleft = subject.GetPosition().x;
+	float Bright = subject.GetPosition().x + subject.GetSize().x;
+	float Btop = subject.GetPosition().y;
+	float Bbottom = subject.GetPosition().y + subject.GetSize().y;
+
+	float overlapX = std::min(Aright, Bright) - std::max(Aleft, Bleft);
+	float overlapY = std::min(Abottom, Bbottom) - std::max(Atop, Btop);
+
+	if (overlapX > 0 && overlapY > 0)
+	{
+		if (overlapX < overlapY)
+		{
+			if (m_Position.x < subject.GetPosition().x)m_Position.x -= overlapX;
+			else m_Position.x += overlapX;
+		}
+		else
+		{
+			//if (m_Position.y < subject.GetPosition().y)m_Position.y -= overlapY;
+			//else m_Position.y += overlapY;
+			if (m_Position.y < subject.GetPosition().y)
+			{
+				if (m_Position.x < subject.GetPosition().x)m_Position.x -= m_Stats.m_Speed;
+				else m_Position.x += m_Stats.m_Speed;
+			}
+			else
+			{
+				m_Position.y += overlapY;
+			}
+		}
 	}
 }

@@ -109,6 +109,7 @@ public:
     State::CharaType GetCharaType() const { return m_charaType; }
     State::JumpState GetJumpState() const { return m_JumpState; }
 
+
     // ゲッター
     float GetAcceleY() { return m_Stats.m_AccelY; }
     float GetDefPosY() { return m_Stats.m_DefPosY; }
@@ -125,4 +126,5 @@ public:
     void SetPos(float x, float y) { m_Position.x = x;m_Position.y = y; }
 
     State::CharDir ReverseDir(State::CharDir now);
+    void ResolveOverlap(const Character& subject);
 };

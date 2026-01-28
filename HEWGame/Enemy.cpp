@@ -172,6 +172,16 @@ void Enemy::SerchPlayer()
 		nowSerchDistance = m_serchDistance;
 		startpos.x = m_Position.x + m_Size.x;
 		endpos.x = startpos.x + nowSerchDistance;
+		for (int x = startpos.x; x < endpos.x; x -= m_Size.x)
+		{
+			for (int y = startpos.y; y < endpos.y; y += 10)
+			{
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					int a = 0;
+				}
+			}
+		}
 	}
 	else if (m_charDir == State::CharDir::LEFT)
 	{
@@ -193,3 +203,4 @@ void Enemy::SerchPlayer()
 	
 	
 }
+
