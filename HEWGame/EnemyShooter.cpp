@@ -3,14 +3,15 @@
 EnemyShooter::EnemyShooter()
 {
 	// エネミー固有の初期設定
+	EnemyInit();
 	m_Stats.m_HP = 1;
 	m_Stats.m_Speed = 15;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
-	m_Size.x = 128.0f;
-	m_Size.y = 256.0f;
-	m_Position.x = 1000.0f;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
+	m_Position.x = 1600.0f;
 	m_Position.y = 0.0f;
 
 	m_AttackTotalFrame = 30;  //攻撃アニメの総フレーム数

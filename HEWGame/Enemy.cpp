@@ -26,7 +26,7 @@ Enemy::~Enemy()
 
 }
 
-void Enemy::Update(const TileMap& tile, Character** charaList)
+void Enemy::EnemyInit()
 {
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
@@ -133,17 +133,10 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 		}
 	}
 
-	//発見状態時
-	if (isDetection == true)
+void Enemy::Update(const TileMap& tile, Character** charaList)
+{
+	if (m_ActionState == ActionState::SERCH)
 	{
-		m_MoveState = State::MoveState::NONE;
-		if (m_pTarget)
-		{
-			DirectX::XMFLOAT2 targetPos = m_pTarget->GetPosition();
-			DirectX::XMFLOAT2 enemyPos = GetPosition();
-
-			targetPos.x += m_pTarget->GetSize().x * 0.5f;
-			enemyPos.x += GetSize().x * 0.5f;
 
 
 			if (targetPos.x + 250.0f < enemyPos.x)
@@ -334,3 +327,50 @@ void Enemy::SetAnimation(int stateIndex)
 		break;
 	}
 }
+
+void Enemy::SerchPlayer()
+{
+	int correction;
+
+	int nowSerchDistance = 0;
+	DirectX::XMFLOAT2 startpos;
+	DirectX::XMFLOAT2 endpos;
+	startpos.y = m_Position.y;
+	endpos.y = m_Position.y + m_Size.y;
+	if (m_charDir == State::CharDir::RIGHT)
+	{
+		nowSerchDistance = m_serchDistance;
+		startpos.x = m_Position.x + m_Size.x;
+		endpos.x = startpos.x + nowSerchDistance;
+		for (int x = startpos.x; x < endpos.x; x -= m_Size.x)
+		{
+			for (int y = startpos.y; y < endpos.y; y += 10)
+			{
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					int a = 0;
+				}
+			}
+		}
+	}
+	else if (m_charDir == State::CharDir::LEFT)
+	{
+		nowSerchDistance = m_serchDistance * -1;
+		startpos.x = m_Position.x;
+		endpos.x = startpos.x + nowSerchDistance;
+
+		for (int x = startpos.x; x > endpos.x; x -= m_Size.x)
+		{
+			for (int y = startpos.y; y < endpos.y; y+=10)
+			{
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					int a = 0;
+				}
+			}
+		}
+	}
+	
+	
+}
+

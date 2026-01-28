@@ -108,6 +108,8 @@ public:
     Character* AddList(State::CharaType e_name);    // リストにオブジェクトを追加
     int GetEmptyListNum();                          // リストの空きを取得
 
+    void CollisionResolve();
+
     void UpdateList();                              
 
     // 当たり判定

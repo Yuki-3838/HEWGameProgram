@@ -2,6 +2,11 @@
 #include"Character.h"
 #include"Animator.h"
 
+enum class ActionState
+{
+	SERCH,
+	ATTACK
+};
 
 class Enemy :public Character
 {
@@ -28,12 +33,15 @@ protected:
 	//サーチ範囲設定
 	DirectX::XMFLOAT2 searchSize;
 	DirectX::XMFLOAT2 searchPos;
+	float m_serchDistance = 1000;
+	ActionState m_ActionState;
 
 public:
 	// コンストラクタ・デストラクタ
 	Enemy();
 	~Enemy() override;
 
+	void EnemyInit();
 	virtual void Update(const TileMap& tile, Character** charaList)override;
 	virtual  void UnInit()override;
 	void Draw();
@@ -46,4 +54,7 @@ public:
 
 	//アニメーションさせるための描画
 	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
+
+	void SerchPlayer();
+	
 };
