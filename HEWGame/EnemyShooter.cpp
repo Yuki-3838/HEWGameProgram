@@ -13,7 +13,11 @@ EnemyShooter::EnemyShooter()
 	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
 
-	m_charaType = State::CharaType::t_Enemy;
+	m_AttackTotalFrame = 30;  //攻撃アニメの総フレーム数
+	m_AttackHitStart = 1;     //攻撃判定が発生する開始フレーム
+	m_AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
+
+	m_charaType = State::CharaType::t_EnemyShooter;
 }
 
 EnemyShooter::~EnemyShooter()

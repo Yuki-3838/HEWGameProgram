@@ -16,7 +16,7 @@ Enemy::Enemy()
 
 	searchSize = { 500.f, 128.0f };
 
-	m_charaType = State::CharaType::t_Enemy;
+	m_charaType = State::CharaType::t_EnemySword;
 
 	isDetection = false; //プレイヤーの発見状態
 }

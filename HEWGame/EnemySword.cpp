@@ -18,6 +18,10 @@ EnemySword::EnemySword()
 
 	m_charaType = State::CharaType::t_EnemySword;
 
+	m_AttackTotalFrame = 30;  //攻撃アニメの総フレーム数
+	m_AttackHitStart = 1;     //攻撃判定が発生する開始フレーム
+	m_AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
+
 	isDetection = false; //プレイヤーの発見状態
 	m_charDir = State::CharDir::LEFT; // エネミーの向き
 }
@@ -170,11 +174,11 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	{
 		nextAnim = 3; //攻撃用アニメ
 	}
-	// ジャンプ上昇中か
-	else if (m_JumpState == State::JumpState::RISE)
-	{
-		nextAnim = 2; // ジャンプ上昇用アニメ
-	}
+	// 攻撃予備動作中か
+	//else if ()
+	//{
+	//	nextAnim = 2; //攻撃予備動作用アニメ
+	//}
 	// 移動中か
 	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
 	{
@@ -190,7 +194,6 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	{
 		SetAnimation(nextAnim);
 	}
-
 }
 
 void EnemySword::UnInit()
@@ -246,15 +249,19 @@ void EnemySword::SetAnimation(int stateIndex)
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(32, 8, w - 20, h + 50, 0.01f, 0.0f, true);
+		m_Animator.Init(32, 8, w, h, 0.01f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(32, 8, w, h - 55, 0.02f, 0.0f, true);
+		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true);
 		break;
-	case 2:
-		m_pTexture = m_eTexJump;
-		m_Animator.Init(1, 1, w, h, 0.2f, 0.0f);
+	case 2: // 攻撃予備動作
+		m_pTexture = m_eTexAttackTelegraph;
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true);
+		break;
+	case 3: // 攻撃
+		m_pTexture = m_eTexAttack;
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f);
 		break;
 	}
 }

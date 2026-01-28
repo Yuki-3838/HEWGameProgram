@@ -222,7 +222,7 @@ Character* Stage1Scene::AddList(State::CharaType e_name)
     case State::CharaType::t_Player:
         return new Player;
         break;
-    case State::CharaType::t_Enemy:
+    case State::CharaType::t_EnemySword:
         return new Enemy;
         break;
     };
@@ -300,7 +300,7 @@ void Stage1Scene::EnemySpawn()
                     int num = GetEmptyListNum();
                     if (num != -1)
                     {
-                        m_pCharaList[num] = AddList(State::CharaType::t_Enemy);
+                        m_pCharaList[num] = AddList(State::CharaType::t_EnemySword);
                         m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
                         SetEnemyTexture(num);
                     }
