@@ -5,9 +5,6 @@
 #include "Player.h"
 #include "GameObject.h"
 #include "Enemy.h"
-#include "EnemySword.h"
-#include "EnemyShooter.h"
-#include "EnemyShielder.h"
 #include <DirectXMath.h>
 #include <unordered_set>
 #include "EffectManager.h"
@@ -58,15 +55,16 @@ private:
 
     ID3D11ShaderResourceView* m_pEnemySwordTexIdle;
     ID3D11ShaderResourceView* m_pEnemySwordTexWalk;
-    ID3D11ShaderResourceView* m_pEnemySwordTexJump;
+    ID3D11ShaderResourceView* m_pEnemySwordTexAttack;
+    ID3D11ShaderResourceView* m_pEnemySwordTexAttackTelegraph;
 
     ID3D11ShaderResourceView* m_pEnemyShooterTexIdle;
     ID3D11ShaderResourceView* m_pEnemyShooterTexWalk;
-    ID3D11ShaderResourceView* m_pEnemyShooterTexJump;
+    ID3D11ShaderResourceView* m_pEnemyShooterTexAttack;
+    ID3D11ShaderResourceView* m_pEnemyShooterTexAttackTelegraph;
 
     ID3D11ShaderResourceView* m_pEnemyShielderTexIdle;
     ID3D11ShaderResourceView* m_pEnemyShielderTexWalk;
-    ID3D11ShaderResourceView* m_pEnemyShielderTexJump;
 
     // testetstest kesite iiyo
     // 背景用テクスチャ（手前・中・奥）

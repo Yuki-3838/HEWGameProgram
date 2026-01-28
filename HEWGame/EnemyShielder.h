@@ -5,14 +5,12 @@ class EnemyShielder : public Enemy
 {
 protected:
 	void SetAnimation(int stateIndex) override;
-
 public:
 	EnemyShielder();
 	~EnemyShielder();
 
-	void Update(const TileMap& tile, Character** charaList) override;
-	void UnInit() override;
-	void Attack(Character** charaList) override;
+	void Update(const TileMap& tile, Character** charaList)override;
+	void Attack(Character** charaList)override;
 };
 
 

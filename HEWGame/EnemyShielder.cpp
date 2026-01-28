@@ -16,6 +16,10 @@ EnemyShielder::EnemyShielder()
 
 	searchSize = { 500.f, 128.0f };
 
+	m_AttackTotalFrame = 30;  //攻撃アニメの総フレーム数
+	m_AttackHitStart = 1;     //攻撃判定が発生する開始フレーム
+	m_AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
+
 	m_charaType = State::CharaType::t_EnemyShielder;
 
 	isDetection = false; //プレイヤーの発見状態
@@ -174,18 +178,8 @@ void EnemyShielder::Update(const TileMap& tile, Character** charaList)
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 
-	//攻撃中か
-	if (m_IsAttack)
-	{
-		nextAnim = 3; //攻撃用アニメ
-	}
-	// ジャンプ上昇中か
-	else if (m_JumpState == State::JumpState::RISE)
-	{
-		nextAnim = 2; // ジャンプ上昇用アニメ
-	}
 	// 移動中か
-	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
+	if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
 	{
 		nextAnim = 1; // 移動用アニメ
 	}
@@ -201,12 +195,6 @@ void EnemyShielder::Update(const TileMap& tile, Character** charaList)
 	}
 
 }
-
-void EnemyShielder::UnInit()
-{
-
-}
-
 void EnemyShielder::Attack(Character** charaList)
 {
 	//攻撃範囲設定
@@ -255,15 +243,11 @@ void EnemyShielder::SetAnimation(int stateIndex)
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(32, 8, w - 130, h + 40, 0.01f, 0.0f, true);
+		m_Animator.Init(32, 8, w, h + 40, 0.01f, 0.0f, true);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(32, 8, w, h + 30, 0.02f, 0.0f, true);
-		break;
-	case 2:
-		m_pTexture = m_eTexJump;
-		m_Animator.Init(1, 1, w, h, 0.2f, 0.0f);
+		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true);
 		break;
 	}
 }
