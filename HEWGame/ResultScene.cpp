@@ -1,39 +1,117 @@
 #include "ResultScene.h"
 #include <vector>
 
-void ResultScene::Init() 
+// ãƒœã‚¿ãƒ³ã®å½“ãŸã‚Šåˆ¤å®š
+bool ResultScene::IsMouseOverButton(const ResultButton& btn, float mouseX, float mouseY)
 {
-    // ƒŠƒUƒ‹ƒg‰æ–Ê—p‚Ì‰æ‘œ‚ð“Ç‚Ýž‚Ý
-    m_pResultTex = m_pResourceManager->LoadTexture("assets/texture/result.png", m_pRenderer->GetDevice());
-
-    // ‘JˆÚƒtƒ‰ƒO‚ðƒŠƒZƒbƒg
-    m_IsFinished = false;
+    float left = btn.x - btn.width / 2.0f;
+    float right = btn.x + btn.width / 2.0f;
+    float top = btn.y - btn.height / 2.0f;
+    float bottom = btn.y + btn.height / 2.0f;
+    return (mouseX >= left && mouseX <= right && mouseY >= top && mouseY <= bottom);
 }
 
-void ResultScene::Update() 
+void ResultScene::Init()
 {
-    // ƒXƒy[ƒXƒL[‚Ü‚½‚ÍƒGƒ“ƒ^[ƒL[‚ª‰Ÿ‚³‚ê‚½‚çAÄ‚Ñƒ^ƒCƒgƒ‹‚Ö–ß‚é
-    if (m_pInput->GetKeyTrigger(VK_SPACE)) 
+    m_pCamera = new Camera(1920, 1080);
+
+    // ãƒªã‚¶ãƒ«ãƒˆç”»é¢ç”¨ã®ç”»åƒã‚’èª­ã¿è¾¼ã‚€
+    m_pResultTex = m_pResourceManager->LoadTexture("asset/texture/result.png", m_pRenderer->GetDevice());
+
+    // ãƒœã‚¿ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®èª­ã¿è¾¼ã¿ï¼ˆãªã‘ã‚Œã°blockã‚’ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ï¼‰
+    m_pTitleButtonTex = m_pResourceManager->LoadTexture("asset/texture/title_button.png", m_pRenderer->GetDevice());
+    if (!m_pTitleButtonTex) {
+        m_pTitleButtonTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
+    }
+    m_pExitButtonTex = m_pResourceManager->LoadTexture("asset/texture/exit_button.png", m_pRenderer->GetDevice());
+    if (!m_pExitButtonTex) {
+        m_pExitButtonTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
+    }
+
+    // ã‚¿ã‚¤ãƒˆãƒ«ã«æˆ»ã‚‹ãƒœã‚¿ãƒ³ã®åˆæœŸåŒ–ï¼ˆç”»é¢ä¸­å¤®ã‚„ã‚„ä¸‹ï¼‰
+    m_titleButton.x = 960.0f;
+    m_titleButton.y = 600.0f;
+    m_titleButton.width = 300.0f;
+    m_titleButton.height = 80.0f;
+    m_titleButton.isHovered = false;
+
+    // çµ‚äº†ãƒœã‚¿ãƒ³ã®åˆæœŸåŒ–ï¼ˆã‚¿ã‚¤ãƒˆãƒ«ãƒœã‚¿ãƒ³ã®ä¸‹ï¼‰
+    m_exitButton.x = 960.0f;
+    m_exitButton.y = 720.0f;
+    m_exitButton.width = 300.0f;
+    m_exitButton.height = 80.0f;
+    m_exitButton.isHovered = false;
+
+    // é·ç§»ãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆ
+    m_IsFinished = false;
+    m_IsExitRequested = false;
+}
+
+void ResultScene::Update()
+{
+    // ãƒžã‚¦ã‚¹åº§æ¨™ã‚’å–å¾—
+    DirectX::XMFLOAT2 mousePos = m_pInput->GetMousePosition();
+
+    // ãƒœã‚¿ãƒ³ã®ãƒ›ãƒãƒ¼çŠ¶æ…‹ã‚’æ›´æ–°
+    m_titleButton.isHovered = IsMouseOverButton(m_titleButton, mousePos.x, mousePos.y);
+    m_exitButton.isHovered = IsMouseOverButton(m_exitButton, mousePos.x, mousePos.y);
+
+    // å·¦ã‚¯ãƒªãƒƒã‚¯ã§ãƒœã‚¿ãƒ³å‡¦ç†
+    if (m_pInput->GetMouseLeftTrigger())
     {
-        m_IsFinished = true;
+        if (m_titleButton.isHovered)
+        {
+            // ã‚¿ã‚¤ãƒˆãƒ«ã«æˆ»ã‚‹ãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
+            m_IsFinished = true;
+        }
+        else if (m_exitButton.isHovered)
+        {
+            // çµ‚äº†ãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
+            m_IsExitRequested = true;
+        }
     }
 }
 
-void ResultScene::Draw() 
+void ResultScene::Draw()
 {
-    float clearColor[4] = { 0.f, 0.f, 1.0f, 1.0f };
+    float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
-    // ƒŠƒUƒ‹ƒg‰æ‘œ‚ð•\Ž¦
-    if (m_pResultTex) 
+    DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
+
+    // ãƒªã‚¶ãƒ«ãƒˆç”»åƒã‚’è¡¨ç¤º
+    if (m_pResultTex)
     {
-        // ‰æ–Ê’†‰›‚É•\Ž¦iÀ•W‚âƒTƒCƒY‚Í“K‹X’²®j
         m_pSpriteRenderer->Draw(
             m_pRenderer->GetContext(),
             m_pResultTex,
-            0.0f, 0.0f, 600.0f, 300.0f,
-            DirectX::XMMatrixIdentity() // ƒŠƒUƒ‹ƒg‚àƒXƒNƒ[ƒ‹•s—v‚È‚Ì‚ÅIdentity
+            0.0f, 0.0f, 1920.0f, 1080.0f,
+            viewProj
         );
+    }
+
+    // ã‚¿ã‚¤ãƒˆãƒ«ã«æˆ»ã‚‹ãƒœã‚¿ãƒ³æç”»
+    if (m_pTitleButtonTex)
+    {
+        float scale = m_titleButton.isHovered ? 1.1f : 1.0f;
+        float w = m_titleButton.width * scale;
+        float h = m_titleButton.height * scale;
+        float x = m_titleButton.x - w / 2.0f;
+        float y = m_titleButton.y - h / 2.0f;
+        m_pSpriteRenderer->Draw(m_pRenderer->GetContext(), m_pTitleButtonTex,
+            x, y, w, h, viewProj);
+    }
+
+    // çµ‚äº†ãƒœã‚¿ãƒ³æç”»
+    if (m_pExitButtonTex)
+    {
+        float scale = m_exitButton.isHovered ? 1.1f : 1.0f;
+        float w = m_exitButton.width * scale;
+        float h = m_exitButton.height * scale;
+        float x = m_exitButton.x - w / 2.0f;
+        float y = m_exitButton.y - h / 2.0f;
+        m_pSpriteRenderer->Draw(m_pRenderer->GetContext(), m_pExitButtonTex,
+            x, y, w, h, viewProj);
     }
 
     m_pRenderer->EndFrame();
@@ -41,9 +119,5 @@ void ResultScene::Draw()
 
 void ResultScene::Uninit()
 {
-    if(m_pResultTex)
-    {
-		m_pResultTex->Release();
-	}
-    m_pResultTex = nullptr;
+    if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
 }

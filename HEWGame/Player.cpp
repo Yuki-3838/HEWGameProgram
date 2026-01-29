@@ -9,7 +9,7 @@ Player::Player()
 {
 	// プレイヤー固有の初期設定
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 30;
+	m_Stats.m_Speed = 20;
 	m_Stats.m_Gravity = 1;
 	m_Stats.m_JumpPw = 25;
 
@@ -95,11 +95,23 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			Jump();
 		}
 
-		if (m_IsAttack == false && GetAsyncKeyState(VK_F) & 0x8000)
+		bool attackKey = (GetAsyncKeyState(VK_F) & 0x8000);
+		bool attackTrigger = attackKey && !m_prevAttackKey; // 押した瞬間
+
+		if (!m_IsAttack && attackTrigger)
 		{
 			m_IsAttack = true;
 			m_AttackFrame = 0;
+
+			if (m_pSound)
+			{
+				m_pSound->Play(SOUND_LABEL_SE_ATTACK);
+			}
 		}
+
+		// フレーム最後に保存
+		m_prevAttackKey = attackKey;
+
 	}
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
@@ -223,8 +235,8 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//空中での一時停止
 	if (isAir && GetAsyncKeyState(VK_G) & 0x8000 && m_dState == DashState::NONE)
 	{
-		m_Stats.m_AccelY = 0.0f;
-
+		m_Stats.m_AccelY = 0.0f; 
+		
 		return;
 	}
 }
@@ -271,7 +283,9 @@ void Player::Jump()
 	{
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;
 		m_JumpState = State::JumpState::RISE;
+		m_pSound->Play(SOUND_LABEL_SE_JUMP);
 	}
+	
 }
 
 void Player::Attack(Character** charaList)

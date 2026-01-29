@@ -1,51 +1,124 @@
 #include "TitleScene.h"
 #include <vector>
-void TitleScene::Init() 
-{
-    m_pCamera = new Camera(1920,1080);
-    // ƒ^ƒCƒgƒ‹‰æ‘œ‚Ì“Ç‚Ýž‚Ý
-    m_pBackground = new BackGround(); // ƒƒ“ƒo•Ï”‚Æ‚µ‚Ä•ÛŽ
-    m_pTitleTex = m_pResourceManager->LoadTexture("asset/texture/testSP.png", m_pRenderer->GetDevice());
 
-    if (m_pTitleTex) 
-    {
-		int animCount = 18;//‰½•ªŠ„‚©
-		int xCount = 6;//‰¡‚É‰½ŒÂ•À‚ñ‚Å‚¢‚é‚©
-		float frameWidth = 320.0f;
-		float frameHeight = 320.0f;
-		float speed = 0.2f; // 1ƒRƒ}‚ ‚½‚è‚Ì•\Ž¦ŽžŠÔi•bj
-        m_pBackground->Init(m_pTitleTex, animCount, xCount, frameWidth, frameHeight, speed);
-        m_pBackground->SetSize(1280.0f, 720.0f); // ‰æ–ÊƒTƒCƒY‚É‡‚í‚¹‚é
-        m_pBackground->SetPosition(0.0f, 0.0f);
-    }
-    m_IsFinished = false;
+// ãƒœã‚¿ãƒ³ã®å½“ãŸã‚Šåˆ¤å®š
+bool TitleScene::IsMouseOverButton(const Button& btn, float mouseX, float mouseY)
+{
+    float left = btn.x - btn.width / 2.0f;
+    float right = btn.x + btn.width / 2.0f;
+    float top = btn.y - btn.height / 2.0f;
+    float bottom = btn.y + btn.height / 2.0f;
+    return (mouseX >= left && mouseX <= right && mouseY >= top && mouseY <= bottom);
 }
 
-void TitleScene::Update() 
+void TitleScene::Init()
 {
-    if (m_pBackground)
-    {
-        m_pBackground->Update();
+    m_pCamera = new Camera(1920,1080);
+    m_pBackground = nullptr;
+    m_pTitleTex = nullptr;
+
+    // å‹•ç”»ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åˆæœŸåŒ–
+    m_pVideoPlayer = new VideoPlayer();
+    m_pVideoPlayer->Init(L"asset/movie/Title_Movie.mp4", m_pRenderer->GetDevice());
+    m_pVideoPlayer->SetLoop(true); // ãƒ«ãƒ¼ãƒ—å†ç”Ÿ
+
+    // ãƒœã‚¿ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®èª­ã¿è¾¼ã¿ï¼ˆãªã‘ã‚Œã°blockã‚’ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ï¼‰
+    m_pStartButtonTex = m_pResourceManager->LoadTexture("asset/texture/start_button.png", m_pRenderer->GetDevice());
+    if (!m_pStartButtonTex) {
+        m_pStartButtonTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
     }
-    // ƒXƒy[ƒXƒL[‚ª‰Ÿ‚³‚ê‚½‚çŽŸ‚ÌƒV[ƒ“iStage1j‚Ö
-    if (m_pInput->GetKeyTrigger(VK_RETURN))
+    m_pExitButtonTex = m_pResourceManager->LoadTexture("asset/texture/exit_button.png", m_pRenderer->GetDevice());
+    if (!m_pExitButtonTex) {
+        m_pExitButtonTex = m_pResourceManager->LoadTexture("asset/texture/block.png", m_pRenderer->GetDevice());
+    }
+
+    // ã‚¹ã‚¿ãƒ¼ãƒˆãƒœã‚¿ãƒ³ã®åˆæœŸåŒ–ï¼ˆå·¦å´ï¼‰
+    m_startButton.x = 760.0f;
+    m_startButton.y = 850.0f;
+    m_startButton.width = 300.0f;
+    m_startButton.height = 80.0f;
+    m_startButton.isHovered = false;
+
+    // çµ‚äº†ãƒœã‚¿ãƒ³ã®åˆæœŸåŒ–ï¼ˆå³å´ã€ã‚¹ã‚¿ãƒ¼ãƒˆãƒœã‚¿ãƒ³ã®æ¨ªï¼‰
+    m_exitButton.x = 1160.0f;
+    m_exitButton.y = 850.0f;
+    m_exitButton.width = 300.0f;
+    m_exitButton.height = 80.0f;
+    m_exitButton.isHovered = false;
+
+    m_IsFinished = false;
+    m_IsExitRequested = false;
+}
+
+void TitleScene::Update()
+{
+    // å‹•ç”»ã®æ›´æ–°ï¼ˆ1/60ç§’ = ç´„0.0167ç§’ï¼‰
+    if (m_pVideoPlayer)
     {
-        m_IsFinished = true;
+        m_pVideoPlayer->Update(1.0f / 60.0f, m_pRenderer->GetContext());
+    }
+
+    // ãƒžã‚¦ã‚¹åº§æ¨™ã‚’å–å¾—
+    DirectX::XMFLOAT2 mousePos = m_pInput->GetMousePosition();
+
+    // ãƒœã‚¿ãƒ³ã®ãƒ›ãƒãƒ¼çŠ¶æ…‹ã‚’æ›´æ–°
+    m_startButton.isHovered = IsMouseOverButton(m_startButton, mousePos.x, mousePos.y);
+    m_exitButton.isHovered = IsMouseOverButton(m_exitButton, mousePos.x, mousePos.y);
+
+    // å·¦ã‚¯ãƒªãƒƒã‚¯ã§ãƒœã‚¿ãƒ³å‡¦ç†
+    if (m_pInput->GetMouseLeftTrigger())
+    {
+        if (m_startButton.isHovered)
+        {
+            // ã‚¹ã‚¿ãƒ¼ãƒˆãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
+            m_IsFinished = true;
+        }
+        else if (m_exitButton.isHovered)
+        {
+            // çµ‚äº†ãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
+            m_IsExitRequested = true;
+        }
     }
 }
 
 void TitleScene::Draw()
 {
-    // ”wŒi‚ð•‚ÅƒNƒŠƒA
+    // èƒŒæ™¯è‰²ã§ã‚¯ãƒªã‚¢
     float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
-    // ƒ^ƒCƒgƒ‹‰æ‘œ‚ð‰æ–Ê’†‰›•t‹ß‚É•\Ž¦
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
-    if (m_pBackground) 
+
+    // å‹•ç”»ã‚’èƒŒæ™¯ã¨ã—ã¦æç”»
+    if (m_pVideoPlayer && m_pVideoPlayer->GetSRV())
     {
-        // ”wŒiƒIƒuƒWƒFƒNƒg‚É•`‰æ‚ð”C‚¹‚é
-        m_pBackground->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+        // ç”»é¢å…¨ä½“ã«å‹•ç”»ã‚’æç”»
+        m_pSpriteRenderer->Draw(m_pRenderer->GetContext(), m_pVideoPlayer->GetSRV(),
+            0.0f, 0.0f, 1920.0f, 1080.0f, viewProj);
+    }
+
+    // ã‚¹ã‚¿ãƒ¼ãƒˆãƒœã‚¿ãƒ³æç”»
+    if (m_pStartButtonTex)
+    {
+        float scale = m_startButton.isHovered ? 1.1f : 1.0f; // ãƒ›ãƒãƒ¼æ™‚ã«å°‘ã—å¤§ãã
+        float w = m_startButton.width * scale;
+        float h = m_startButton.height * scale;
+        float x = m_startButton.x - w / 2.0f;
+        float y = m_startButton.y - h / 2.0f;
+        m_pSpriteRenderer->Draw(m_pRenderer->GetContext(), m_pStartButtonTex,
+            x, y, w, h, viewProj);
+    }
+
+    // çµ‚äº†ãƒœã‚¿ãƒ³æç”»
+    if (m_pExitButtonTex)
+    {
+        float scale = m_exitButton.isHovered ? 1.1f : 1.0f;
+        float w = m_exitButton.width * scale;
+        float h = m_exitButton.height * scale;
+        float x = m_exitButton.x - w / 2.0f;
+        float y = m_exitButton.y - h / 2.0f;
+        m_pSpriteRenderer->Draw(m_pRenderer->GetContext(), m_pExitButtonTex,
+            x, y, w, h, viewProj);
     }
 
     m_pRenderer->EndFrame();
@@ -53,6 +126,7 @@ void TitleScene::Draw()
 
 void TitleScene::Uninit()
 {
+    if (m_pVideoPlayer) { delete m_pVideoPlayer; m_pVideoPlayer = nullptr; }
     if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
     if (m_pBackground) { delete m_pBackground; m_pBackground = nullptr; }
 }

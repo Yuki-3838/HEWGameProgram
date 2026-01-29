@@ -1,19 +1,22 @@
 #pragma once
 
 #include <xaudio2.h>
-#include <wrl/client.h> // ƒXƒ}[ƒgƒ|ƒCƒ“ƒ^
-#include <vector>       // ‰¹ºƒf[ƒ^ŠÇ—
+#include <wrl/client.h> // ã‚¹ãƒžãƒ¼ãƒˆãƒã‚¤ãƒ³ã‚¿
+#include <vector>       // éŸ³å£°ãƒ‡ãƒ¼ã‚¿ç®¡ç†
 
 #pragma comment(lib, "xaudio2.lib")
 
-// ƒTƒEƒ“ƒh‚Ìƒ‰ƒxƒ‹i‘‚â‚µ‚½‚¢‚Æ‚«‚Í‚±‚±‚É’Ç‰Áj
+// ã‚µã‚¦ãƒ³ãƒ‰ã®ãƒ©ãƒ™ãƒ«ï¼ˆå¢—ã‚„ã—ãŸã„ã¨ãã¯ã“ã“ã«è¿½åŠ ï¼‰
 enum SOUND_LABEL
 {
     SOUND_LABEL_BGM_SAMPLE = 0,
 
-    //Žg‚¢‚½‚¢ƒ‰ƒxƒ‹‚ð‚±‚±‚É’Ç‰Á‚µ‚Ä‚¢‚­
+    //ä½¿ã„ãŸã„ãƒ©ãƒ™ãƒ«ã‚’ã“ã“ã«è¿½åŠ ã—ã¦ã„ã
     SOUND_LABEL_SE_JUMP,
     SOUND_LABEL_SE_ATTACK,
+    SOUND_LABEL_SE_JUMPLANDING,
+    SOUND_LABEL_SE_DASH,
+    SOUND_LABEL_SE_DASHCHARGE,
 
     SOUND_LABEL_MAX,
 };
@@ -21,35 +24,35 @@ enum SOUND_LABEL
 class Sound
 {
 private:
-    // XAudio2 –{‘Ì
+    // XAudio2 æœ¬ä½“
     Microsoft::WRL::ComPtr<IXAudio2> m_pXAudio2;
-    IXAudio2MasteringVoice* m_pMasteringVoice = nullptr; // ƒ}ƒXƒ^[‚ÍComPtr”ñ‘Î‰ž‚Ìê‡‚ª‚ ‚é
+    IXAudio2MasteringVoice* m_pMasteringVoice = nullptr; // ãƒžã‚¹ã‚¿ãƒ¼ã¯ComPtréžå¯¾å¿œã®å ´åˆãŒã‚ã‚‹
 
-    // 1‚Â‚Ì‰¹º‚ðŠÇ—‚·‚é\‘¢‘Ì
+    // 1ã¤ã®éŸ³å£°ã‚’ç®¡ç†ã™ã‚‹æ§‹é€ ä½“
     struct AudioData
     {
-        IXAudio2SourceVoice* pSourceVoice = nullptr; // Ä¶‚·‚él
-        std::vector<BYTE> soundData;                 // ‰¹ºƒf[ƒ^‚ÌŽÀ‘Ì
-        XAUDIO2_BUFFER buffer = {};                  // ƒoƒbƒtƒ@î•ñ
-        WAVEFORMATEX wfx = {};                       // ƒtƒH[ƒ}ƒbƒgî•ñ
+        IXAudio2SourceVoice* pSourceVoice = nullptr; // å†ç”Ÿã™ã‚‹äºº
+        std::vector<BYTE> soundData;                 // éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã®å®Ÿä½“
+        XAUDIO2_BUFFER buffer = {};                  // ãƒãƒƒãƒ•ã‚¡æƒ…å ±
+        WAVEFORMATEX wfx = {};                       // ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆæƒ…å ±
     };
 
-    // ‘S‚Ä‚Ì‰¹ƒf[ƒ^‚ð”z—ñ‚ÅŠÇ—
+    // å…¨ã¦ã®éŸ³ãƒ‡ãƒ¼ã‚¿ã‚’é…åˆ—ã§ç®¡ç†
     AudioData m_AudioList[SOUND_LABEL_MAX];
 
 public:
     Sound() {}
     ~Sound() { Uninit(); }
 
-    // ‰Šú‰»EI—¹
+    // åˆæœŸåŒ–ãƒ»çµ‚äº†
     HRESULT Init();
     void Uninit();
 
-    //“Ç‚Ýž‚ÝŠÖ” (ƒ‰ƒxƒ‹, ƒtƒ@ƒCƒ‹ƒpƒX, ƒ‹[ƒv‚·‚é‚©)
+    //èª­ã¿è¾¼ã¿é–¢æ•° (ãƒ©ãƒ™ãƒ«, ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹, ãƒ«ãƒ¼ãƒ—ã™ã‚‹ã‹)
     HRESULT Load(SOUND_LABEL label, const char* filename, bool loop = false);
 
-    // Ä¶E’âŽ~E‰¹—Ê
+    // å†ç”Ÿãƒ»åœæ­¢ãƒ»éŸ³é‡
     void Play(SOUND_LABEL label);
     void Stop(SOUND_LABEL label);
-    void SetVolume(SOUND_LABEL label, float volume); // 1.0f‚ªŠî€
+    void SetVolume(SOUND_LABEL label, float volume); // 1.0fãŒåŸºæº–
 };

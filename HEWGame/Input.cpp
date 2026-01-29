@@ -1,15 +1,21 @@
 #include "input.h"
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 Input::Input()
 {
 	VibrationTime = 0;
+	m_hWnd = nullptr;
+	m_gameWidth = 1920;  //ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚²ãƒ¼ãƒ è§£åƒåº¦
+	m_gameHeight = 1080;
+	m_mousePos = { 0, 0 };
+	m_mouseLeftState = false;
+	m_mouseLeftState_old = false;
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ï¿½fï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 Input::~Input()
 {
-	//U“®‚ğI—¹‚³‚¹‚é
+	//ï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	XINPUT_VIBRATION vibration;
 	ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
 	vibration.wLeftMotorSpeed = 0;
@@ -19,20 +25,29 @@ Input::~Input()
 
 void Input::Update()
 {
-	//1ƒtƒŒ[ƒ€‘O‚Ì“ü—Í‚ğ‹L˜^‚µ‚Ä‚¨‚­
+	//1ï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Oï¿½Ì“ï¿½ï¿½Í‚ï¿½ï¿½Lï¿½^ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 	for (int i = 0; i < 256; i++) { keyState_old[i] = keyState[i]; }
 	controllerState_old = controllerState;
+	m_mouseLeftState_old = m_mouseLeftState;
 
-	//ƒL[“ü—Í‚ğXV
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½Í‚ï¿½ï¿½Xï¿½V
 	BOOL hr = GetKeyboardState(keyState);
 
-	//ƒRƒ“ƒgƒ[ƒ‰[“ü—Í‚ğXV(XInput)
+	//ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Í‚ï¿½ï¿½Xï¿½V(XInput)
 	XInputGetState(0, &controllerState);
 
-	//U“®Œp‘±ŠÔ‚ğƒJƒEƒ“ƒg
+	//ãƒã‚¦ã‚¹åº§æ¨™ã‚’æ›´æ–°
+	if (m_hWnd) {
+		GetCursorPos(&m_mousePos);
+		ScreenToClient(m_hWnd, &m_mousePos);
+	}
+	//ãƒã‚¦ã‚¹å·¦ãƒœã‚¿ãƒ³ã®çŠ¶æ…‹ã‚’æ›´æ–°
+	m_mouseLeftState = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+
+	//ï¿½Uï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½g
 	if (VibrationTime > 0) {
 		VibrationTime--;
-		if (VibrationTime == 0) { //U“®Œp‘±ŠÔ‚ªŒo‚Á‚½‚ÉU“®‚ğ~‚ß‚é
+		if (VibrationTime == 0) { //ï¿½Uï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÉUï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½ß‚ï¿½
 			XINPUT_VIBRATION vibration;
 			ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
 			vibration.wLeftMotorSpeed = 0;
@@ -42,82 +57,131 @@ void Input::Update()
 	}
 }
 
-//ƒL[“ü—Í
-bool Input::GetKeyPress(int key) //ƒvƒŒƒX
+//ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½
+bool Input::GetKeyPress(int key) //ï¿½vï¿½ï¿½ï¿½X
 {
 	return keyState[key] & 0x80;
 }
-bool Input::GetKeyTrigger(int key) //ƒgƒŠƒK[
+bool Input::GetKeyTrigger(int key) //ï¿½gï¿½ï¿½ï¿½Kï¿½[
 {
 	return (keyState[key] & 0x80) && !(keyState_old[key] & 0x80);
 }
-bool Input::GetKeyRelease(int key) //ƒŠƒŠ[ƒX
+bool Input::GetKeyRelease(int key) //ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½X
 {
 	return !(keyState[key] & 0x80) && (keyState_old[key] & 0x80);
 }
 
-//¶ƒAƒiƒƒOƒXƒeƒBƒbƒN
+//ï¿½ï¿½ï¿½Aï¿½iï¿½ï¿½ï¿½Oï¿½Xï¿½eï¿½Bï¿½bï¿½N
 DirectX::XMFLOAT2 Input::GetLeftAnalogStick(void)
 {
-	SHORT x = controllerState.Gamepad.sThumbLX; // -32768`32767
-	SHORT y = controllerState.Gamepad.sThumbLY; // -32768`32767
+	SHORT x = controllerState.Gamepad.sThumbLX; // -32768ï¿½`32767
+	SHORT y = controllerState.Gamepad.sThumbLY; // -32768ï¿½`32767
 
 	DirectX::XMFLOAT2 res;
-	res.x = x / 32767.0f; //-1`1
-	res.y = y / 32767.0f; //-1`1
+	res.x = x / 32767.0f; //-1ï¿½`1
+	res.y = y / 32767.0f; //-1ï¿½`1
 	return res;
 }
-//‰EƒAƒiƒƒOƒXƒeƒBƒbƒN
+//ï¿½Eï¿½Aï¿½iï¿½ï¿½ï¿½Oï¿½Xï¿½eï¿½Bï¿½bï¿½N
 DirectX::XMFLOAT2 Input::GetRightAnalogStick(void)
 {
-	SHORT x = controllerState.Gamepad.sThumbRX; // -32768`32767
-	SHORT y = controllerState.Gamepad.sThumbRY; // -32768`32767
+	SHORT x = controllerState.Gamepad.sThumbRX; // -32768ï¿½`32767
+	SHORT y = controllerState.Gamepad.sThumbRY; // -32768ï¿½`32767
 
 	DirectX::XMFLOAT2 res;
-	res.x = x / 32767.0f; //-1`1
-	res.y = y / 32767.0f; //-1`1
+	res.x = x / 32767.0f; //-1ï¿½`1
+	res.y = y / 32767.0f; //-1ï¿½`1
 	return res;
 }
 
-//¶ƒgƒŠƒK[
+//ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Kï¿½[
 float Input::GetLeftTrigger(void)
 {
-	BYTE t = controllerState.Gamepad.bLeftTrigger; // 0`255
+	BYTE t = controllerState.Gamepad.bLeftTrigger; // 0ï¿½`255
 	return t / 255.0f;
 }
-//‰EƒgƒŠƒK[
+//ï¿½Eï¿½gï¿½ï¿½ï¿½Kï¿½[
 float Input::GetRightTrigger(void)
 {
-	BYTE t = controllerState.Gamepad.bRightTrigger; // 0`255
+	BYTE t = controllerState.Gamepad.bRightTrigger; // 0ï¿½`255
 	return t / 255.0f;
 }
 
-//ƒ{ƒ^ƒ““ü—Í
-bool Input::GetButtonPress(WORD btn) //ƒvƒŒƒX
+//ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+bool Input::GetButtonPress(WORD btn) //ï¿½vï¿½ï¿½ï¿½X
 {
 	return (controllerState.Gamepad.wButtons & btn) != 0;
 }
-bool Input::GetButtonTrigger(WORD btn) //ƒgƒŠƒK[
+bool Input::GetButtonTrigger(WORD btn) //ï¿½gï¿½ï¿½ï¿½Kï¿½[
 {
 	return (controllerState.Gamepad.wButtons & btn) != 0 && (controllerState_old.Gamepad.wButtons & btn) == 0;
 }
-bool Input::GetButtonRelease(WORD btn) //ƒŠƒŠ[ƒX
+bool Input::GetButtonRelease(WORD btn) //ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½X
 {
 	return (controllerState.Gamepad.wButtons & btn) == 0 && (controllerState_old.Gamepad.wButtons & btn) != 0;
 }
 
-//U“®
+//ï¿½Uï¿½ï¿½
 void Input::SetVibration(int frame, float powor)
 {
-	// XINPUT_VIBRATION\‘¢‘Ì‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
+	// XINPUT_VIBRATIONï¿½\ï¿½ï¿½ï¿½Ì‚ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ì¬
 	XINPUT_VIBRATION vibration;
 	ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
 
-	// ƒ‚[ƒ^[‚Ì‹­“x‚ğİ’èi0`65535j
+	// ï¿½ï¿½ï¿½[ï¿½^ï¿½[ï¿½Ì‹ï¿½ï¿½xï¿½ï¿½İ’ï¿½i0ï¿½`65535ï¿½j
 	vibration.wLeftMotorSpeed = (WORD)(powor * 65535.0f);
 	vibration.wRightMotorSpeed = (WORD)(powor * 65535.0f);
 	XInputSetState(0, &vibration);
 
-	//U“®Œp‘±ŠÔ‚ğ‘ã“ü
+	//ï¿½Uï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½
 	VibrationTime = frame;
+}
+
+//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«è¨­å®š
+void Input::SetHWnd(HWND hWnd)
+{
+	m_hWnd = hWnd;
+}
+
+//ã‚²ãƒ¼ãƒ è«–ç†è§£åƒåº¦ã‚’è¨­å®š
+void Input::SetGameResolution(int width, int height)
+{
+	m_gameWidth = width;
+	m_gameHeight = height;
+}
+
+//ãƒã‚¦ã‚¹åº§æ¨™å–å¾—ï¼ˆã‚²ãƒ¼ãƒ åº§æ¨™ç³»ã«å¤‰æ›æ¸ˆã¿ï¼‰
+DirectX::XMFLOAT2 Input::GetMousePosition()
+{
+	//å®Ÿéš›ã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¦ã‚²ãƒ¼ãƒ åº§æ¨™ã«ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°
+	if (m_hWnd) {
+		RECT clientRect;
+		GetClientRect(m_hWnd, &clientRect);
+		int clientWidth = clientRect.right - clientRect.left;
+		int clientHeight = clientRect.bottom - clientRect.top;
+
+		//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆåº§æ¨™ã‚’ã‚²ãƒ¼ãƒ åº§æ¨™ã«å¤‰æ›
+		float scaledX = (float)m_mousePos.x * m_gameWidth / clientWidth;
+		float scaledY = (float)m_mousePos.y * m_gameHeight / clientHeight;
+		return DirectX::XMFLOAT2(scaledX, scaledY);
+	}
+	return DirectX::XMFLOAT2((float)m_mousePos.x, (float)m_mousePos.y);
+}
+
+//ãƒã‚¦ã‚¹å·¦ãƒœã‚¿ãƒ³ ãƒ—ãƒ¬ã‚¹
+bool Input::GetMouseLeftPress()
+{
+	return m_mouseLeftState;
+}
+
+//ãƒã‚¦ã‚¹å·¦ãƒœã‚¿ãƒ³ ãƒˆãƒªã‚¬ãƒ¼
+bool Input::GetMouseLeftTrigger()
+{
+	return m_mouseLeftState && !m_mouseLeftState_old;
+}
+
+//ãƒã‚¦ã‚¹å·¦ãƒœã‚¿ãƒ³ ãƒªãƒªãƒ¼ã‚¹
+bool Input::GetMouseLeftRelease()
+{
+	return !m_mouseLeftState && m_mouseLeftState_old;
 }

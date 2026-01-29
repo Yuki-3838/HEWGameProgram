@@ -21,9 +21,16 @@ void Stage1Scene::Init()
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(m_ScreenWidth, m_ScreenHeight);
 
+    //音源をロード
     m_pSound = new Sound();
     m_pSound->Init();
     m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
+    m_pSound->Load(SOUND_LABEL_SE_ATTACK, "asset/sound/SE/Attack.wav", false);
+    m_pSound->Load(SOUND_LABEL_SE_JUMPLANDING, "asset/sound/SE/Jumplanding.wav", false);
+    m_pSound->Load(SOUND_LABEL_SE_DASH, "asset/sound/SE/Dash2.wav", false);
+    m_pSound->Load(SOUND_LABEL_SE_DASHCHARGE, "asset/sound/SE/Dashcharge.wav", false);
+
+
 
     m_pEffectManager = new EffectManager();
     m_pEffectManager->Init();
