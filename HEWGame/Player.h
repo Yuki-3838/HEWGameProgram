@@ -60,6 +60,9 @@ private:
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
     Effect* m_pRunningEffect = nullptr;
+	Effect* m_pDashEffect = nullptr;
+	Effect* m_pDashIdolEffect = nullptr;
+	Effect* m_pAttackEffect = nullptr;
 public:
     // コンストラクタ・デストラクタ
     Player();

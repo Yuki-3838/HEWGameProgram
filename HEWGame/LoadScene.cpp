@@ -1,6 +1,9 @@
 #include "LoadScene.h"
 #include "Stage1Scene.h" // Stage1で使うアセットを知るため
 
+static constexpr float SCREEN_W  = 1920.0f;
+static constexpr float SCREEN_H  = 1080.0f;
+
 LoadScene::LoadScene(Renderer* r, ResourceManager* res, SpriteRenderer* spr, Input* input, NextSceneType next)
     : Scene(r, res, spr, input), m_NextScene(next)
 {
@@ -14,8 +17,17 @@ void LoadScene::Init()
     m_pCamera = new Camera(1920, 1080);
     m_pCamera->SetPosition(0.0f, 0.0f);
     // ロード画面自体の画像（これは即座に必要なので普通に読む）
-    m_pLoadTex = m_pResourceManager->LoadTexture("asset/texture/kinnniku.png", m_pRenderer->GetDevice());
+    m_pLoadMainTex = m_pResourceManager->LoadTexture("asset/texture/Load/Road_Main.png", m_pRenderer->GetDevice());
+    m_pLoadRedBarTex = m_pResourceManager->LoadTexture("asset/texture/Load/Road_Bg_red.png", m_pRenderer->GetDevice());
 
+	//ロード画面のくるくる回るアイコン
+    m_pLoadCycle1Tex = m_pResourceManager->LoadTexture("asset/texture/Load/Road_Cycle_1.png", m_pRenderer->GetDevice());
+    m_pLoadCycle2Tex = m_pResourceManager->LoadTexture("asset/texture/Load/Road_Cycle_2.png", m_pRenderer->GetDevice());
+    m_pLoadCycle3Tex = m_pResourceManager->LoadTexture("asset/texture/Load/Road_Cycle_3.png", m_pRenderer->GetDevice());
+
+    //アニメーション初期値
+	m_RedBarX = -500.0f;
+	m_Angle = 0.0f;
     //スレッド作成：裏で BackgroundLoad 関数を実行させる
     //this を渡しているのは、メンバ関数を実行するため
     m_pThread = new std::thread(&LoadScene::BackgroundLoad, this);
@@ -86,6 +98,17 @@ void LoadScene::Update()
 {
     // メインスレッドはここでアニメーションの計算をするだけ
     // もし m_IsFinished が true になったら、Game.cpp が感知してシーンを切り替えてくれる
+
+	m_RedBarX += 25.0f;
+
+    if (m_RedBarX > SCREEN_W)
+    {
+		m_RedBarX = -400.0f;
+    }
+
+	m_Angle += 3.0f;//回転スピード
+
+	if (m_Angle > 360.0f) m_Angle -= 360.0f;
 }
 
 void LoadScene::Draw()
@@ -93,25 +116,98 @@ void LoadScene::Draw()
     float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
+    //中心を基準にするためのオフセット
+	const float HW = SCREEN_W / 2.0f;
+	const float HH = SCREEN_H / 2.0f;
     DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
-    if (m_pLoadTex)
+    if (m_pLoadMainTex)
     {
-        // ローディングアイコンをくるくる回す演出
-        static float angle = 0.0f;
-        angle += 5.0f; // 回転させる
-
         // 画面中央に描画
         m_pSpriteRenderer->Draw(
             m_pRenderer->GetContext(),
-            m_pLoadTex,
-            0.0f, 0.0f,      // 座標
-            1280.0f, 960.0f,      // サイズ
+            m_pLoadMainTex,
+            0.0, 0.0f,      // 座標
+            SCREEN_W, SCREEN_H,      // サイズ
             viewProj,
-            0.0f, 0.0f, 128.0f, 128.0f, // UV
-            angle
+			0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f,
+			false
         );
     }
 
+  //  if (m_pLoadRedBarTex)
+  //  {
+		//float barLen = 500.0f;
+		//float barThick = 500.0f;
+
+  //      float rotAngle = -3.14159f / 2.0f;
+		//
+  //      float centerX = -HW + m_RedBarX;
+
+  //      float topY = -280.0f;
+  //      float bottomY = 280.0f;;
+
+  //      float offX = barThick / 2.0f;
+  //      float offY = barLen / 2.0f;
+  //      m_pSpriteRenderer->Draw(
+  //          m_pRenderer->GetContext(),
+  //          m_pLoadRedBarTex,
+  //          centerX - offX, topY - offY,
+  //          barThick,barLen,      // 座標
+  //          viewProj,
+  //          0.0f, 0.0f, 
+  //          0.0f, 0.0f,
+  //          0.0f,
+  //          false
+  //      );
+  //  }
+
+	float cycleSize = 200.0f;
+	float drawCycleX = HW + 855.0f;
+	float drawCycleY = HH + 370.0f;
+    if(m_pLoadCycle1Tex)
+    {
+        m_pSpriteRenderer->Draw(
+            m_pRenderer->GetContext(),
+            m_pLoadCycle1Tex,
+            drawCycleX - cycleSize * 0.5f, drawCycleY - cycleSize * 0.5f,
+            cycleSize, cycleSize,
+            viewProj,
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            m_Angle,
+            false
+        );
+	}
+
+    if (m_pLoadCycle2Tex)
+    {
+        m_pSpriteRenderer->Draw(
+            m_pRenderer->GetContext(),
+            m_pLoadCycle2Tex,
+            drawCycleX - cycleSize * 0.5f, drawCycleY - cycleSize * 0.5f,
+            cycleSize, cycleSize,
+            viewProj,
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            m_Angle * 1.5f,
+            false
+        );
+    }
+    if (m_pLoadCycle3Tex)
+    {
+        m_pSpriteRenderer->Draw(
+            m_pRenderer->GetContext(),
+            m_pLoadCycle3Tex,
+            drawCycleX - cycleSize * 0.5f, drawCycleY - cycleSize * 0.5f,
+            cycleSize, cycleSize,
+            viewProj,
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            m_Angle * 0.5,
+            false
+        );
+    }
     m_pRenderer->EndFrame();
 }
 

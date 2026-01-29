@@ -31,7 +31,9 @@ void Stage1Scene::Init()
     // エフェクト
     m_pEffectManager = new EffectManager();
     m_pEffectManager->Init();
-    m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(), m_pResourceManager);
+    m_pEffectManager->LoadEffectTexture(EffectType::Dash, "asset/texture/Effect_Hero_AbilityB.png", m_pRenderer->GetDevice(), m_pResourceManager);
+    m_pEffectManager->LoadEffectTexture(EffectType::DashIdol, "asset/texture/Effect_Hero_AbilityA.png", m_pRenderer->GetDevice(), m_pResourceManager);
+    m_pEffectManager->LoadEffectTexture(EffectType::Attack, "asset/texture/Effect_Hero_AttackD.png", m_pRenderer->GetDevice(), m_pResourceManager);
     // リスト作成
     CreateList(maxChara);
     // Playerキャラ作成　キャラクターは０番

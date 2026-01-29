@@ -1,18 +1,21 @@
 #include "ResultScene.h"
 #include <vector>
+#include "GameData.h"
 
 void ResultScene::Init() 
 {
-    // ƒŠƒUƒ‹ƒg‰æ–Ê—p‚Ì‰æ‘œ‚ğ“Ç‚İ‚İ
+    // ãƒªã‚¶ãƒ«ãƒˆç”»é¢ç”¨ã®ç”»åƒã‚’èª­ã¿è¾¼ã¿
     m_pResultTex = m_pResourceManager->LoadTexture("assets/texture/result.png", m_pRenderer->GetDevice());
 
-    // ‘JˆÚƒtƒ‰ƒO‚ğƒŠƒZƒbƒg
+	m_pGameUI = new GameUI();
+	m_pGameUI->Init(m_pRenderer->GetDevice(), m_pResourceManager);
+    // é·ç§»ãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆ
     m_IsFinished = false;
 }
 
 void ResultScene::Update() 
 {
-    // ƒXƒy[ƒXƒL[‚Ü‚½‚ÍƒGƒ“ƒ^[ƒL[‚ª‰Ÿ‚³‚ê‚½‚çAÄ‚Ñƒ^ƒCƒgƒ‹‚Ö–ß‚é
+    // ã‚¹ãƒšãƒ¼ã‚¹ã‚­ãƒ¼ã¾ãŸã¯ã‚¨ãƒ³ã‚¿ãƒ¼ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã‚‰ã€å†ã³ã‚¿ã‚¤ãƒˆãƒ«ã¸æˆ»ã‚‹
     if (m_pInput->GetKeyTrigger(VK_SPACE)) 
     {
         m_IsFinished = true;
@@ -24,16 +27,27 @@ void ResultScene::Draw()
     float clearColor[4] = { 0.f, 0.f, 1.0f, 1.0f };
     m_pRenderer->StartFrame(clearColor);
 
-    // ƒŠƒUƒ‹ƒg‰æ‘œ‚ğ•\¦
+    // ãƒªã‚¶ãƒ«ãƒˆç”»åƒã‚’è¡¨ç¤º
     if (m_pResultTex) 
     {
-        // ‰æ–Ê’†‰›‚É•\¦iÀ•W‚âƒTƒCƒY‚Í“K‹X’²®j
+        // ç”»é¢ä¸­å¤®ã«è¡¨ç¤ºï¼ˆåº§æ¨™ã‚„ã‚µã‚¤ã‚ºã¯é©å®œèª¿æ•´ï¼‰
         m_pSpriteRenderer->Draw(
             m_pRenderer->GetContext(),
             m_pResultTex,
             0.0f, 0.0f, 600.0f, 300.0f,
-            DirectX::XMMatrixIdentity() // ƒŠƒUƒ‹ƒg‚àƒXƒNƒ[ƒ‹•s—v‚È‚Ì‚ÅIdentity
+            DirectX::XMMatrixIdentity() // ãƒªã‚¶ãƒ«ãƒˆã‚‚ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä¸è¦ãªã®ã§Identity
         );
+    }
+
+	int score = GameData::GetScore();
+	int time = static_cast<int>(GameData::GetTime());
+    if (m_pGameUI)
+    {
+		//ã‚¿ã‚¤ãƒ è¡¨ç¤º
+		m_pGameUI->DrawNumber(m_pRenderer->GetContext(), m_pSpriteRenderer,time,800.0f,400.0f,1.0f);
+
+		//ã‚¹ã‚³ã‚¢è¡¨ç¤º
+        m_pGameUI->DrawNumber(m_pRenderer->GetContext(), m_pSpriteRenderer, score, 800.0f, 600.0f, 1.0f);
     }
 
     m_pRenderer->EndFrame();
@@ -44,6 +58,12 @@ void ResultScene::Uninit()
     if(m_pResultTex)
     {
 		m_pResultTex->Release();
+        m_pResultTex = nullptr;
 	}
-    m_pResultTex = nullptr;
+    if (m_pGameUI)
+    {
+        m_pGameUI->Uninit();
+        delete m_pGameUI;
+		m_pGameUI = nullptr;
+    }
 }

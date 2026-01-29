@@ -1,12 +1,15 @@
 #pragma once
 #include "Scene.h"
+#include "GameUI.h"
 
 class ResultScene : public Scene 
 {
 private:
     bool m_IsFinished = false;
-    // タイトル画面用のテクスチャポインタを追加
+    // 繧ｿ繧､繝医Ν逕ｻ髱｢逕ｨ縺ｮ繝�繧ｯ繧ｹ繝√Ε繝昴う繝ｳ繧ｿ繧定ｿｽ蜉
     ID3D11ShaderResourceView* m_pResultTex;
+
+    GameUI* m_pGameUI = nullptr;
 public:
     using Scene::Scene;
     void Init() override;

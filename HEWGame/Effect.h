@@ -6,10 +6,11 @@
 
 enum EffectType
 {
-	Explosion,
-    Smoke,
-    Dash,
-	// •K—v‚É‰‚¶‚Ä‘¼‚ÌƒGƒtƒFƒNƒgƒ^ƒCƒv‚ğ’Ç‰Á
+    DashIdol,
+	Dash,
+    Attack,
+
+	// å¿…è¦ã«å¿œã˜ã¦ä»–ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚¿ã‚¤ãƒ—ã‚’è¿½åŠ 
 };
 class Effect
 {
@@ -18,7 +19,7 @@ private:
     DirectX::XMFLOAT2 m_Position;
     float m_Scale;
 
-    //ƒAƒjƒ[ƒVƒ‡ƒ“ŠÇ——p
+    //ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç®¡ç†ç”¨
     Animator m_Animator;
 
     ID3D11ShaderResourceView* m_pTexture = nullptr;
@@ -28,27 +29,27 @@ private:
     float m_Angle = 0.0f;
     float m_StartTexX;
     float m_StartTexY;
-    bool m_IsLoop = false; // ƒ‹[ƒvİ’è—pƒtƒ‰ƒO
+    bool m_IsLoop = false; // ãƒ«ãƒ¼ãƒ—è¨­å®šç”¨ãƒ•ãƒ©ã‚°
 public:
     Effect() {}
     ~Effect() {}
 
-    // Init‚ÅƒAƒjƒ[ƒVƒ‡ƒ“î•ñiƒRƒ}”‚â•ªŠ„”j‚àó‚¯æ‚é
-    // frameCount: ‘ƒRƒ}”// divX: ‰¡‚Ì•ªŠ„”// texW, texH: ƒeƒNƒXƒ`ƒƒ‘S‘Ì‚ÌƒTƒCƒY
+    // Initã§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ï¼ˆã‚³ãƒæ•°ã‚„åˆ†å‰²æ•°ï¼‰ã‚‚å—ã‘å–ã‚‹
+    // frameCount: ç·ã‚³ãƒæ•°// divX: æ¨ªã®åˆ†å‰²æ•°// texW, texH: ãƒ†ã‚¯ã‚¹ãƒãƒ£å…¨ä½“ã®ã‚µã‚¤ã‚º
     void Init(ID3D11ShaderResourceView* tex, float x, float y, float scale,
         int frameCount, int divX, float texW, float texH, float speed, bool flipX, float angle, float startTexX, float startTexY);
 
-    void Update(float deltaTime); // deltaTime (•b) ‚ğó‚¯æ‚é‚æ‚¤‚É‚·‚é
+    void Update(float deltaTime); // deltaTime (ç§’) ã‚’å—ã‘å–ã‚‹ã‚ˆã†ã«ã™ã‚‹
     void Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer, DirectX::XMMATRIX viewProj);
 
     bool IsActive() const { return m_Active; }
 
-    //SŒã‚©‚çˆÊ’u‚ğ•Ï‚¦‚éŠÖ”
+    //Så¾Œã‹ã‚‰ä½ç½®ã‚’å¤‰ãˆã‚‹é–¢æ•°
     void SetPosition(float x, float y) { m_Position = { x, y }; }
 
-    // ƒ‹[ƒvİ’è‚ğƒIƒ“‚É‚·‚éŠÖ”
+    // ãƒ«ãƒ¼ãƒ—è¨­å®šã‚’ã‚ªãƒ³ã«ã™ã‚‹é–¢æ•°
     void SetLoop(bool loop) { m_IsLoop = loop; }
 
-    //‹­§“I‚ÉÁ‚·ŠÖ”iƒL[‚ğ—£‚µ‚½‚Æ‚«—pj
+    //å¼·åˆ¶çš„ã«æ¶ˆã™é–¢æ•°ï¼ˆã‚­ãƒ¼ã‚’é›¢ã—ãŸã¨ãç”¨ï¼‰
     void Stop() { m_Active = false; }
 };

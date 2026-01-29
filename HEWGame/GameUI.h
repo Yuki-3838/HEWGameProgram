@@ -30,6 +30,7 @@ public:
 	//まとめて全部描画する関数
 	void Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer);
 
+	static void GetTexSize(ID3D11ShaderResourceView* srv, float& outWidth, float& outHeight);
 	//個別に描画したいときの関数
 	void DrawBar(ID3D11DeviceContext* context, SpriteRenderer* sprite, ID3D11ShaderResourceView* bodyTex,float x, float y, float w, float h, float current, float max);
 	void DrawGauge(ID3D11DeviceContext* context, SpriteRenderer* sprite, ID3D11ShaderResourceView* framTex, ID3D11ShaderResourceView* bodyTex, float x, float y, float w, float h, float current, float max);

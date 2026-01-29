@@ -97,6 +97,11 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		{
 			m_IsAttack = true;
 			m_AttackFrame = 0;
+			if (m_pEffectManager)
+			{
+				float offsetX = m_FlipX ? 80.0f : 40.0f;
+				m_pAttackEffect = m_pEffectManager->Play(EffectType::Attack, m_Position.x + offsetX, m_Position.y, m_FlipX);
+			}
 		}
 	}
 
@@ -185,39 +190,39 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	// --- エフェクトの制御 ---
 	if (isMoving)
 	{
-		/// 1. まだエフェクトが出ていなければ、新しく出す
-		if (m_pEffectManager && m_pRunningEffect == nullptr)
-		{
-			// エフェクトを発生させ、そのポインタを受け取る
-			m_pRunningEffect = m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y, m_FlipX);
+		///// 1. まだエフェクトが出ていなければ、新しく出す
+		//if (m_pEffectManager && m_pRunningEffect == nullptr)
+		//{
+		//	// エフェクトを発生させ、そのポインタを受け取る
+		//	m_pRunningEffect = m_pEffectManager->Play(EffectType::Smoke, m_Position.x, m_Position.y, m_FlipX);
 
-			// ループ設定をONにする（これで勝手に消えない）
-			if (m_pRunningEffect)
-			{
-				m_pRunningEffect->SetLoop(true);
-			}
-		}
+		//	// ループ設定をONにする（これで勝手に消えない）
+		//	if (m_pRunningEffect)
+		//	{
+		//		m_pRunningEffect->SetLoop(true);
+		//	}
+		//}
 
-		// 2. エフェクトが出ているなら、プレイヤーについてくるように位置を更新
-		if (m_pRunningEffect)
-		{
-			// プレイヤーの足元(の少し後ろ)に合わせる計算
-			// (Play関数内の計算と同じロジックを手動で行うか、Playを呼ぶ代わりにSetPositionを使う)
-			float offsetX = m_FlipX ? 192.0f : 40.0f;
-			float offsetY = 150.0f;                    // ����
+		//// 2. エフェクトが出ているなら、プレイヤーについてくるように位置を更新
+		//if (m_pRunningEffect)
+		//{
+		//	// プレイヤーの足元(の少し後ろ)に合わせる計算
+		//	// (Play関数内の計算と同じロジックを手動で行うか、Playを呼ぶ代わりにSetPositionを使う)
+		//	float offsetX = m_FlipX ? 192.0f : 40.0f;
+		//	float offsetY = 150.0f;                    // ����
 
-			m_pRunningEffect->SetPosition(m_Position.x + offsetX, m_Position.y + offsetY);
-		}
+		//	m_pRunningEffect->SetPosition(m_Position.x + offsetX, m_Position.y + offsetY);
+		//}
 	}
 	else
 	{
-		// キーを離して止まったら、エフェクトを消す
-		if (m_pRunningEffect)
-		{
-			m_pRunningEffect->Stop();  // エフェクトを停止
-			m_pRunningEffect = nullptr;
-			m_pRunningEffect = nullptr;
-		}
+		//// キーを離して止まったら、エフェクトを消す
+		//if (m_pRunningEffect)
+		//{
+		//	m_pRunningEffect->Stop();  // エフェクトを停止
+		//	m_pRunningEffect = nullptr;
+		//	m_pRunningEffect = nullptr;
+		//}
 	}
 
 	//空中ジャンプの判定
@@ -238,7 +243,12 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		}
 		return;
 	}
-
+	if (m_pDashIdolEffect)
+	{
+		float centerX = m_Position.x + (m_Size.x / 2.0f);
+		float centerY = m_Position.y;
+		m_pDashIdolEffect->SetPosition(centerX, centerY);
+	}
 }
 
 void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
@@ -519,6 +529,12 @@ void Player::DashMove(const TileMap& tile)
 			if (StageCol(tile, ColRes::LEFT))m_Position.x += m_dSpeed;
 		}
 	}
+	if (m_pDashEffect)
+	{
+		float centerX = m_FlipX ? 200.0f : -50.0f;
+		float centrY = m_Position.y + (m_Size.y / 2.0f);
+		m_pDashEffect->SetPosition(m_Position.x + centerX, centrY);
+	}
 	m_dDistanceCount += m_dSpeed;
 	if (m_dDistanceCount >= m_dDistanceMax)
 	{
@@ -530,14 +546,30 @@ void Player::DashInput()
 {
 	bool inputQ = GetAsyncKeyState(VK_Q);
 	// ダッシュキーを押しており、ダッシュ状態でなければ、ダッシュ発動処理を行う
-	if (inputQ && m_dState != DashState::DASH)
+	if (inputQ && m_dState == DashState::NONE)
 	{
-		if (m_sGauge >= 1.0f && (m_JumpState == State::JumpState::NONE || m_canAirDash))
+		float currentSkill = GameData::GetSkill(SkillType::Dash);
+		if (currentSkill >= 33.0f && (m_JumpState == State::JumpState::NONE || m_canAirDash))
 		{
 			m_dState = DashState::STAY;
 			m_dStayCount = 0;
 			m_dDire[0] = DashDirection::NONE;
 			m_dDire[1] = DashDirection::NONE;
+
+			if(m_pEffectManager)
+			{
+				if(m_pDashIdolEffect)
+				{
+					m_pDashIdolEffect->Stop();
+				}
+				float centerX = m_Position.x + (m_Size.x / 2.0f);
+				float centerY = m_Position.y;
+				m_pDashIdolEffect = m_pEffectManager->Play(EffectType::DashIdol, centerX, centerY, m_FlipX);
+				if (m_pDashIdolEffect != nullptr)
+				{
+					m_pDashIdolEffect->SetLoop(true);
+				}
+			}
 		}
 	}
 	if (inputQ && m_dState == DashState::STAY)
@@ -553,19 +585,34 @@ void Player::DashInput()
 
 		if (m_dStayCount >= m_dStayMax)
 		{
-			m_dState = DashState::DASH;
+			StartDash();
 		}
 	}
 	if (!inputQ && m_dState == DashState::STAY)
 	{
-		m_dState = DashState::DASH;
+		StartDash();
 	}
 }
 
 void Player::StartDash()
 {
+	if (m_pDashIdolEffect)
+	{
+		m_pDashIdolEffect->Stop();
+		m_pDashIdolEffect = nullptr;
+	}
+	if (m_pDashEffect)
+	{
+		m_pDashEffect->Stop();
+	}
+	m_pDashEffect = m_pEffectManager->Play(EffectType::Dash, m_Position.x, m_Position.y , m_FlipX);
+
+	if(m_pDashEffect)
+	{
+		m_pDashEffect->SetLoop(true);
+	}
 	m_dState = DashState::DASH;
-	m_sGauge -= 1.0f;
+	GameData::UseSkill(SkillType::Dash, 33.0f);
 	m_dDistanceCount = 0.0f;
 
 	// 入力なし → 向いている方向
@@ -585,6 +632,11 @@ void Player::StartDash()
 
 void Player::EndDash()
 {
+	if(m_pDashEffect)
+	{
+		m_pDashEffect->Stop();
+		m_pDashEffect = nullptr;
+	}
 	m_dState = DashState::NONE;
 	m_dStayCount = 0;
 	m_dDistanceCount = 0;

@@ -1,5 +1,6 @@
 #include "GameUI.h"
 #include "GameData.h"
+#include <cmath>
 
 GameUI::GameUI() {}
 GameUI::~GameUI() {}
@@ -35,16 +36,38 @@ void GameUI::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer)
     float dashVal = GameData::GetSkill(SkillType::Dash);
     float dashValMax = GameData::GetMaxSkill(SkillType::Dash);
     //位置:(640,600)サイズ:幅100,高さ10
-    DrawGauge(context, spriteRenderer,m_pGaugeFrameTex, m_pGaugeBackGroundTex, 640.0f, 600.0f, 500.0f, 500.0f, dashVal, dashValMax);
+    DrawGauge(context, spriteRenderer,m_pGaugeFrameTex, m_pGaugeBackGroundTex, -60.0f, -170.0f, 500.0f, 500.0f, dashVal, dashValMax);
 
-    DrawBar(context, spriteRenderer, m_pSkillGaugeTex, 640, 600, 500, 500, dashVal, dashValMax);
+    DrawBar(context, spriteRenderer, m_pSkillGaugeTex, 15, -133, 395, 395, dashVal, dashValMax);
         //スコア表示
-    DrawNumber(context, spriteRenderer, GameData::GetScore(), 10.0f, 10.0f, 1.0f);
+    DrawNumber(context, spriteRenderer, GameData::GetScore(), 10.0f, 50.0f, 1.0f);
     //タイム表示
-    DrawNumber(context, spriteRenderer, static_cast<int>(GameData::GetTime()), 100.0f, 500.0f, 50.0f);
+    DrawNumber(context, spriteRenderer, static_cast<int>(GameData::GetTime()), 1600.0f, 0.0f, 0.5f);
     ////必殺技
     //float ultVal = GameData::GetSkill(SkillType::Ult);
     //float ultValMax = GameData::GetMaxSkill(SkillType::Ult);
+}
+
+void GameUI::GetTexSize(ID3D11ShaderResourceView* srv, float& outWidth, float& outHeight)
+{
+	outWidth = 0.0f;
+	outHeight = 0.0f;
+	if (!srv) return;
+
+	ID3D11Resource* res = nullptr;
+	srv->GetResource(&res);
+	if (!res) return;
+
+	ID3D11Texture2D* tex = static_cast<ID3D11Texture2D*>(res); 
+
+    if(tex)
+    {
+        D3D11_TEXTURE2D_DESC desc = {};
+        tex->GetDesc(&desc);
+        outWidth = static_cast<float>(desc.Width);
+        outHeight = static_cast<float>(desc.Height);
+	}
+	res->Release();
 }
 
 void GameUI::DrawBar(ID3D11DeviceContext* context, SpriteRenderer* sprite, ID3D11ShaderResourceView* bodyTex, float x, float y, float w, float h, float current, float max)
@@ -58,10 +81,15 @@ void GameUI::DrawBar(ID3D11DeviceContext* context, SpriteRenderer* sprite, ID3D1
     //範囲制限
     if (rate < 0.0f) rate = 0.0f;
     if (rate > 1.0f) rate = 1.0f;
-        //描画する幅を計算
-        float drawW = w * rate;
+ 
 
-        sprite->Draw(context, bodyTex, x, y, drawW, h, viewProj);
+    float texW = 0.0f, texH = 0.0f;
+	GetTexSize(bodyTex, texW, texH);
+    //描画する幅を計算
+    float drawW = w * rate;
+	float srcW = texW * rate;
+
+        sprite->Draw(context, bodyTex, x, y, drawW, h, viewProj,0.0f,0.0f,srcW,texW);
 }
 
 void GameUI::DrawGauge(ID3D11DeviceContext* context, SpriteRenderer* sprite, ID3D11ShaderResourceView* frameTex, ID3D11ShaderResourceView* bodyTex, float x, float y, float w, float h, float current, float max)

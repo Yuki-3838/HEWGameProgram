@@ -12,7 +12,15 @@ enum class NextSceneType
 class LoadScene : public Scene
 {
 private:
-    ID3D11ShaderResourceView* m_pLoadTex = nullptr; // ローディング画像
+    ID3D11ShaderResourceView* m_pLoadMainTex = nullptr; //背景
+    ID3D11ShaderResourceView* m_pLoadRedBarTex = nullptr; //赤い光
+    ID3D11ShaderResourceView* m_pLoadCycle1Tex = nullptr; //リング1
+    ID3D11ShaderResourceView* m_pLoadCycle2Tex = nullptr; //リング2
+    ID3D11ShaderResourceView* m_pLoadCycle3Tex = nullptr; //リング3
+
+    float m_RedBarX = 0.0f;
+	float m_Angle = 0.0f;
+
     NextSceneType m_NextScene;
 
     Camera* m_pCamera = nullptr;
