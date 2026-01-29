@@ -210,13 +210,13 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	}
 	else
 	{
-		// キーを離して止まったら、エフェクトを消す
-		if (m_pRunningEffect)
-		{
-			m_pRunningEffect->Stop();  // エフェクトを停止
-			m_pRunningEffect = nullptr;
-			m_pRunningEffect = nullptr;
-		}
+		//// キーを離して止まったら、エフェクトを消す
+		//if (m_pRunningEffect)
+		//{
+		//	m_pRunningEffect->Stop();  // エフェクトを停止
+		//	m_pRunningEffect = nullptr;
+		//	m_pRunningEffect = nullptr;
+		//}
 	}
 
 	//空中ジャンプの判定
@@ -237,7 +237,10 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		}
 		return;
 	}
-
+	if (m_pDashIdolEffect)
+	{
+		m_pDashIdolEffect->SetPosition(m_Position.x, m_Position.y);
+	}
 }
 
 void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
@@ -544,6 +547,15 @@ void Player::DashInput()
 			m_dStayCount = 0;
 			m_dDire[0] = DashDirection::NONE;
 			m_dDire[1] = DashDirection::NONE;
+
+			if(m_pEffectManager)
+			{
+				m_pDashIdolEffect = m_pEffectManager->Play(EffectType::DashIdol, m_Position.x, m_Position.y , m_FlipX);
+				if (m_pDashEffect)
+				{
+					m_pDashEffect->SetLoop(true);
+				}
+			}
 		}
 	}
 	if (inputQ && m_dState == DashState::STAY)
@@ -570,6 +582,11 @@ void Player::DashInput()
 
 void Player::StartDash()
 {
+	if (m_pDashIdolEffect)
+	{
+		m_pDashIdolEffect->Stop();
+		m_pDashIdolEffect = nullptr;
+	}
 	if (m_pDashEffect)
 	{
 		m_pDashEffect->Stop();
