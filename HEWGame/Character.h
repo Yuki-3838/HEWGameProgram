@@ -91,6 +91,9 @@ protected:
 
     GameObject* object;
 
+    
+    
+
 public:
     Character();
     virtual ~Character() {}
@@ -102,7 +105,7 @@ public:
     virtual int TakeDamage() = 0;
     virtual void Jump() = 0;
 
-    bool StageCol(const TileMap& tile, const ColRes direction);
+    bool StageCol(const TileMap& tile, const ColRes direction,float x = -1,float y = -1);
 
     virtual void Update(const TileMap& tile, Character** charaList) = 0;
 
@@ -125,6 +128,6 @@ public:
 
     void SetPos(float x, float y) { m_Position.x = x;m_Position.y = y; }
 
-    State::CharDir ReverseDir(State::CharDir now);
-    void ResolveOverlap(const Character& subject);
+    void ReverseDir();
+    void ResolveOverlap(const TileMap&,const Character& subject);
 };

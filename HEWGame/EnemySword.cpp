@@ -6,12 +6,15 @@ EnemySword::EnemySword()
 	// エネミー固有の初期設定
 	EnemyInit();
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 15;
+	
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
-	m_Size.x = 128.0f;
-	m_Size.y = 256.0f;
+	m_serchSpeed = 1;
+	m_targetSpeed = 5;
+	m_Stats.m_Speed = m_serchSpeed;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
 	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
 
@@ -38,8 +41,12 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	m_Animator.Update(1.0f / 1.0f);
 
 	Enemy::Update(tile,charaList);
+	if (m_ActionState == ActionState::ATTACK)
+	{
+		AttackPlayer();
+	}
 	Move(tile);
-
+	//Attack(charaList);
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 
@@ -164,5 +171,17 @@ void EnemySword::SetAnimation(int stateIndex)
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);
 		break;
+	}
+}
+
+void EnemySword::AttackPlayer()
+{
+	if (m_charDir == State::CharDir::LEFT && m_Position.x < m_pTarget->GetPosition().x)
+	{
+		m_charDir = State::CharDir::RIGHT;
+	}
+	else if (m_charDir == State::CharDir::RIGHT && m_Position.x > m_pTarget->GetPosition().x)
+	{
+		m_charDir = State::CharDir::LEFT;
 	}
 }
