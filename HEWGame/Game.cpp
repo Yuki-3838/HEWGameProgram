@@ -2,6 +2,7 @@
 #include "Stage1Scene.h"
 #include "ResultScene.h"
 #include "DemoReelScene.h"
+#include "LoadScene.h"
 
 #include<vector>
 #include"GameObject.h"
@@ -56,7 +57,7 @@ void Game::Update()
     if (!m_pInput || !m_pSceneManager) return;
 
     // 1. 入力情報を最新にする
-    m_pInput->Update(); // ★これがないと判定が更新されません
+    m_pInput->Update();
 
     // 2. シーンの更新
     m_pSceneManager->Update();
@@ -91,7 +92,19 @@ void Game::Update()
         // TitleScene の場合 -> Stage1Scene へ
         if (titleScene)
         {
-            m_pSceneManager->ChangeScene(new Stage1Scene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
+            // 「次は Stage1 だよ」と指定して LoadScene を作る
+            m_pSceneManager->ChangeScene(new LoadScene(m_pRenderer,m_pResourceManager,m_pSpriteRenderer,m_pInput,NextSceneType::Stage1));
+        }
+        else if (auto loadScene = dynamic_cast<LoadScene*>(current)) // loadSceneとしてキャスト
+        {
+            //LoadSceneが持っている「次の行き先」情報を取得
+            NextSceneType type = loadScene->GetNextSceneType();
+            // LoadScene の場合 -> 指定された次のシーンへ
+            if (type == NextSceneType::Stage1)
+            {
+                m_pSceneManager->ChangeScene(new Stage1Scene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
+            }
+            //ほかのステージを追加の場合else if(type == NextType)
         }
         else if (dynamic_cast<DemoReelScene*>(current))
         {

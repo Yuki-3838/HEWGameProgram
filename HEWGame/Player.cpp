@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <Windows.h>
 #include<vector>
+#include "GameData.h"
 
 std::vector<GameObject*> g_GameObjects;
 
@@ -45,6 +46,7 @@ Player::~Player()
 void Player::Update(const TileMap& tile, Character** charaList)
 {
 	
+	GameData::AddSkill(SkillType::Dash, 0.5f);
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //待機状態に戻す
@@ -53,24 +55,20 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	bool isMoving = false;
 	//空中にいるかのチェック
 	bool isAir = (m_JumpState != State::JumpState::NONE);
-	
+
 
 	//ｖを教えている間ダッシュゲージをチャージする　仕様と違うので削除する
 	if (GetAsyncKeyState(VK_V) & 0x8000 && m_dState != DashState::DASH)
 	{
-		m_sGauge += 1.0f/60.0f;
-
-		if (m_sGauge > m_sGaugeMAX)
-		{
-			m_sGauge = m_sGaugeMAX;
-		}
+		m_sGauge += 1.0f / 60.0f;
 	}
-	
+
+
 
 	DashInput();
 
 	//通常移動
-	 if(m_dState == DashState::NONE)
+	if (m_dState == DashState::NONE)
 	{
 		m_dState = DashState::NONE;
 		m_dStayCount = 0;
@@ -113,6 +111,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		m_prevAttackKey = attackKey;
 
 	}
+
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 
@@ -129,7 +128,14 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//攻撃中か
 	else if (m_IsAttack)
 	{
-		nextAnim = 3; //攻撃用アニメ
+		if (isAir)
+		{
+			nextAnim = 7; //空中攻撃用アニメ
+		}
+		else
+		{
+			nextAnim = 3; //攻撃用アニメ
+		}
 	}
 	// ジャンプ上昇中か
 	else if (m_JumpState == State::JumpState::RISE)
@@ -235,10 +241,16 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	//空中での一時停止
 	if (isAir && GetAsyncKeyState(VK_G) & 0x8000 && m_dState == DashState::NONE)
 	{
-		m_Stats.m_AccelY = 0.0f; 
-		
+		m_sGauge = GameData::GetSkill(SkillType::Dash);
+		m_sGaugeMAX = GameData::GetMaxSkill(SkillType::Dash);
+
+		if (m_sGauge > m_sGaugeMAX)
+		{
+			GameData::UseSkill(SkillType::Dash, m_sGaugeMAX);
+		}
 		return;
 	}
+
 }
 
 void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj)
@@ -247,10 +259,10 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 	AnimFrame f = m_Animator.GetCurrentFrame();
 
 	// 描画位置とサイズ
-	float drawX = m_Position.x;
-	float drawY = m_Position.y;
-	float drawW = m_Size.x;
-	float drawH = m_Size.y;
+	float drawX = m_Position.x + f.renderOffsetX;
+	float drawY = m_Position.y + f.renderOffsetY;
+	float drawW = f.w * f.scale;
+	float drawH = f.h * f.scale;
 
 
 	// SpriteRendererで描画
@@ -309,7 +321,7 @@ void Player::Attack(Character** charaList)
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
-		if (obj->GetCharaType() != State::CharaType::t_Enemy)continue;  //enemy以外だったらスキップする
+		if (obj->GetCharaType() == State::CharaType::t_Player)continue;  //playerだったらスキップする
 
 		ColRes hit = CollisionRect(*obj,attackPos, attackSize);
 		
@@ -326,14 +338,14 @@ void Player::Attack(Character** charaList)
 int Player::TakeDamage()
 {
 	
-		int damage = 1;
-		m_Stats.m_HP -= damage;
-		if (m_Stats.m_HP <= 0)
-		{
-			m_Stats.m_HP = 0;
-			m_IsDead = true;
-		}
-		return m_Stats.m_HP;
+	int damage = 1;
+	m_Stats.m_HP -= damage;
+	if (m_Stats.m_HP <= 0)
+	{
+		m_Stats.m_HP = 0;
+		m_IsDead = true;
+	}
+	return m_Stats.m_HP;
 	
 }
 
@@ -351,13 +363,14 @@ void Player::GetBlink()
 {
 }
 
-void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
+void Player::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* flyattack, ID3D11ShaderResourceView* abilityA, ID3D11ShaderResourceView* abilityB)
 {
 	m_pTexIdle = idle;
 	m_pTexWalk = walk;
 	m_pTexJump = jump;
 	m_pTexFall = fall;
 	m_pTexAttack = attack;
+	m_pTexFlyAttack = flyattack;
 	
 	m_pTexAbilityA = abilityA;
 	m_pTexAbilityB = abilityB;
@@ -375,38 +388,89 @@ void Player::SetAnimation(int stateIndex)
 	m_CurrentAnimState = stateIndex;
 	//画像の構成に合わせて数値を変更してね
 	float w = 320.0f;
-	float h = 240.0f;
+	float h = 320.0f;
+	float animW = 0; // 今回設定するアニメの幅
+	float animH = 0; // 今回設定するアニメの高さ
+	float uvOffsetY = 0.0f; // UVのYオフセット
+	float scale = 1.0f;
+
+	float offX;
+	float offY;
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
 	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置,ループさせるかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_pTexIdle;
-		m_Animator.Init(24, 8, w - 80, h + 80, 0.02f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(24, 8, animW, animH, 0.02f, 0.0f, true, offX, offY, scale);
 		break;
 	case 1: //移動
 		m_pTexture = m_pTexWalk;
-		m_Animator.Init(18, 6, w, h, 0.05f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(18, 9, animW, animH, 0.05f, 0.0f, true, offX, offY, scale);
 		break;
 	case 2: //ジャンプ上昇（ループしない）
 		m_pTexture = m_pTexJump;
-		m_Animator.Init(14, 7, w - 40, h + 80, 0.1f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 0.65;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(14, 7, animW, animH, 0.1f, 0.0f, false, offX, offY, scale);
 		break;
 	case 3: //攻撃
 		m_pTexture = m_pTexAttack;
-		m_Animator.Init(6, 3, w, h, 0.03f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 0.7;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(6, 3, animW, animH, 0.03f, 0.0f, false, offX, offY, scale);
 		break;
 	case 4: //落下
 		m_pTexture = m_pTexFall;
-		m_Animator.Init(14, 7, w - 80, h + 80, 0.01f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 0.65;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(14, 7, animW, animH, 0.01f, 0.0f, false, offX, offY, scale);
 		break;
 	case 5: //溜め（AbilityA）
 		m_pTexture = m_pTexAbilityA;
-		m_Animator.Init(28, 7, w, h+30, 0.05f, 0.0f, true);
+		animW = w;
+		animH = h;
+		scale = 0.7;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, animW, animH, 0.05f, 0.0f, true, offX, offY, scale);
 		break;
 	case 6: //ダッシュ（AbilityB）
 		m_pTexture = m_pTexAbilityB;
-		m_Animator.Init(20, 5, w, h-30, 0.02f, 0.0f, false);
+		animW = w;
+		animH = h;
+		scale = 0.7;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(16, 8, animW, animH, 0.02f, 0.0f, false, offX, offY, scale);
+		break;
+	case 7: //空中攻撃
+		m_pTexture = m_pTexFlyAttack;
+		animW = w;
+		animH = h;
+		scale = 0.75;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(6, 3, animW, animH, 0.03f, 0.0f, false, offX, offY, scale);
 		break;
 
 	}
@@ -442,7 +506,7 @@ void Player::DashMove(const TileMap& tile)
 			break;
 		case DashDirection::LEFT:
 			m_Position.x -= DirectX::XMVectorGetX(v);
-			if (StageCol(tile, ColRes::RIGHT))m_Position.x += DirectX::XMVectorGetX(v);
+			if (StageCol(tile, ColRes::LEFT))m_Position.x += DirectX::XMVectorGetX(v);
 			break;
 		}
 	}

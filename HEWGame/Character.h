@@ -43,7 +43,9 @@ namespace State
     enum class CharaType
     {
         t_Player = 0,
-        t_Enemy = 1
+        t_EnemySword = 1,
+        t_EnemyShooter = 2,
+        t_EnemyShielder = 3,
     };
 
     enum class CharDir
@@ -89,6 +91,9 @@ protected:
 
     GameObject* object;
 
+    
+    
+
 public:
     Character();
     virtual ~Character() {}
@@ -100,12 +105,13 @@ public:
     virtual int TakeDamage() = 0;
     virtual void Jump() = 0;
 
-    bool StageCol(const TileMap& tile, const ColRes direction);
+    bool StageCol(const TileMap& tile, const ColRes direction,float x = -1,float y = -1);
 
     virtual void Update(const TileMap& tile, Character** charaList) = 0;
 
     State::CharaType GetCharaType() const { return m_charaType; }
     State::JumpState GetJumpState() const { return m_JumpState; }
+
 
     // ゲッター
     float GetAcceleY() { return m_Stats.m_AccelY; }
@@ -119,4 +125,9 @@ public:
 
 	// 死亡しているかどうか取得
     bool IsDead() const { return m_IsDead; }
+
+    void SetPos(float x, float y) { m_Position.x = x;m_Position.y = y; }
+
+    void ReverseDir();
+    void ResolveOverlap(const TileMap&,const Character& subject);
 };

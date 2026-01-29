@@ -1,4 +1,7 @@
 #include "Character.h"
+#include <algorithm>
+#undef min
+#undef max
 
 Character::Character()
 {
@@ -6,13 +9,22 @@ Character::Character()
 }
 
 // 当たり判定作成中
-bool Character::StageCol(const TileMap& tile, const ColRes direction)
+bool Character::StageCol(const TileMap& tile, const ColRes direction,float x ,float y)
 {
 	// 周囲のタイルを探索
 	float left = GetPosition().x;
 	float right = GetPosition().x + GetSize().x;
 	float top = GetPosition().y;
 	float bottom = GetPosition().y + GetSize().y;
+
+
+	if (x != -1 && y != -1)
+	{
+		left = x;
+		right = x + GetSize().x;
+		top = y;
+		bottom = y + GetSize().y;
+	}
 
 	int tileX_L = static_cast<int>(left / 64);
 	int tileX_R = static_cast<int>(right / 64);
@@ -25,7 +37,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	case ColRes::TOP:
 		for (int x = tileX_L; x <= tileX_R; x++)
 		{
-			if (tile.GetTileID(x, tileY_T) == Kaneda::TILE_WALL)
+			if (tile.GetTileID(x, tileY_T) == TILE_WALL)
 			{
 				DirectX::XMFLOAT2 XMPos(x * 64, tileY_T * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
@@ -42,7 +54,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	case ColRes::BOTTOM:
 		for (int x = tileX_L; x <= tileX_R; x++)
 		{
-			if (tile.GetTileID(x, tileY_B) == Kaneda::TILE_WALL)
+			if (tile.GetTileID(x, tileY_B) == TILE_WALL)
 			{
 				DirectX::XMFLOAT2 XMPos(x * 64, tileY_B * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
@@ -59,7 +71,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	case ColRes::LEFT:
 		for (int y = tileY_T; y <= tileY_B; y++)
 		{
-			if (tile.GetTileID(tileX_L, y) == Kaneda::TILE_WALL)
+			if (tile.GetTileID(tileX_L, y) == TILE_WALL)
 			{
 				DirectX::XMFLOAT2 XMPos(tileX_L * 64, y * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
@@ -76,7 +88,7 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 	case ColRes::RIGHT:
 		for (int y = tileY_T; y <= tileY_B; y++)
 		{
-			if (tile.GetTileID(tileX_R, y) == Kaneda::TILE_WALL)
+			if (tile.GetTileID(tileX_R, y) == TILE_WALL)
 			{
 				DirectX::XMFLOAT2 XMPos(tileX_R * 64, y * 64);
 				DirectX::XMFLOAT2 XMSize(tile.GetTileSize(), tile.GetTileSize());
@@ -96,15 +108,26 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 
 void Character::Move(const TileMap& tile)
 {
+	
 	switch (m_MoveState)
 	{
 	case State::MoveState::LEFT:
 		m_Position.x -= m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_Stats.m_Speed;
+		if (StageCol(tile, ColRes::LEFT))
+		{
+			m_Position.x += m_Stats.m_Speed;
+			if (!(m_charaType == State::CharaType::t_Player))ReverseDir();
+			
+					
+		}
 		break;
 	case State::MoveState::RIGHT:
 		m_Position.x += m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
+		if (StageCol(tile, ColRes::RIGHT))
+		{
+			m_Position.x -= m_Stats.m_Speed;
+			if (!(m_charaType == State::CharaType::t_Player)) ReverseDir();
+		}
 		break;
 	}
 
@@ -181,5 +204,64 @@ void Character::Move(const TileMap& tile)
 		}
 		m_Position.y -= m_Stats.m_Gravity;
 		m_Stats.m_DefPosY = m_Position.y;
+	}
+}
+
+void  Character::ReverseDir()
+{
+
+	switch (m_charDir)
+	{
+	case State::CharDir::LEFT:
+		m_charDir = State::CharDir::RIGHT;
+		break;
+	case State::CharDir::RIGHT:
+		m_charDir = State::CharDir::LEFT;
+		break;
+	}
+
+}
+
+void Character::ResolveOverlap(const TileMap& tile,const Character& subject)
+{
+	float Aleft = m_Position.x;
+	float Aright = m_Position.x + m_Size.x;
+	float Atop = m_Position.y;
+	float Abottom = m_Position.y + m_Size.y;
+
+	float Bleft = subject.GetPosition().x;
+	float Bright = subject.GetPosition().x + subject.GetSize().x;
+	float Btop = subject.GetPosition().y;
+	float Bbottom = subject.GetPosition().y + subject.GetSize().y;
+
+	float overlapX = std::min(Aright, Bright) - std::max(Aleft, Bleft);
+	float overlapY = std::min(Abottom, Bbottom) - std::max(Atop, Btop);
+
+	if (overlapX > 0 && overlapY > 0)
+	{
+		if (overlapX < overlapY)
+		{
+			if (m_Position.x < subject.GetPosition().x)
+			{
+				m_Position.x -= overlapX;
+			}
+			else
+			{
+				m_Position.x += overlapX;
+			}
+			
+		}
+		else
+		{
+			if (m_Position.y < subject.GetPosition().y)
+			{
+				if (m_Position.x < subject.GetPosition().x)m_Position.x -= m_Stats.m_Speed;
+				else m_Position.x += m_Stats.m_Speed;
+			}
+			else
+			{
+				m_Position.y += overlapY;
+			}
+		}
 	}
 }
