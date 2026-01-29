@@ -34,53 +34,10 @@ void Enemy::EnemyInit()
 
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
-	/*if (m_ActionState == ActionState::SERCH)
+	if (m_ActionState == ActionState::SERCH)
 	{
-
-
-		if (targetPos.x + 250.0f < enemyPos.x)
-		{
-			m_MoveState = State::MoveState::LEFT;
-			m_charDir = State::CharDir::LEFT;
-		}
-
-		else if (targetPos.x - 250.0f > enemyPos.x)
-		{
-			m_MoveState = State::MoveState::RIGHT;
-
-		}
-
+		SerchPlayer();
 	}
-	Move(tile);
-
-	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
-	int nextAnim = 0; // 0:待機 (デフォルト)
-
-	//攻撃中か
-	if (m_IsAttack)
-	{
-		nextAnim = 3; //攻撃用アニメ
-	}
-	// 攻撃予備動作中か
-	//else if ()
-	//{
-	//	nextAnim = 2; //攻撃予備動作用アニメ
-	//}
-	// 移動中か
-	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
-	{
-		nextAnim = 1; // 移動用アニメ
-	}
-	else
-	{
-		nextAnim = 0; // 待機アニメ
-	}
-
-	// 状態が変わった時だけセットする
-	if (nextAnim != m_CurrentAnimState)
-	{
-		SetAnimation(nextAnim);
-	}*/
 }
 
 void Enemy::UnInit()
