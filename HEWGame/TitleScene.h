@@ -1,19 +1,38 @@
 #pragma once
 #include "Scene.h"
 #include "BackGround.h"
-class TitleScene :public Scene
+#include "VideoPlayer.h"
+
+class TitleScene : public Scene
 {
 private:
     bool m_IsFinished;
-    // タイトル画面用のテクスチャポインタを追加
     ID3D11ShaderResourceView* m_pTitleTex;
     BackGround* m_pBackground;
+    VideoPlayer* m_pVideo;
+
+    // 繧ｹ繧ｿ繝ｼ繝医�懊ち繝ｳ
+    ID3D11ShaderResourceView* m_pStartButtonTex;
+    float m_StartButtonX;
+    float m_StartButtonY;
+    float m_StartButtonWidth;
+    float m_StartButtonHeight;
+
+    // 邨ゆｺ�繝懊ち繝ｳ
+    ID3D11ShaderResourceView* m_pExitButtonTex;
+    float m_ExitButtonX;
+    float m_ExitButtonY;
+    float m_ExitButtonWidth;
+    float m_ExitButtonHeight;
+
 public:
     using Scene::Scene;
     void Init() override;
-    void Update() override; // スペースキーが押されたらフラグを立てる
-    void Draw() override;   // タイトル画像を描画
+    void Update() override;
+    void Draw() override;
     void Uninit() override;
     bool ShouldChangeScene() const override { return m_IsFinished; }
-};
 
+private:
+    bool IsMouseOverButton(float x, float y, float width, float height);
+};

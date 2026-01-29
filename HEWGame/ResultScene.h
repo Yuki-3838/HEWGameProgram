@@ -1,12 +1,26 @@
 #pragma once
 #include "Scene.h"
 
-class ResultScene : public Scene 
+class ResultScene : public Scene
 {
 private:
     bool m_IsFinished = false;
-    // タイトル画面用のテクスチャポインタを追加
     ID3D11ShaderResourceView* m_pResultTex;
+
+    // 繧ｿ繧､繝医Ν縺ｫ謌ｻ繧九�懊ち繝ｳ
+    ID3D11ShaderResourceView* m_pTitleButtonTex;
+    float m_TitleButtonX;
+    float m_TitleButtonY;
+    float m_TitleButtonWidth;
+    float m_TitleButtonHeight;
+
+    // 邨ゆｺ�繝懊ち繝ｳ
+    ID3D11ShaderResourceView* m_pExitButtonTex;
+    float m_ExitButtonX;
+    float m_ExitButtonY;
+    float m_ExitButtonWidth;
+    float m_ExitButtonHeight;
+
 public:
     using Scene::Scene;
     void Init() override;
@@ -14,4 +28,7 @@ public:
     void Draw() override;
     void Uninit() override;
     bool ShouldChangeScene() const override { return m_IsFinished; }
+
+private:
+    bool IsMouseOverButton(float x, float y, float width, float height);
 };
