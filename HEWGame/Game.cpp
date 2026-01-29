@@ -33,6 +33,8 @@ void Game::Init(HWND hWnd, int width, int height)
     m_pSpriteRenderer = new SpriteRenderer();
     m_pSceneManager = new SceneManager();
     m_pInput = new Input();
+    m_pInput->SetHWnd(hWnd); // マウス座標取得用にウィンドウハンドルを設定
+    m_pInput->SetGameResolution(width, height); // ゲーム論理解像度を設定（マウス座標スケーリング用）
 
     // 2. レンダラーの初期化（Direct3D 起動）
     m_pRenderer->Init(m_hWnd, width, height);
@@ -62,6 +64,25 @@ void Game::Update()
     // --- シーン遷移ロジック ---
     // シーンが「次に進みたい（ShouldChangeScene）」と言っているか確認
     Scene* current = m_pSceneManager->GetCurrentScene();
+
+    // TitleSceneの終了ボタンが押されたかチェック
+    TitleScene* titleScene = dynamic_cast<TitleScene*>(current);
+    if (titleScene && titleScene->ShouldExitGame())
+    {
+        // ウィンドウを閉じる（確認ダイアログが表示される）
+        PostMessage(m_hWnd, WM_CLOSE, 0, 0);
+        return;
+    }
+
+    // ResultSceneの終了ボタンが押されたかチェック
+    ResultScene* resultScene = dynamic_cast<ResultScene*>(current);
+    if (resultScene && resultScene->ShouldExitGame())
+    {
+        // ウィンドウを閉じる（確認ダイアログが表示される）
+        PostMessage(m_hWnd, WM_CLOSE, 0, 0);
+        return;
+    }
+
     if (current && current->ShouldChangeScene())
     {
         // どのシーンに切り替えるかの判定
@@ -69,7 +90,7 @@ void Game::Update()
         // ここでは簡単な状態遷移として実装例を示します。
 
         // TitleScene の場合 -> Stage1Scene へ
-        if (dynamic_cast<TitleScene*>(current))
+        if (titleScene)
         {
             // 「次は Stage1 だよ」と指定して LoadScene を作る
             m_pSceneManager->ChangeScene(new LoadScene(m_pRenderer,m_pResourceManager,m_pSpriteRenderer,m_pInput,NextSceneType::Stage1));
@@ -95,7 +116,7 @@ void Game::Update()
             m_pSceneManager->ChangeScene(new ResultScene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
         }
         // ResultScene の場合 -> TitleScene へ戻る
-        else if (dynamic_cast<ResultScene*>(current))
+        else if (resultScene)
         {
             m_pSceneManager->ChangeScene(new TitleScene(m_pRenderer, m_pResourceManager, m_pSpriteRenderer, m_pInput));
         }

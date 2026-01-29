@@ -20,15 +20,21 @@ void Stage1Scene::Init()
     // 1. 各種マネージャー・マップの生成
     // タイル
     m_pTileMap = new TileMap();
-    m_pTileMap->LoadCSV("asset/map/Stage1.csv");
-    // レンダー
+    m_pTileMap->LoadCSV("asset/map/HH_stage.csv");
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(m_ScreenWidth, m_ScreenHeight);
-    // サウンド
+
+    //音源をロード
     m_pSound = new Sound();
     m_pSound->Init();
     m_pSound->Load(SOUND_LABEL_SE_JUMP, "asset/sound/SE/jump.wav", false);
-    // エフェクト
+    m_pSound->Load(SOUND_LABEL_SE_ATTACK, "asset/sound/SE/Attack.wav", false);
+    m_pSound->Load(SOUND_LABEL_SE_JUMPLANDING, "asset/sound/SE/Jumplanding.wav", false);
+    m_pSound->Load(SOUND_LABEL_SE_DASH, "asset/sound/SE/Dash2.wav", false);
+    m_pSound->Load(SOUND_LABEL_SE_DASHCHARGE, "asset/sound/SE/Dashcharge.wav", false);
+
+
+
     m_pEffectManager = new EffectManager();
     m_pEffectManager->Init();
     m_pEffectManager->LoadEffectTexture(EffectType::Smoke, "asset/texture/Test_dash_Effect.png", m_pRenderer->GetDevice(), m_pResourceManager);

@@ -1,13 +1,13 @@
 #pragma once
-#include <d3d11.h>  // DirectX11‚ğg‚¤‚½‚ß‚Ìƒwƒbƒ_[ƒtƒ@ƒCƒ‹
-#include <DirectXMath.h> // DirextX‚Ì”ŠwŠÖ˜A‚Ìƒwƒbƒ_[ƒtƒ@ƒCƒ‹
+#include <d3d11.h>  // DirectX11ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ß‚Ìƒwï¿½bï¿½_ï¿½[ï¿½tï¿½@ï¿½Cï¿½ï¿½
+#include <DirectXMath.h> // DirextXï¿½Ìï¿½ï¿½wï¿½Ö˜Aï¿½Ìƒwï¿½bï¿½_ï¿½[ï¿½tï¿½@ï¿½Cï¿½ï¿½
 
-#include <Xinput.h> //XInput(XBOX‹KŠi‚ÌƒRƒ“ƒgƒ[ƒ‰[)‚ğg‚¤‚½‚ß‚Ìƒwƒbƒ_[ƒtƒ@ƒCƒ‹
-#pragma comment (lib, "xinput.lib") //XInput‚ğg‚¤‚½‚ß‚É•K—v
+#include <Xinput.h> //XInput(XBOXï¿½Kï¿½iï¿½ÌƒRï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[)ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ß‚Ìƒwï¿½bï¿½_ï¿½[ï¿½tï¿½@ï¿½Cï¿½ï¿½
+#pragma comment (lib, "xinput.lib") //XInputï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ß‚É•Kï¿½v
 
-#include<Dinput.h> //Dinput(PS‚ÌƒRƒ“ƒgƒ[ƒ‰“™)‚ğg‚¤‚½‚ß‚Ìƒwƒbƒ_[ƒtƒ@ƒCƒ‹
+#include<Dinput.h> //Dinput(PSï¿½ÌƒRï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ß‚Ìƒwï¿½bï¿½_ï¿½[ï¿½tï¿½@ï¿½Cï¿½ï¿½
 #pragma comment(lib, "dinput8.lib")
-#pragma comment(lib, "dxguid.lib") //DInput‚ğg‚¤‚½‚ß‚É•K—v
+#pragma comment(lib, "dxguid.lib") //DInputï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ß‚É•Kï¿½v
 
 #define XINPUT_A              0x1000
 #define XINPUT_B              0x2000
@@ -19,8 +19,8 @@
 #define XINPUT_RIGHT          0x0008
 #define XINPUT_START          0x0010
 #define XINPUT_BACK           0x0020
-#define XINPUT_LEFT_THUMB     0x0040 //¶ƒXƒeƒBƒbƒN‰Ÿ‚µ‚İ
-#define XINPUT_RIGHT_THUMB    0x0080 //‰EƒXƒeƒBƒbƒN‰Ÿ‚µ‚İ
+#define XINPUT_LEFT_THUMB     0x0040 //ï¿½ï¿½ï¿½Xï¿½eï¿½Bï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+#define XINPUT_RIGHT_THUMB    0x0080 //ï¿½Eï¿½Xï¿½eï¿½Bï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define XINPUT_LEFT_SHOULDER  0x0100 //L
 #define XINPUT_RIGHT_SHOULDER 0x0200 //R
 
@@ -54,46 +54,66 @@
 class Input{
 private:
 
-	//ƒL[“ü—Íî•ñ‚ğ•Û‘¶‚·‚é•Ï”
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ï¼ˆãƒã‚¦ã‚¹åº§æ¨™å–å¾—ç”¨ï¼‰
+	HWND m_hWnd;
+
+	//ã‚²ãƒ¼ãƒ ã®è«–ç†è§£åƒåº¦ï¼ˆåº§æ¨™å¤‰æ›ç”¨ï¼‰
+	int m_gameWidth;
+	int m_gameHeight;
+
+	//ãƒã‚¦ã‚¹å…¥åŠ›æƒ…å ±
+	POINT m_mousePos;
+	bool m_mouseLeftState;
+	bool m_mouseLeftState_old;
+
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½ï¿½Ïï¿½
 	BYTE keyState[256] = {};
 	BYTE keyState_old[256] = {};
 
-	//XInputƒRƒ“ƒgƒ[ƒ‰[“ü—Íî•ñ‚ğ•Û‘¶‚·‚é•Ï”
+	//XInputï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½ï¿½Ïï¿½
 	XINPUT_STATE controllerState = {};
 	XINPUT_STATE controllerState_old = {};
 
-	//Dinput‚ÌƒRƒ“ƒgƒ[ƒ‰[—p
-	IDirectInput8* m_pDI = nullptr; // DirectInput –{‘Ì
-	IDirectInputDevice8* m_pKeyboard = nullptr; // ƒL[ƒ{[ƒhƒfƒoƒCƒX
+	//Dinputï¿½ÌƒRï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½p
+	IDirectInput8* m_pDI = nullptr; // DirectInput ï¿½{ï¿½ï¿½
+	IDirectInputDevice8* m_pKeyboard = nullptr; // ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½fï¿½oï¿½Cï¿½X
 
-	int VibrationTime; //U“®Œp‘±ŠÔ‚ğƒJƒEƒ“ƒg‚·‚é•Ï”
+	int VibrationTime; //ï¿½Uï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½Ïï¿½
 
 public:
 
-	Input(); //ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~Input(); //ƒfƒXƒgƒ‰ƒNƒ^
-	void Update(); //XV
+	Input(); //ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
+	~Input(); //ï¿½fï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
+	void Update(); //ï¿½Xï¿½V
 
-	//ƒL[“ü—Í
-	bool GetKeyPress(int key);   //ƒvƒŒƒX(‰Ÿ‚µ‚Ä‚¢‚éŠÔ‚¸‚Á‚Æ)
-	bool GetKeyTrigger(int key); //ƒgƒŠƒK[(‰Ÿ‚µn‚ß‚½)
-	bool GetKeyRelease(int key); //ƒŠƒŠ[ƒX(‰Ÿ‚µI‚í‚Á‚½)
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½
+	bool GetKeyPress(int key);   //ï¿½vï¿½ï¿½ï¿½X(ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½)
+	bool GetKeyTrigger(int key); //ï¿½gï¿½ï¿½ï¿½Kï¿½[(ï¿½ï¿½ï¿½ï¿½ï¿½nï¿½ß‚ï¿½ï¿½ï¿½)
+	bool GetKeyRelease(int key); //ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½X(ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 
-	//ƒAƒiƒƒOƒXƒeƒBƒbƒN(ƒRƒ“ƒgƒ[ƒ‰[)
+	//ï¿½Aï¿½iï¿½ï¿½ï¿½Oï¿½Xï¿½eï¿½Bï¿½bï¿½N(ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[)
 	DirectX::XMFLOAT2 GetLeftAnalogStick(void);
 	DirectX::XMFLOAT2 GetRightAnalogStick(void);
 
-	//ƒgƒŠƒK[(ƒRƒ“ƒgƒ[ƒ‰[)
+	//ï¿½gï¿½ï¿½ï¿½Kï¿½[(ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[)
 	float GetLeftTrigger(void);
 	float GetRightTrigger(void);
 
-	//ƒ{ƒ^ƒ““ü—Í(ƒRƒ“ƒgƒ[ƒ‰[)
-	bool GetButtonPress(WORD btn);   //ƒvƒŒƒX(‰Ÿ‚µ‚Ä‚¢‚éŠÔ‚¸‚Á‚Æ)
-	bool GetButtonTrigger(WORD btn); //ƒgƒŠƒK[(‰Ÿ‚µn‚ß‚½)
-	bool GetButtonRelease(WORD btn); //ƒŠƒŠ[ƒX(‰Ÿ‚µI‚í‚Á‚½)
+	//ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[)
+	bool GetButtonPress(WORD btn);   //ï¿½vï¿½ï¿½ï¿½X(ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½)
+	bool GetButtonTrigger(WORD btn); //ï¿½gï¿½ï¿½ï¿½Kï¿½[(ï¿½ï¿½ï¿½ï¿½ï¿½nï¿½ß‚ï¿½ï¿½ï¿½)
+	bool GetButtonRelease(WORD btn); //ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½X(ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 
-	//U“®(ƒRƒ“ƒgƒ[ƒ‰[)
-	//flameFU“®‚ğŒp‘±‚·‚éŠÔ(’PˆÊFƒtƒŒ[ƒ€)
-	//powoeFU“®‚Ì‹­‚³(0`1)
+	//ï¿½Uï¿½ï¿½(ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[)
+	//flameï¿½Fï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½éï¿½ï¿½(ï¿½Pï¿½ÊFï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½)
+	//powoeï¿½Fï¿½Uï¿½ï¿½ï¿½Ì‹ï¿½ï¿½ï¿½(0ï¿½`1)
 	void SetVibration(int frame = 1, float powor = 1);
+
+	//ãƒã‚¦ã‚¹å…¥åŠ›
+	void SetHWnd(HWND hWnd); //ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«è¨­å®š
+	void SetGameResolution(int width, int height); //ã‚²ãƒ¼ãƒ è«–ç†è§£åƒåº¦ã‚’è¨­å®š
+	DirectX::XMFLOAT2 GetMousePosition(); //ãƒã‚¦ã‚¹åº§æ¨™å–å¾—ï¼ˆã‚²ãƒ¼ãƒ åº§æ¨™ç³»ã«å¤‰æ›æ¸ˆã¿ï¼‰
+	bool GetMouseLeftPress();   //å·¦ã‚¯ãƒªãƒƒã‚¯æŠ¼ã—ã¦ã„ã‚‹
+	bool GetMouseLeftTrigger(); //å·¦ã‚¯ãƒªãƒƒã‚¯æŠ¼ã—ãŸç¬é–“
+	bool GetMouseLeftRelease(); //å·¦ã‚¯ãƒªãƒƒã‚¯é›¢ã—ãŸç¬é–“
 };

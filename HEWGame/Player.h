@@ -56,6 +56,8 @@ private:
     float m_sChage;  //1f当たりのチャージ量
     bool m_sChageF; // チャージオンオフフラグ
     bool m_sQpush; //Q(ダッシュボタン)を押している間のフラグ
+    bool m_prevAttackKey = false;
+
 
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;

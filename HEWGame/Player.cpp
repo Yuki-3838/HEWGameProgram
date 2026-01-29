@@ -17,8 +17,8 @@ Player::Player()
 
 	m_Size.x = 64 * 2;
 	m_Size.y = 64 * 2;
-	m_Position.x = 0.0f;
-	m_Position.y = 100.0f;
+	m_Position.x = 100.0f;
+	m_Position.y = 1920.0f;
 
 	// ダッシュに関する初期化
 	m_dState = DashState::NONE;
@@ -93,11 +93,23 @@ void Player::Update(const TileMap& tile, Character** charaList)
 			Jump();
 		}
 
-		if (m_IsAttack == false && GetAsyncKeyState(VK_F) & 0x8000)
+		bool attackKey = (GetAsyncKeyState(VK_F) & 0x8000);
+		bool attackTrigger = attackKey && !m_prevAttackKey; // 押した瞬間
+
+		if (!m_IsAttack && attackTrigger)
 		{
 			m_IsAttack = true;
 			m_AttackFrame = 0;
+
+			if (m_pSound)
+			{
+				m_pSound->Play(SOUND_LABEL_SE_ATTACK);
+			}
 		}
+
+		// フレーム最後に保存
+		m_prevAttackKey = attackKey;
+
 	}
 
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
@@ -227,7 +239,7 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	}
 
 	//空中での一時停止
-	if (isAir && GetAsyncKeyState(VK_Q) & 0x8000 && m_dState == DashState::NONE)
+	if (isAir && GetAsyncKeyState(VK_G) & 0x8000 && m_dState == DashState::NONE)
 	{
 		m_sGauge = GameData::GetSkill(SkillType::Dash);
 		m_sGaugeMAX = GameData::GetMaxSkill(SkillType::Dash);
@@ -283,7 +295,9 @@ void Player::Jump()
 	{
 		m_Stats.m_AccelY = m_Stats.m_JumpPw;
 		m_JumpState = State::JumpState::RISE;
+		m_pSound->Play(SOUND_LABEL_SE_JUMP);
 	}
+	
 }
 
 void Player::Attack(Character** charaList)
@@ -528,7 +542,7 @@ void Player::DashMove(const TileMap& tile)
 
 void Player::DashInput()
 {
-	bool inputQ = GetAsyncKeyState(VK_Q);
+	bool inputQ = GetAsyncKeyState(VK_G);
 	// ダッシュキーを押しており、ダッシュ状態でなければ、ダッシュ発動処理を行う
 	if (inputQ && m_dState != DashState::DASH)
 	{
