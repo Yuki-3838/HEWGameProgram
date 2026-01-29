@@ -252,7 +252,7 @@ void EnemyShielder::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexIdle;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, animW, animH, 0.01f, 0.0f, true, offX, offY, scale);
@@ -261,28 +261,10 @@ void EnemyShielder::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexWalk;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true, offX, offY, scale);
-		break;
-	case 2: // 攻撃予備動作
-		m_pTexture = m_eTexAttackTelegraph;
-		animW = w;
-		animH = h;
-		scale = 0.7f;
-		offX = (m_Size.x - animW * scale) / 2;
-		offY = (m_Size.y - animH * scale);
-		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true, offX, offY, scale);
-		break;
-	case 3: // 攻撃
-		m_pTexture = m_eTexAttack;
-		animW = w;
-		animH = h;
-		scale = 0.7f;
-		offX = (m_Size.x - animW * scale) / 2;
-		offY = (m_Size.y - animH * scale);
-		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);
 		break;
 	}
 }

@@ -88,10 +88,6 @@ void Enemy::UnInit()
   
 }
 
-void Enemy::Draw()
-{
-}
-
 
 void Enemy::Attack(Character** charaList)
 {
@@ -181,13 +177,23 @@ void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XM
 	if (m_pTexture && pSR)
 	{
 		
-		m_FlipX = (m_charDir != State::CharDir::RIGHT); // enumyの向きに合わせてbool型の反転設定
+		// アニメーターから今のコマ情報を取得
+		AnimFrame f = m_Animator.GetCurrentFrame();
+
+		// 描画位置とサイズ
+		float drawX = m_Position.x + f.renderOffsetX;
+		float drawY = m_Position.y + f.renderOffsetY;
+		float drawW = f.w * f.scale;
+		float drawH = f.h * f.scale;
+
+		// enumの向きに合わせてbool型でテクスチャの反転設定
+		m_FlipX = (m_charDir != State::CharDir::RIGHT);
 
 		pSR->Draw(
 			pContext,
 			m_pTexture,
-			m_Position.x, m_Position.y,   
-			m_Size.x, m_Size.y,
+			drawX, drawY,
+			drawW, drawH,
 			viewProj,
 			f.x, f.y, f.w, f.h, // UV座標
 			0.0f,    // 回転なし
@@ -220,7 +226,7 @@ void Enemy::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexIdle;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, animW, animH, 0.01f, 0.0f, true, offX, offY, scale);
@@ -229,7 +235,7 @@ void Enemy::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexWalk;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true, offX, offY, scale);
@@ -238,7 +244,7 @@ void Enemy::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexAttackTelegraph;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true, offX, offY, scale);
@@ -247,7 +253,7 @@ void Enemy::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexAttack;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);

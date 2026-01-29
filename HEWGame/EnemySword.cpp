@@ -36,10 +36,11 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 {
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
+	// 移動状態初期化
+	m_MoveState = State::MoveState::NONE;
 
-	SerchPlayer();
-
-	/*m_MoveState = State::MoveState::NONE;
+	 SerchPlayer();
+	/*
 	// 移動入力処理
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
@@ -261,7 +262,7 @@ void EnemySword::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexIdle;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, animW, animH, 0.01f, 0.0f, true, offX, offY, scale);
@@ -270,7 +271,7 @@ void EnemySword::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexWalk;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true, offX, offY, scale);
@@ -279,7 +280,7 @@ void EnemySword::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexAttackTelegraph;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true, offX, offY, scale);
@@ -288,10 +289,10 @@ void EnemySword::SetAnimation(int stateIndex)
 		m_pTexture = m_eTexAttack;
 		animW = w;
 		animH = h;
-		scale = 0.7f;
+		scale = 1.25f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
-		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);
+		m_Animator.Init(4, 2, w, h, 0.2f, 0.0f, false, offX, offY, scale);
 		break;
 	}
 }
