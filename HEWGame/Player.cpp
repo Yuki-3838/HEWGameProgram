@@ -96,6 +96,11 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		{
 			m_IsAttack = true;
 			m_AttackFrame = 0;
+			if (m_pEffectManager)
+			{
+				float offsetX = m_FlipX ? 80.0f : 40.0f;
+				m_pAttackEffect = m_pEffectManager->Play(EffectType::Attack, m_Position.x + offsetX, m_Position.y, m_FlipX);
+			}
 		}
 	}
 
@@ -239,7 +244,9 @@ void Player::Update(const TileMap& tile, Character** charaList)
 	}
 	if (m_pDashIdolEffect)
 	{
-		m_pDashIdolEffect->SetPosition(m_Position.x, m_Position.y);
+		float centerX = m_Position.x + (m_Size.x / 2.0f);
+		float centerY = m_Position.y;
+		m_pDashIdolEffect->SetPosition(centerX, centerY);
 	}
 }
 
@@ -538,7 +545,7 @@ void Player::DashInput()
 {
 	bool inputQ = GetAsyncKeyState(VK_Q);
 	// ダッシュキーを押しており、ダッシュ状態でなければ、ダッシュ発動処理を行う
-	if (inputQ && m_dState != DashState::DASH)
+	if (inputQ && m_dState == DashState::NONE)
 	{
 		float currentSkill = GameData::GetSkill(SkillType::Dash);
 		if (currentSkill >= 33.0f && (m_JumpState == State::JumpState::NONE || m_canAirDash))
@@ -550,10 +557,16 @@ void Player::DashInput()
 
 			if(m_pEffectManager)
 			{
-				m_pDashIdolEffect = m_pEffectManager->Play(EffectType::DashIdol, m_Position.x, m_Position.y , m_FlipX);
-				if (m_pDashEffect)
+				if(m_pDashIdolEffect)
 				{
-					m_pDashEffect->SetLoop(true);
+					m_pDashIdolEffect->Stop();
+				}
+				float centerX = m_Position.x + (m_Size.x / 2.0f);
+				float centerY = m_Position.y;
+				m_pDashIdolEffect = m_pEffectManager->Play(EffectType::DashIdol, centerX, centerY, m_FlipX);
+				if (m_pDashIdolEffect != nullptr)
+				{
+					m_pDashIdolEffect->SetLoop(true);
 				}
 			}
 		}

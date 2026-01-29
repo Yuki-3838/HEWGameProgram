@@ -8,7 +8,7 @@ enum EffectType
 {
     DashIdol,
 	Dash,
-    Attach,
+    Attack,
 
 	// 必要に応じて他のエフェクトタイプを追加
 };

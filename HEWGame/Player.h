@@ -62,6 +62,7 @@ private:
     Effect* m_pRunningEffect = nullptr;
 	Effect* m_pDashEffect = nullptr;
 	Effect* m_pDashIdolEffect = nullptr;
+	Effect* m_pAttackEffect = nullptr;
 public:
     // コンストラクタ・デストラクタ
     Player();
