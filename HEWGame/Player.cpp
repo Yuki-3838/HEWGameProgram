@@ -63,8 +63,6 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		m_sGauge += 1.0f / 60.0f;
 	}
 
-
-
 	DashInput();
 
 	//通常移動
