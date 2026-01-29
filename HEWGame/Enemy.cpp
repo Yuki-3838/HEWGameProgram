@@ -29,14 +29,14 @@ Enemy::~Enemy()
 void Enemy::EnemyInit()
 {
 	m_ActionState = ActionState::SERCH;
-	m_serchDistance = 1000;
+	m_serchDistance = 500;
 }
 
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
 	if (m_ActionState == ActionState::SERCH)
 	{
-		SerchPlayer(charaList);
+		SerchPlayer(charaList,tile);
 	}
 	CharacterColDir(charaList);
 	switch (m_charDir)
@@ -225,7 +225,7 @@ void Enemy::SetAnimation(int stateIndex)
 	}
 }
 
-void Enemy::SerchPlayer(Character** charaList)
+void Enemy::SerchPlayer(Character** charaList,const TileMap& tile)
 {
 	int correction;
 	int nowSerchDistance = 0;
@@ -238,10 +238,11 @@ void Enemy::SerchPlayer(Character** charaList)
 		nowSerchDistance = m_serchDistance;
 		startpos.x = m_Position.x + m_Size.x;
 		endpos.x = startpos.x + nowSerchDistance;
-		for (int x = startpos.x; x < endpos.x; x += m_Size.x)
+		for (int x = startpos.x; x < endpos.x; x += tile.GetTileSize())
 		{
-			for (int y = startpos.y; y < endpos.y; y += 10)
+			for (int y = startpos.y; y < endpos.y; y += tile.GetTileSize())
 			{
+				if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_WALL)return;
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
 					ReverseActionState();
@@ -256,10 +257,11 @@ void Enemy::SerchPlayer(Character** charaList)
 		startpos.x = m_Position.x;
 		endpos.x = startpos.x + nowSerchDistance;
 
-		for (int x = startpos.x; x > endpos.x; x -= m_Size.x)
+		for (int x = startpos.x; x > endpos.x; x -= tile.GetTileSize())
 		{
-			for (int y = startpos.y; y < endpos.y; y+=10)
+			for (int y = startpos.y; y < endpos.y; y+= tile.GetTileSize())
 			{
+				if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_WALL)return;
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
 					ReverseActionState();

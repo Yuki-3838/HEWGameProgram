@@ -433,13 +433,6 @@ void Stage1Scene::UpdateList()
             m_pCharaList[i]->Update(*m_pTileMap, m_pCharaList);
         }
     }
-    for (int i = 0; i < m_currentCharaNum; i++)
-    {
-        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
-        {
-            m_pCharaList[i]->Move(*m_pTileMap);
-        }
-    }
 }
 
 void Stage1Scene::CollisionResolve()

@@ -9,13 +9,22 @@ Character::Character()
 }
 
 // 当たり判定作成中
-bool Character::StageCol(const TileMap& tile, const ColRes direction)
+bool Character::StageCol(const TileMap& tile, const ColRes direction,float x ,float y)
 {
 	// 周囲のタイルを探索
 	float left = GetPosition().x;
 	float right = GetPosition().x + GetSize().x;
 	float top = GetPosition().y;
 	float bottom = GetPosition().y + GetSize().y;
+
+
+	if (x != -1 && y != -1)
+	{
+		left = x;
+		right = x + GetSize().x;
+		top = y;
+		bottom = y + GetSize().y;
+	}
 
 	int tileX_L = static_cast<int>(left / 64);
 	int tileX_R = static_cast<int>(right / 64);

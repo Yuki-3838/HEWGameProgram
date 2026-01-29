@@ -64,7 +64,7 @@ public:
 	//アニメーションさせるための描画
 	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
 
-	void SerchPlayer(Character** charaList);
+	void SerchPlayer(Character** charaList, const TileMap& tile);
 	void PropagatePlayerDetection(Character** charaList);
 
 	void CharacterColDir(Character** charaList);

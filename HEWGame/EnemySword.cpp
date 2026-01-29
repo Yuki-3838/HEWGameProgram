@@ -11,7 +11,7 @@ EnemySword::EnemySword()
 	m_Stats.m_JumpPw = 25;
 
 	m_serchSpeed = 1;
-	m_targetSpeed = 3;
+	m_targetSpeed = 5;
 	m_Stats.m_Speed = m_serchSpeed;
 	m_Size.x = 64 * 2;
 	m_Size.y = 64 * 2;

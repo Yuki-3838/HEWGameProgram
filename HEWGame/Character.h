@@ -105,7 +105,7 @@ public:
     virtual int TakeDamage() = 0;
     virtual void Jump() = 0;
 
-    bool StageCol(const TileMap& tile, const ColRes direction);
+    bool StageCol(const TileMap& tile, const ColRes direction,float x = -1,float y = -1);
 
     virtual void Update(const TileMap& tile, Character** charaList) = 0;
 
