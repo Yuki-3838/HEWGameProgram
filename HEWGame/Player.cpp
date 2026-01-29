@@ -45,6 +45,7 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile, Character** charaList)
 {
+	
 	GameData::AddSkill(SkillType::Dash, 0.5f);
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);

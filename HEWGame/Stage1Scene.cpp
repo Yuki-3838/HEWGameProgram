@@ -1,7 +1,7 @@
 #include "Stage1Scene.h"
 #include "iostream"
 #include "Collision.h"
-#include <cmath> // fmod
+#include <cmath> 
 #include "GameData.h"
 
 void Stage1Scene::Init()
@@ -285,7 +285,7 @@ void Stage1Scene::CameraSeting()
 {
     DirectX::XMFLOAT2 defCameraPos(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 696);
     // プレイヤーのｘ座標が壁から一定距離でなければカメラを固定
-    if (m_pCharaList[0]->GetPosition().x <= 240)
+    /*if (m_pCharaList[0]->GetPosition().x <= 240)
     {
         //ジャンプ中
         if (m_pCharaList[0]->GetJumpState() == State::JumpState::RISE || m_pCharaList[0]->GetJumpState() == State::JumpState::DESC)
@@ -298,9 +298,9 @@ void Stage1Scene::CameraSeting()
             m_pCamera->SetPosition(0, defCameraPos.y);
         }
     }
-    else if (defCameraPos.y < m_pCharaList[0]->GetPosition().y)
+    else if (defCameraPos.y < m_pCharaList[0]->GetPosition().y)*/
     {
-        m_pCamera->SetPosition(m_pCharaList[0]->GetPosition().x - 240, m_pCharaList[0]->GetPosition().y - 696);
+        m_pCamera->SetPosition(m_pCharaList[0]->GetPosition().x - 540, m_pCharaList[0]->GetPosition().y - 696);
     }
 }
 
@@ -444,7 +444,7 @@ void Stage1Scene::CollisionResolve()
         {
             if (!m_pCharaList[j]->IsDead())
             {
-                m_pCharaList[i]->ResolveOverlap(*m_pCharaList[j]);
+                m_pCharaList[i]->ResolveOverlap(*m_pTileMap,*m_pCharaList[j]);
             }
         }
     }

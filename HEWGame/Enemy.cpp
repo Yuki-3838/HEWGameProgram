@@ -9,8 +9,8 @@ Enemy::Enemy()
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
-	m_Size.x = 128.0f;
-	m_Size.y = 256.0f;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
 	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
 
@@ -29,14 +29,24 @@ Enemy::~Enemy()
 void Enemy::EnemyInit()
 {
 	m_ActionState = ActionState::SERCH;
-	m_serchDistance = 1000;
+	m_serchDistance = 500;
 }
 
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
 	if (m_ActionState == ActionState::SERCH)
 	{
-		SerchPlayer();
+		SerchPlayer(charaList,tile);
+	}
+	CharacterColDir(charaList);
+	switch (m_charDir)
+	{
+	case State::CharDir::LEFT:
+		m_MoveState = State::MoveState::LEFT;
+		break;
+	case State::CharDir::RIGHT:
+		m_MoveState = State::MoveState::RIGHT;
+		break;
 	}
 }
 
@@ -215,10 +225,9 @@ void Enemy::SetAnimation(int stateIndex)
 	}
 }
 
-void Enemy::SerchPlayer()
+void Enemy::SerchPlayer(Character** charaList,const TileMap& tile)
 {
 	int correction;
-
 	int nowSerchDistance = 0;
 	DirectX::XMFLOAT2 startpos;
 	DirectX::XMFLOAT2 endpos;
@@ -229,13 +238,15 @@ void Enemy::SerchPlayer()
 		nowSerchDistance = m_serchDistance;
 		startpos.x = m_Position.x + m_Size.x;
 		endpos.x = startpos.x + nowSerchDistance;
-		for (int x = startpos.x; x < endpos.x; x -= m_Size.x)
+		for (int x = startpos.x; x < endpos.x; x += tile.GetTileSize())
 		{
-			for (int y = startpos.y; y < endpos.y; y += 10)
+			for (int y = startpos.y; y < endpos.y; y += tile.GetTileSize())
 			{
+				if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_WALL)return;
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
-					int a = 0;
+					ReverseActionState();
+					PropagatePlayerDetection(charaList);
 				}
 			}
 		}
@@ -246,18 +257,88 @@ void Enemy::SerchPlayer()
 		startpos.x = m_Position.x;
 		endpos.x = startpos.x + nowSerchDistance;
 
-		for (int x = startpos.x; x > endpos.x; x -= m_Size.x)
+		for (int x = startpos.x; x > endpos.x; x -= tile.GetTileSize())
 		{
-			for (int y = startpos.y; y < endpos.y; y+=10)
+			for (int y = startpos.y; y < endpos.y; y+= tile.GetTileSize())
 			{
+				if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_WALL)return;
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
-					int a = 0;
+					ReverseActionState();
+					PropagatePlayerDetection(charaList);
 				}
 			}
 		}
 	}
-	
-	
 }
 
+void Enemy::CharacterColDir(Character** charaList)
+{
+	ColRes res;
+	for (int i = 0;;i++)
+	{
+		if (charaList[i] == nullptr) break;
+		if (charaList[i] == this) continue;
+		res = CollisionRect(*this, *charaList[i]);
+		if (res & ColRes::LEFT && m_charDir == State::CharDir::RIGHT)
+		{	
+			ReverseDir();
+		}
+		if (res & ColRes::RIGHT && m_charDir == State::CharDir::LEFT)
+		{
+			ReverseDir();
+		}
+	}
+}
+
+void Enemy::ReverseActionState()
+{
+	switch (m_ActionState)
+	{
+	case ActionState::SERCH:
+		m_ActionState = ActionState::ATTACK;
+		SetSpeed(m_targetSpeed);
+		break;
+	case ActionState::ATTACK:
+		m_ActionState = ActionState::SERCH;
+		SetSpeed(m_serchSpeed);
+		break;
+	}
+}
+
+void Enemy::PropagatePlayerDetection(Character** charaList)
+{
+	DirectX::XMFLOAT2 startPos;
+	DirectX::XMFLOAT2 endPos;
+
+	startPos.x = m_Position.x - 480;
+	startPos.y = m_Position.y - 270;
+	endPos.x = m_Position.x + 480;
+	endPos.y = m_Position.y + 270;
+
+	for (int x = startPos.x;x < endPos.x;x += m_Size.x)
+	{
+		for (int y = startPos.y;y < endPos.y;y += m_Size.y)
+		{
+			for (int i = 1;;i++)
+			{
+				if (charaList[i] == nullptr) break;
+				if (charaList[i] == this)continue;
+				if (CollisionRect(*charaList[i], DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					if (charaList[i]->GetCharaType() != State::CharaType::t_Player)
+					{
+						Enemy* enemy = dynamic_cast<Enemy*>(charaList[i]);
+						{
+							if (enemy->GetActionState() == ActionState::SERCH)
+							{
+								enemy->ReverseActionState();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
