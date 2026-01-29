@@ -6,12 +6,12 @@ EnemySword::EnemySword()
 	// エネミー固有の初期設定
 	EnemyInit();
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 15;
+	m_Stats.m_Speed = 1;
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
-	m_Size.x = 128.0f;
-	m_Size.y = 256.0f;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
 	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
 
@@ -24,7 +24,7 @@ EnemySword::EnemySword()
 	m_AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
 
 	isDetection = false; //プレイヤーの発見状態
-	m_charDir = State::CharDir::LEFT; // エネミーの向き
+	m_charDir = State::CharDir::RIGHT; // エネミーの向き
 }
 
 EnemySword::~EnemySword()

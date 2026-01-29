@@ -91,6 +91,9 @@ protected:
 
     GameObject* object;
 
+    
+    
+
 public:
     Character();
     virtual ~Character() {}
@@ -125,6 +128,6 @@ public:
 
     void SetPos(float x, float y) { m_Position.x = x;m_Position.y = y; }
 
-    State::CharDir ReverseDir(State::CharDir now);
-    void ResolveOverlap(const Character& subject);
+    void ReverseDir();
+    void ResolveOverlap(const TileMap&,const Character& subject);
 };

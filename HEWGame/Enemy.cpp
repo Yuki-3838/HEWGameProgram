@@ -9,8 +9,8 @@ Enemy::Enemy()
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
-	m_Size.x = 128.0f;
-	m_Size.y = 256.0f;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
 	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
 
@@ -37,6 +37,16 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 	if (m_ActionState == ActionState::SERCH)
 	{
 		SerchPlayer();
+	}
+	CharacterColDir(charaList);
+	switch (m_charDir)
+	{
+	case State::CharDir::LEFT:
+		m_MoveState = State::MoveState::LEFT;
+		break;
+	case State::CharDir::RIGHT:
+		m_MoveState = State::MoveState::RIGHT;
+		break;
 	}
 }
 
@@ -229,13 +239,13 @@ void Enemy::SerchPlayer()
 		nowSerchDistance = m_serchDistance;
 		startpos.x = m_Position.x + m_Size.x;
 		endpos.x = startpos.x + nowSerchDistance;
-		for (int x = startpos.x; x < endpos.x; x -= m_Size.x)
+		for (int x = startpos.x; x < endpos.x; x += m_Size.x)
 		{
 			for (int y = startpos.y; y < endpos.y; y += 10)
 			{
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
-					int a = 0;
+					
 				}
 			}
 		}
@@ -252,12 +262,33 @@ void Enemy::SerchPlayer()
 			{
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
-					int a = 0;
+					
 				}
 			}
 		}
 	}
 	
+	
+}
+
+void Enemy::CharacterColDir(Character** charaList)
+{
+
+	ColRes res;
+	for (int i = 0;;i++)
+	{
+		if (charaList[i] == nullptr) break;
+		if (charaList[i] == this) break;
+		res = CollisionRect(*this, *charaList[i]);
+		if (res & ColRes::LEFT && m_charDir == State::CharDir::RIGHT)
+		{
+			ReverseDir();
+		}
+		else if (res & ColRes::RIGHT && m_charDir == State::CharDir::LEFT)
+		{
+			ReverseDir();
+		}
+	}
 	
 }
 

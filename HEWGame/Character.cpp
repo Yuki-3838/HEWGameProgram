@@ -99,15 +99,26 @@ bool Character::StageCol(const TileMap& tile, const ColRes direction)
 
 void Character::Move(const TileMap& tile)
 {
+	
 	switch (m_MoveState)
 	{
 	case State::MoveState::LEFT:
 		m_Position.x -= m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::LEFT))m_Position.x += m_Stats.m_Speed;
+		if (StageCol(tile, ColRes::LEFT))
+		{
+			m_Position.x += m_Stats.m_Speed;
+			if (!(m_charaType == State::CharaType::t_Player))ReverseDir();
+			
+					
+		}
 		break;
 	case State::MoveState::RIGHT:
 		m_Position.x += m_Stats.m_Speed;
-		if (StageCol(tile, ColRes::RIGHT))m_Position.x -= m_Stats.m_Speed;
+		if (StageCol(tile, ColRes::RIGHT))
+		{
+			m_Position.x -= m_Stats.m_Speed;
+			if (!(m_charaType == State::CharaType::t_Player)) ReverseDir();
+		}
 		break;
 	}
 
@@ -187,20 +198,22 @@ void Character::Move(const TileMap& tile)
 	}
 }
 
-State::CharDir Character::ReverseDir(State::CharDir now)
+void  Character::ReverseDir()
 {
-	switch (now)
+
+	switch (m_charDir)
 	{
 	case State::CharDir::LEFT:
-		return State::CharDir::RIGHT;
+		m_charDir = State::CharDir::RIGHT;
 		break;
 	case State::CharDir::RIGHT:
-		return State::CharDir::LEFT;
+		m_charDir = State::CharDir::LEFT;
 		break;
 	}
+
 }
 
-void Character::ResolveOverlap(const Character& subject)
+void Character::ResolveOverlap(const TileMap& tile,const Character& subject)
 {
 	float Aleft = m_Position.x;
 	float Aright = m_Position.x + m_Size.x;
@@ -219,13 +232,18 @@ void Character::ResolveOverlap(const Character& subject)
 	{
 		if (overlapX < overlapY)
 		{
-			if (m_Position.x < subject.GetPosition().x)m_Position.x -= overlapX;
-			else m_Position.x += overlapX;
+			if (m_Position.x < subject.GetPosition().x)
+			{
+				m_Position.x -= overlapX;
+			}
+			else
+			{
+				m_Position.x += overlapX;
+			}
+			
 		}
 		else
 		{
-			//if (m_Position.y < subject.GetPosition().y)m_Position.y -= overlapY;
-			//else m_Position.y += overlapY;
 			if (m_Position.y < subject.GetPosition().y)
 			{
 				if (m_Position.x < subject.GetPosition().x)m_Position.x -= m_Stats.m_Speed;

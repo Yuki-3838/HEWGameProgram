@@ -10,6 +10,7 @@ enum class ActionState
 
 class Enemy :public Character
 {
+
 protected:
 	// 各状態のテクスチャを保持しておく変数
 	ID3D11ShaderResourceView* m_eTexIdle = nullptr; // 待機用
@@ -17,6 +18,8 @@ protected:
 	ID3D11ShaderResourceView* m_eTexAttack = nullptr; // 攻撃用
 	ID3D11ShaderResourceView* m_eTexAttackTelegraph = nullptr; // 攻撃予備動作
 
+
+	
 	bool m_FlipX = true; // 左右反転フラグ
 	Animator m_Animator;//アニメーション管理
 
@@ -56,5 +59,7 @@ public:
 	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
 
 	void SerchPlayer();
-	
+
+	void CharacterColDir(Character** charaList);
+
 };
