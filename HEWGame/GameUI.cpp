@@ -40,7 +40,7 @@ void GameUI::Draw(ID3D11DeviceContext* context, SpriteRenderer* spriteRenderer)
 
     DrawBar(context, spriteRenderer, m_pSkillGaugeTex, 15, -133, 395, 395, dashVal, dashValMax);
         //スコア表示
-    /*DrawNumber(context, spriteRenderer, GameData::GetScore(), 10.0f, 10.0f, 1.0f);*/
+    DrawNumber(context, spriteRenderer, GameData::GetScore(), 10.0f, 50.0f, 1.0f);
     //タイム表示
     DrawNumber(context, spriteRenderer, static_cast<int>(GameData::GetTime()), 1600.0f, 0.0f, 0.5f);
     ////必殺技
