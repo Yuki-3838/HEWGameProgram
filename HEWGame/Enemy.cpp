@@ -175,7 +175,10 @@ void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XM
 
 	////絵をどれくらい下にずらすか
 	//float drawOffsetY = 60.0f;   /*+ drawOffsetY*/
-	
+	float drawX = m_Position.x + f.renderOffsetX;
+	float drawY = m_Position.y + f.renderOffsetY;
+	float drawW = f.w * f.scale;
+	float drawH = f.h * f.scale;
 
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
@@ -186,8 +189,8 @@ void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XM
 		pSR->Draw(
 			pContext,
 			m_pTexture,
-			m_Position.x, m_Position.y,   
-			m_Size.x, m_Size.y,
+			drawX, drawY,
+			drawW, drawH,
 			viewProj,
 			f.x, f.y, f.w, f.h, // UV座標
 			0.0f,    // 回転なし
