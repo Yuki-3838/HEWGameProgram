@@ -29,6 +29,9 @@ protected:
 	//アニメーション切り替え関数
 	virtual void SetAnimation(int stateIndex);
 
+	float m_targetSpeed;
+	float m_serchSpeed;
+
 	const Character* m_pTarget = nullptr; //ターゲット（プレイヤー）の
 	bool isDetection; //プレイヤーの発見状態
 	int SCount = 0;   //タイマー
@@ -54,11 +57,15 @@ public:
 	void Jump() override;
 	void SetTarget(const Character& target);
 	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* attackTelegraph);
+	void SetSpeed(float speed) { m_Stats.m_Speed = speed; }
+	void ReverseActionState();
+	ActionState GetActionState() { return m_ActionState; }
 
 	//アニメーションさせるための描画
 	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
 
-	void SerchPlayer();
+	void SerchPlayer(Character** charaList);
+	void PropagatePlayerDetection(Character** charaList);
 
 	void CharacterColDir(Character** charaList);
 

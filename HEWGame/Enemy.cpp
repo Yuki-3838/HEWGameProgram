@@ -36,7 +36,7 @@ void Enemy::Update(const TileMap& tile, Character** charaList)
 {
 	if (m_ActionState == ActionState::SERCH)
 	{
-		SerchPlayer();
+		SerchPlayer(charaList);
 	}
 	CharacterColDir(charaList);
 	switch (m_charDir)
@@ -225,10 +225,9 @@ void Enemy::SetAnimation(int stateIndex)
 	}
 }
 
-void Enemy::SerchPlayer()
+void Enemy::SerchPlayer(Character** charaList)
 {
 	int correction;
-
 	int nowSerchDistance = 0;
 	DirectX::XMFLOAT2 startpos;
 	DirectX::XMFLOAT2 endpos;
@@ -245,7 +244,8 @@ void Enemy::SerchPlayer()
 			{
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
-					
+					ReverseActionState();
+					PropagatePlayerDetection(charaList);
 				}
 			}
 		}
@@ -262,33 +262,81 @@ void Enemy::SerchPlayer()
 			{
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
-					
+					ReverseActionState();
+					PropagatePlayerDetection(charaList);
 				}
 			}
 		}
 	}
-	
-	
 }
 
 void Enemy::CharacterColDir(Character** charaList)
 {
-
 	ColRes res;
 	for (int i = 0;;i++)
 	{
 		if (charaList[i] == nullptr) break;
-		if (charaList[i] == this) break;
+		if (charaList[i] == this) continue;
 		res = CollisionRect(*this, *charaList[i]);
 		if (res & ColRes::LEFT && m_charDir == State::CharDir::RIGHT)
-		{
+		{	
 			ReverseDir();
 		}
-		else if (res & ColRes::RIGHT && m_charDir == State::CharDir::LEFT)
+		if (res & ColRes::RIGHT && m_charDir == State::CharDir::LEFT)
 		{
 			ReverseDir();
 		}
 	}
-	
 }
 
+void Enemy::ReverseActionState()
+{
+	switch (m_ActionState)
+	{
+	case ActionState::SERCH:
+		m_ActionState = ActionState::ATTACK;
+		SetSpeed(m_targetSpeed);
+		break;
+	case ActionState::ATTACK:
+		m_ActionState = ActionState::SERCH;
+		SetSpeed(m_serchSpeed);
+		break;
+	}
+}
+
+void Enemy::PropagatePlayerDetection(Character** charaList)
+{
+	DirectX::XMFLOAT2 startPos;
+	DirectX::XMFLOAT2 endPos;
+
+	startPos.x = m_Position.x - 480;
+	startPos.y = m_Position.y - 270;
+	endPos.x = m_Position.x + 480;
+	endPos.y = m_Position.y + 270;
+
+	for (int x = startPos.x;x < endPos.x;x += m_Size.x)
+	{
+		for (int y = startPos.y;y < endPos.y;y += m_Size.y)
+		{
+			for (int i = 1;;i++)
+			{
+				if (charaList[i] == nullptr) break;
+				if (charaList[i] == this)continue;
+				if (CollisionRect(*charaList[i], DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					if (charaList[i]->GetCharaType() != State::CharaType::t_Player)
+					{
+						Enemy* enemy = dynamic_cast<Enemy*>(charaList[i]);
+						{
+							if (enemy->GetActionState() == ActionState::SERCH)
+							{
+								enemy->ReverseActionState();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+}

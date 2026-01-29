@@ -1,7 +1,7 @@
 #include "Stage1Scene.h"
 #include "iostream"
 #include "Collision.h"
-#include <cmath> // fmod
+#include <cmath> 
 #include "GameData.h"
 
 void Stage1Scene::Init()
@@ -431,6 +431,13 @@ void Stage1Scene::UpdateList()
         if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
         {
             m_pCharaList[i]->Update(*m_pTileMap, m_pCharaList);
+        }
+    }
+    for (int i = 0; i < m_currentCharaNum; i++)
+    {
+        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ更新
+        {
+            m_pCharaList[i]->Move(*m_pTileMap);
         }
     }
 }

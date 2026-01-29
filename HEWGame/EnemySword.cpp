@@ -6,10 +6,13 @@ EnemySword::EnemySword()
 	// エネミー固有の初期設定
 	EnemyInit();
 	m_Stats.m_HP = 1;
-	m_Stats.m_Speed = 1;
+	
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
+	m_serchSpeed = 1;
+	m_targetSpeed = 3;
+	m_Stats.m_Speed = m_serchSpeed;
 	m_Size.x = 64 * 2;
 	m_Size.y = 64 * 2;
 	m_Position.x = 1000.0f;
@@ -24,7 +27,7 @@ EnemySword::EnemySword()
 	m_AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
 
 	isDetection = false; //プレイヤーの発見状態
-	m_charDir = State::CharDir::RIGHT; // エネミーの向き
+	m_charDir = State::CharDir::LEFT; // エネミーの向き
 }
 
 EnemySword::~EnemySword()
@@ -38,8 +41,12 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	m_Animator.Update(1.0f / 1.0f);
 
 	Enemy::Update(tile,charaList);
+	if (m_ActionState == ActionState::ATTACK)
+	{
+		AttackPlayer();
+	}
 	Move(tile);
-
+	//Attack(charaList);
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 
@@ -164,5 +171,17 @@ void EnemySword::SetAnimation(int stateIndex)
 		offY = (m_Size.y - animH * scale);
 		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);
 		break;
+	}
+}
+
+void EnemySword::AttackPlayer()
+{
+	if (m_charDir == State::CharDir::LEFT && m_Position.x < m_pTarget->GetPosition().x)
+	{
+		m_charDir = State::CharDir::RIGHT;
+	}
+	else if (m_charDir == State::CharDir::RIGHT && m_Position.x > m_pTarget->GetPosition().x)
+	{
+		m_charDir = State::CharDir::LEFT;
 	}
 }
