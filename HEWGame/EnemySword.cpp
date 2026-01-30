@@ -22,6 +22,7 @@ EnemySword::EnemySword()
 
 	m_charaType = State::CharaType::t_EnemySword;
 
+	m_AttackFrame = 0;
 	m_AttackTotalFrame = 30;  //攻撃アニメの総フレーム数
 	m_AttackHitStart = 1;     //攻撃判定が発生する開始フレーム
 	m_AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
@@ -44,31 +45,25 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	if (m_ActionState == ActionState::ATTACK)
 	{
 		AttackPlayer();
+		Attack(charaList);
+		
 		//nowOff
 	}
 	Move(tile);
-	Attack(charaList);
-	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
-	int nextAnim = 0; // 0:待機 (デフォルト)
 
-	//攻撃中か
+	int nextAnim = 0;
+
 	if (m_IsAttack)
 	{
-		nextAnim = 3; //攻撃用アニメ
+		nextAnim = 3; 
 	}
-	// 攻撃予備動作中か
-	//else if ()
-	//{
-	//	nextAnim = 2; //攻撃予備動作用アニメ
-	//}
-	// 移動中か
 	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
 	{
-		nextAnim = 1; // 移動用アニメ
+		nextAnim = 1;
 	}
 	else
 	{
-		nextAnim = 0; // 待機アニメ
+		nextAnim = 0;
 	}
 
 	// 状態が変わった時だけセットする
@@ -86,7 +81,7 @@ void EnemySword::UnInit()
 void EnemySword::Attack(Character** charaList)
 {
 	//攻撃範囲設定
-	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
+	DirectX::XMFLOAT2 attackSize = { 50.f,50.0f };
 	DirectX::XMFLOAT2 attackPos;
 	if (m_charDir == State::CharDir::RIGHT)//右向き
 	{
@@ -177,12 +172,23 @@ void EnemySword::SetAnimation(int stateIndex)
 
 void EnemySword::AttackPlayer()
 {
-	if (m_charDir == State::CharDir::LEFT && m_Position.x < m_pTarget->GetPosition().x)
+	m_AttackFrame++;
+	if (m_AttackFrame < m_AttackTotalFrame)
 	{
-		m_charDir = State::CharDir::RIGHT;
+		m_IsAttack = true;
+		if (m_charDir == State::CharDir::LEFT && m_Position.x < m_pTarget->GetPosition().x)
+		{
+			m_charDir = State::CharDir::RIGHT;
+		}
+		else if (m_charDir == State::CharDir::RIGHT && m_Position.x > m_pTarget->GetPosition().x)
+		{
+			m_charDir = State::CharDir::LEFT;
+		}
 	}
-	else if (m_charDir == State::CharDir::RIGHT && m_Position.x > m_pTarget->GetPosition().x)
+	else
 	{
-		m_charDir = State::CharDir::LEFT;
+		m_IsAttack = false;
+		m_AttackFrame = 0;
+		m_ActionState = ActionState::SERCH;
 	}
 }

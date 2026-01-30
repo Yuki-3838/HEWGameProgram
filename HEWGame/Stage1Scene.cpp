@@ -462,7 +462,7 @@ void Stage1Scene::CollisionResolve()
 
 void Stage1Scene::GameClearCheck()
 {
-    int cnt = -1;
+    int cnt = 0;
     for (int i = 0;;i++)
     {
         if (m_pCharaList[i] == nullptr) break;
@@ -474,7 +474,7 @@ void Stage1Scene::GameClearCheck()
     {
         m_IsRestart = true;
     }
-    if (cnt == m_currentCharaNum)
+    else if (cnt == m_currentCharaNum)
     {
         m_IsFinished = true;
     }
