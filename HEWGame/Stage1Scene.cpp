@@ -339,7 +339,7 @@ void Stage1Scene::EnemySpawn()
                     if (num != -1)
                     {
                         m_pCharaList[num] = AddList(State::CharaType::t_EnemySword);
-                        m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
+                        m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), (y - 3) * m_pTileMap->GetTileSize());
                         SetEnemyTexture(num);
                     }
                 }

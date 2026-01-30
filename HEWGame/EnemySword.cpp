@@ -41,15 +41,33 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 
-	Enemy::Update(tile,charaList);
-	if (m_ActionState == ActionState::ATTACK)
+	if (!freez)
 	{
-		AttackPlayer();
-		Attack(charaList);
-		
-		//nowOff
+		Enemy::Update(tile, charaList);
+		if (m_ActionState == ActionState::ATTACK)
+		{
+			//AttackPlayer();
+			if (!m_IsAttack)
+			{
+				AttackSerch(tile);
+			}
+			else if (m_IsAttack)
+			{
+				Attack(charaList);
+			}
+		}
+		Move(tile);
 	}
-	Move(tile);
+	else if (freez)
+	{
+		freezCnt++;
+		if (freezCnt == freezMax)
+		{
+			freez = false;
+			freezCnt = 0;
+		}
+	}
+	
 
 	int nextAnim = 0;
 
@@ -57,13 +75,13 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	{
 		nextAnim = 3; 
 	}
+	else if (freez)
+	{
+		nextAnim = 0;
+	}
 	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
 	{
 		nextAnim = 1;
-	}
-	else
-	{
-		nextAnim = 0;
 	}
 
 	// 状態が変わった時だけセットする
@@ -80,34 +98,44 @@ void EnemySword::UnInit()
 
 void EnemySword::Attack(Character** charaList)
 {
-	//攻撃範囲設定
-	DirectX::XMFLOAT2 attackSize = { 50.f,50.0f };
-	DirectX::XMFLOAT2 attackPos;
-	if (m_charDir == State::CharDir::RIGHT)//右向き
+	m_AttackFrame++;
+	if (m_AttackFrame < m_AttackTotalFrame)
 	{
-		attackPos.x = GetPosition().x + GetSize().x;
-	}
-	if (m_charDir == State::CharDir::LEFT)//左向き
-	{
-		attackPos.x = GetPosition().x - attackSize.x;
-	}
-	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
-
-	for (int i = 0; charaList[i] != nullptr; ++i)
-	{
-		auto obj = charaList[i];
-		//オブジェクトじゃなかったらスキップする
-		if (!obj)continue;
-
-		if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
-
-		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
-		if (Col::Any(hit))
+		//攻撃範囲設定
+		DirectX::XMFLOAT2 attackSize = { 50.f,50.0f };
+		DirectX::XMFLOAT2 attackPos;
+		if (m_charDir == State::CharDir::RIGHT)//右向き
 		{
-			//敵にダメージを与える
-			obj->TakeDamage();
-			//ここではplayerをdeleteしない！
+			attackPos.x = GetPosition().x + GetSize().x;
 		}
+		if (m_charDir == State::CharDir::LEFT)//左向き
+		{
+			attackPos.x = GetPosition().x - attackSize.x;
+		}
+		attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
+
+		for (int i = 0; charaList[i] != nullptr; ++i)
+		{
+			auto obj = charaList[i];
+			//オブジェクトじゃなかったらスキップする
+			if (!obj)continue;
+
+			if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
+
+			ColRes hit = CollisionRect(*obj, attackPos, attackSize);
+			if (Col::Any(hit))
+			{
+				//敵にダメージを与える
+				//obj->TakeDamage();
+				//ここではplayerをdeleteしない！
+			}
+		}
+	}
+	else
+	{
+		m_IsAttack = false;
+		m_AttackFrame = 0;
+		freez = true;
 	}
 }
 
@@ -156,7 +184,7 @@ void EnemySword::SetAnimation(int stateIndex)
 		scale = 0.9f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
-		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true, offX, offY, scale);
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);
 		break;
 	case 3: // 攻撃
 		m_pTexture = m_eTexAttack;
@@ -175,7 +203,7 @@ void EnemySword::AttackPlayer()
 	m_AttackFrame++;
 	if (m_AttackFrame < m_AttackTotalFrame)
 	{
-		m_IsAttack = true;
+		
 		if (m_charDir == State::CharDir::LEFT && m_Position.x < m_pTarget->GetPosition().x)
 		{
 			m_charDir = State::CharDir::RIGHT;
@@ -187,7 +215,6 @@ void EnemySword::AttackPlayer()
 	}
 	else
 	{
-		m_IsAttack = false;
 		m_AttackFrame = 0;
 		m_ActionState = ActionState::SERCH;
 	}
