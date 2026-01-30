@@ -176,11 +176,25 @@ void Player::Update(const TileMap& tile, Character** charaList)
 		{
 			Attack(charaList);
 		}
+		if (m_AttackFrame == 10)
+		{
+			if(m_pAttackEffect)
+			{
+				m_pAttackEffect->Stop();
+				m_pAttackEffect = nullptr;
+			}
+		}
 		//攻撃アニメ終了判定
 		if (m_AttackFrame >= m_AttackTotalFrame)
 		{
 			m_IsAttack = false;
 			m_AttackFrame = 0;
+
+			if (m_pAttackEffect)
+			{
+				m_pAttackEffect->Stop();
+				m_pAttackEffect = nullptr;
+			}
 		}
 	}
 	// ダッシュ待機中でもダッシュ中でもなければ通常のMOVE
@@ -642,6 +656,7 @@ void Player::EndDash()
 		m_pDashEffect->Stop();
 		m_pDashEffect = nullptr;
 	}
+
 	m_dState = DashState::NONE;
 	m_dStayCount = 0;
 	m_dDistanceCount = 0;
