@@ -35,6 +35,7 @@ void Stage1Scene::Init()
     m_pEffectManager->LoadEffectTexture(EffectType::DashIdol, "asset/texture/Effect_Hero_AbilityA.png", m_pRenderer->GetDevice(), m_pResourceManager);
     m_pEffectManager->LoadEffectTexture(EffectType::Attack, "asset/texture/Effect_Hero_AttackD.png", m_pRenderer->GetDevice(), m_pResourceManager);
     // リスト作成
+    m_currentCharaNum = 0;
     CreateList(maxChara);
     // Playerキャラ作成　キャラクターは０番
     m_pCharaList[0] = AddList(State::CharaType::t_Player);
@@ -68,6 +69,11 @@ void Stage1Scene::Init()
 
 void Stage1Scene::Update()
 {
+    if (m_IsRestart)
+    {
+        GameRestart();
+        Init();
+    }
     EnemySpawn();
 
     CameraSeting();
@@ -77,10 +83,7 @@ void Stage1Scene::Update()
     CollisionResolve(); 
 
     GameClearCheck();
-    if (m_IsRestart)
-    {
-
-    }
+  
     if (m_pEffectManager)
     {
         m_pEffectManager->Update();
@@ -91,39 +94,42 @@ void Stage1Scene::Update()
 
 void Stage1Scene::Draw()
 {
-    // 背景色クリア（空の色）
-    float clearColor[4] = { 0.f, 1.f, 0.f, 1.0f };
-    m_pRenderer->StartFrame(clearColor);
-
-    // カメラ行列の取得
-    CameraSeting();
-
-    DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
-
-    // 0. 背景（パララックス）
-    DrawBackground(viewProj);
-
-    //1. マップの描画
-    m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
-
-    //
-    // 2. プレイヤーの描画
-    for (int i = 0; i < m_currentCharaNum; i++)
+    if (!m_IsRestart)
     {
-        if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ描画
+        // 背景色クリア（空の色）
+        float clearColor[4] = { 0.f, 1.f, 0.f, 1.0f };
+        m_pRenderer->StartFrame(clearColor);
+
+        // カメラ行列の取得
+        CameraSeting();
+
+        DirectX::XMMATRIX viewProj = m_pCamera->GetViewProjection();
+
+        // 0. 背景（パララックス）
+        DrawBackground(viewProj);
+
+        //1. マップの描画
+        m_pMapRenderer->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, *m_pTileMap, m_pMapTex, viewProj);
+
+        //
+        // 2. プレイヤーの描画
+        for (int i = 0; i < m_currentCharaNum; i++)
         {
-            m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+            if (m_pCharaList[i] && !m_pCharaList[i]->IsDead())  // 死亡していなければ描画
+            {
+                m_pCharaList[i]->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+            }
         }
+        if (m_pEffectManager)
+        {
+            m_pEffectManager->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
+        }
+        if (m_pGameUI)
+        {
+            m_pGameUI->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer);
+        }
+        m_pRenderer->EndFrame();
     }
-    if (m_pEffectManager)
-    {
-        m_pEffectManager->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer, viewProj);
-    }
-    if (m_pGameUI)
-    {
-        m_pGameUI->Draw(m_pRenderer->GetContext(), m_pSpriteRenderer);
-    }
-    m_pRenderer->EndFrame();
 }
 
 void Stage1Scene::DrawBackground(DirectX::XMMATRIX viewProj)
@@ -333,7 +339,7 @@ void Stage1Scene::EnemySpawn()
                     if (num != -1)
                     {
                         m_pCharaList[num] = AddList(State::CharaType::t_EnemySword);
-                        m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), y * m_pTileMap->GetTileSize());
+                        m_pCharaList[num]->SetPos(x * m_pTileMap->GetTileSize(), (y - 3) * m_pTileMap->GetTileSize());
                         SetEnemyTexture(num);
                     }
                 }
@@ -468,8 +474,27 @@ void Stage1Scene::GameClearCheck()
     {
         m_IsRestart = true;
     }
-    if (cnt == m_currentCharaNum)
+    else if (cnt == m_currentCharaNum)
     {
         m_IsFinished = true;
     }
+}
+
+void Stage1Scene::GameRestart()
+{
+    // メモリ解放
+    if (m_pTileMap) { delete m_pTileMap; m_pTileMap = nullptr; }
+    if (m_pMapRenderer) { delete m_pMapRenderer; m_pMapRenderer = nullptr; }
+    if (m_pCamera) { delete m_pCamera; m_pCamera = nullptr; }
+    if (m_pSound) { m_pSound->Uninit(); delete m_pSound; m_pSound = nullptr; }
+    if (m_pEffectManager) { m_pEffectManager->Uninit(); delete m_pEffectManager; m_pEffectManager = nullptr; }
+    if (m_pGameUI) { delete m_pGameUI; m_pGameUI = nullptr; }
+    AllClearList(m_pCharaList);
+
+    // 背景のSRVは ResourceManager が管理している想定のため Release しない。
+    m_pBGTexFront = nullptr;
+    m_pBGTexMid = nullptr;
+    m_pBGTexBack = nullptr;
+
+    std::unordered_set<SpawnPoint, SpawnPointHash>().swap(exploredPoint);
 }

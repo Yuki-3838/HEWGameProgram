@@ -126,4 +126,5 @@ public:
     void SetPlayerTexture();
     void SetEnemyTexture(int num);
     void GameClearCheck();
+    void GameRestart();
 };

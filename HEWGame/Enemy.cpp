@@ -236,7 +236,7 @@ void Enemy::SerchPlayer(Character** charaList,const TileMap& tile)
 	if (m_charDir == State::CharDir::RIGHT)
 	{
 		nowSerchDistance = m_serchDistance;
-		startpos.x = m_Position.x + m_Size.x;
+		startpos.x = m_Position.x;
 		endpos.x = startpos.x + nowSerchDistance;
 		for (int x = startpos.x; x < endpos.x; x += tile.GetTileSize())
 		{
@@ -246,7 +246,7 @@ void Enemy::SerchPlayer(Character** charaList,const TileMap& tile)
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
 					ReverseActionState();
-					PropagatePlayerDetection(charaList);
+					break;
 				}
 			}
 		}
@@ -254,10 +254,10 @@ void Enemy::SerchPlayer(Character** charaList,const TileMap& tile)
 	else if (m_charDir == State::CharDir::LEFT)
 	{
 		nowSerchDistance = m_serchDistance * -1;
-		startpos.x = m_Position.x;
-		endpos.x = startpos.x + nowSerchDistance;
+		startpos.x = m_Position.x + nowSerchDistance;
+		endpos.x = m_Position.x;
 
-		for (int x = startpos.x; x > endpos.x; x -= tile.GetTileSize())
+		for (int x = startpos.x; x < endpos.x; x += tile.GetTileSize())
 		{
 			for (int y = startpos.y; y < endpos.y; y+= tile.GetTileSize())
 			{
@@ -265,7 +265,7 @@ void Enemy::SerchPlayer(Character** charaList,const TileMap& tile)
 				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
 					ReverseActionState();
-					PropagatePlayerDetection(charaList);
+					return;
 				}
 			}
 		}
@@ -326,7 +326,7 @@ void Enemy::PropagatePlayerDetection(Character** charaList)
 				if (charaList[i] == this)continue;
 				if (CollisionRect(*charaList[i], DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
 				{
-					if (charaList[i]->GetCharaType() != State::CharaType::t_Player)
+					if (charaList[i]->GetCharaType() == State::CharaType::t_Player)
 					{
 						Enemy* enemy = dynamic_cast<Enemy*>(charaList[i]);
 						{
@@ -341,4 +341,50 @@ void Enemy::PropagatePlayerDetection(Character** charaList)
 		}
 	}
 
+}
+
+void Enemy::AttackSerch(const TileMap& tile)
+{
+	ColRes res;
+	int correction;
+	int nowSerchDistance = 0;
+	DirectX::XMFLOAT2 startpos;
+	DirectX::XMFLOAT2 endpos;
+	startpos.y = m_Position.y;
+	endpos.y = m_Position.y + m_Size.y;
+	if (m_charDir == State::CharDir::RIGHT)
+	{
+		nowSerchDistance = 50;
+		startpos.x = m_Position.x;
+		endpos.x = startpos.x + nowSerchDistance;
+		for (int x = startpos.x; x < endpos.x; x += tile.GetTileSize())
+		{
+			for (int y = startpos.y; y < endpos.y; y += tile.GetTileSize())
+			{
+				if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_WALL)return;
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					m_IsAttack = true;
+				}
+			}
+		}
+	}
+	else if (m_charDir == State::CharDir::LEFT)
+	{
+		nowSerchDistance = 50 * -1;
+		startpos.x = m_Position.x + nowSerchDistance;
+		endpos.x = m_Position.x;
+
+		for (int x = startpos.x; x < endpos.x; x += tile.GetTileSize())
+		{
+			for (int y = startpos.y; y < endpos.y; y += tile.GetTileSize())
+			{
+				if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_WALL)return;
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					m_IsAttack = true;
+				}
+			}
+		}
+	}
 }

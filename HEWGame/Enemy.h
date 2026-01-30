@@ -32,6 +32,10 @@ protected:
 	float m_targetSpeed;
 	float m_serchSpeed;
 
+	int freezMax = 120;
+	int freezCnt = 0;
+	bool freez = false;
+
 	const Character* m_pTarget = nullptr; //ターゲット（プレイヤー）の
 	bool isDetection; //プレイヤーの発見状態
 	int SCount = 0;   //タイマー
@@ -65,6 +69,7 @@ public:
 	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
 
 	void SerchPlayer(Character** charaList, const TileMap& tile);
+	void AttackSerch(const TileMap& tile);
 	void PropagatePlayerDetection(Character** charaList);
 
 	void CharacterColDir(Character** charaList);

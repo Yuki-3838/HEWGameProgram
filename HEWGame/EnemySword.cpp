@@ -22,6 +22,7 @@ EnemySword::EnemySword()
 
 	m_charaType = State::CharaType::t_EnemySword;
 
+	m_AttackFrame = 0;
 	m_AttackTotalFrame = 30;  //攻撃アニメの総フレーム数
 	m_AttackHitStart = 1;     //攻撃判定が発生する開始フレーム
 	m_AttackHitEnd = 30;      //攻撃判定が発生する終了フレーム
@@ -40,35 +41,47 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 
-	Enemy::Update(tile,charaList);
-	if (m_ActionState == ActionState::ATTACK)
+	if (!freez)
 	{
-		//AttackPlayer();
-		//nowOff
+		Enemy::Update(tile, charaList);
+		if (m_ActionState == ActionState::ATTACK)
+		{
+			//AttackPlayer();
+			if (!m_IsAttack)
+			{
+				AttackSerch(tile);
+			}
+			else if (m_IsAttack)
+			{
+				Attack(charaList);
+			}
+		}
+		Move(tile);
 	}
-	Move(tile);
-	//Attack(charaList);
-	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
-	int nextAnim = 0; // 0:待機 (デフォルト)
+	else if (freez)
+	{
+		freezCnt++;
+		if (freezCnt == freezMax)
+		{
+			freez = false;
+			freezCnt = 0;
+		}
+	}
+	
 
-	//攻撃中か
+	int nextAnim = 0;
+
 	if (m_IsAttack)
 	{
-		nextAnim = 3; //攻撃用アニメ
+		nextAnim = 3; 
 	}
-	// 攻撃予備動作中か
-	//else if ()
-	//{
-	//	nextAnim = 2; //攻撃予備動作用アニメ
-	//}
-	// 移動中か
+	else if (freez)
+	{
+		nextAnim = 0;
+	}
 	else if (m_MoveState == State::MoveState::LEFT || m_MoveState == State::MoveState::RIGHT)
 	{
-		nextAnim = 1; // 移動用アニメ
-	}
-	else
-	{
-		nextAnim = 0; // 待機アニメ
+		nextAnim = 1;
 	}
 
 	// 状態が変わった時だけセットする
@@ -85,34 +98,44 @@ void EnemySword::UnInit()
 
 void EnemySword::Attack(Character** charaList)
 {
-	//攻撃範囲設定
-	DirectX::XMFLOAT2 attackSize = { 200.f,128.0f };
-	DirectX::XMFLOAT2 attackPos;
-	if (m_charDir == State::CharDir::RIGHT)//右向き
+	m_AttackFrame++;
+	if (m_AttackFrame < m_AttackTotalFrame)
 	{
-		attackPos.x = GetPosition().x + GetSize().x;
-	}
-	if (m_charDir == State::CharDir::LEFT)//左向き
-	{
-		attackPos.x = GetPosition().x - attackSize.x;
-	}
-	attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
-
-	for (int i = 0; charaList[i] != nullptr; ++i)
-	{
-		auto obj = charaList[i];
-		//オブジェクトじゃなかったらスキップする
-		if (!obj)continue;
-
-		if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
-
-		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
-		if (Col::Any(hit))
+		//攻撃範囲設定
+		DirectX::XMFLOAT2 attackSize = { 50.f,50.0f };
+		DirectX::XMFLOAT2 attackPos;
+		if (m_charDir == State::CharDir::RIGHT)//右向き
 		{
-			//敵にダメージを与える
-			obj->TakeDamage();
-			//ここではplayerをdeleteしない！
+			attackPos.x = GetPosition().x + GetSize().x;
 		}
+		if (m_charDir == State::CharDir::LEFT)//左向き
+		{
+			attackPos.x = GetPosition().x - attackSize.x;
+		}
+		attackPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
+
+		for (int i = 0; charaList[i] != nullptr; ++i)
+		{
+			auto obj = charaList[i];
+			//オブジェクトじゃなかったらスキップする
+			if (!obj)continue;
+
+			if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
+
+			ColRes hit = CollisionRect(*obj, attackPos, attackSize);
+			if (Col::Any(hit))
+			{
+				//敵にダメージを与える
+				//obj->TakeDamage();
+				//ここではplayerをdeleteしない！
+			}
+		}
+	}
+	else
+	{
+		m_IsAttack = false;
+		m_AttackFrame = 0;
+		freez = true;
 	}
 }
 
@@ -161,7 +184,7 @@ void EnemySword::SetAnimation(int stateIndex)
 		scale = 0.9f;
 		offX = (m_Size.x - animW * scale) / 2;
 		offY = (m_Size.y - animH * scale);
-		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true, offX, offY, scale);
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);
 		break;
 	case 3: // 攻撃
 		m_pTexture = m_eTexAttack;
@@ -177,12 +200,22 @@ void EnemySword::SetAnimation(int stateIndex)
 
 void EnemySword::AttackPlayer()
 {
-	if (m_charDir == State::CharDir::LEFT && m_Position.x < m_pTarget->GetPosition().x)
+	m_AttackFrame++;
+	if (m_AttackFrame < m_AttackTotalFrame)
 	{
-		m_charDir = State::CharDir::RIGHT;
+		
+		if (m_charDir == State::CharDir::LEFT && m_Position.x < m_pTarget->GetPosition().x)
+		{
+			m_charDir = State::CharDir::RIGHT;
+		}
+		else if (m_charDir == State::CharDir::RIGHT && m_Position.x > m_pTarget->GetPosition().x)
+		{
+			m_charDir = State::CharDir::LEFT;
+		}
 	}
-	else if (m_charDir == State::CharDir::RIGHT && m_Position.x > m_pTarget->GetPosition().x)
+	else
 	{
-		m_charDir = State::CharDir::LEFT;
+		m_AttackFrame = 0;
+		m_ActionState = ActionState::SERCH;
 	}
 }
