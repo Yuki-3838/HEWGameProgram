@@ -36,7 +36,7 @@ Player::Player()
 
 	m_sGauge = 3.0f;
 	m_sGaugeMAX = 3.0f;
-	m_sQpush = false;
+	
 }
 
 Player::~Player()
@@ -45,12 +45,24 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile, Character** charaList)
 {
+
+
+	if (m_cStayCount > 0)
+	{
+		m_cStayCount--;
+	}
+
 	if (spawnFg)
 	{
 		PlayerSpawn(tile);
 	}
-	
-	GameData::AddSkill(SkillType::Dash, 0.5f);
+
+	if (m_dState == DashState::NONE && m_cStayCount <= 0)
+	{
+		GameData::AddSkill(SkillType::Dash, 0.2f);
+	}
+
+
 	//アニメーション更新
 	m_Animator.Update(1.0f / 1.0f);
 	m_MoveState = State::MoveState::NONE;  //待機状態に戻す
@@ -344,7 +356,8 @@ void Player::Attack(Character** charaList)
 		{
 			//敵にダメージを与える
 			obj->TakeDamage();
-			m_sGauge += 0.5f;
+			GameData::AddSkill(SkillType::Dash, 0.2f);
+			m_cStayCount = 120;
 			//ここではenemyをdeleteしない！
 		}
 	}
@@ -662,6 +675,7 @@ void Player::EndDash()
 	m_dDistanceCount = 0;
 	m_dDire[0] = DashDirection::NONE;
 	m_dDire[1] = DashDirection::NONE;
+	m_cStayCount = 120;
 }
 
 void Player::PlayerSpawn(const TileMap& tile)
