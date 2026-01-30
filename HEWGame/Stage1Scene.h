@@ -41,7 +41,7 @@ private:
     // キャラクターに関する変数
     Character** m_pCharaList = nullptr; // キャラクターリスト
     int m_currentCharaNum = 0;          // 現在のキャラクター数
-    static constexpr int maxChara = 10; // 最大キャラ数
+    static constexpr int maxChara = 50; // 最大キャラ数
 
     ID3D11ShaderResourceView* m_pMapTex;
     ID3D11ShaderResourceView* m_pPlayerTex;
@@ -84,6 +84,7 @@ private:
     int m_ScreenHeight = 1080;
 
     bool m_IsFinished;
+    bool m_IsRestart;
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
 
@@ -91,8 +92,6 @@ private:
     std::unordered_set<SpawnPoint,SpawnPointHash> exploredPoint;
 
     
-    
-
     GameUI* m_pGameUI = nullptr;
 public:
     using Scene::Scene;
@@ -126,4 +125,5 @@ public:
     void SetAnimations();
     void SetPlayerTexture();
     void SetEnemyTexture(int num);
+    void GameClearCheck();
 };

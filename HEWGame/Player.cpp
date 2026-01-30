@@ -45,6 +45,10 @@ Player::~Player()
 
 void Player::Update(const TileMap& tile, Character** charaList)
 {
+	if (spawnFg)
+	{
+		PlayerSpawn(tile);
+	}
 	
 	GameData::AddSkill(SkillType::Dash, 0.5f);
 	//アニメーション更新
@@ -282,6 +286,7 @@ void Player::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::X
 
 void Player::UnInit()
 {
+
 }
 
 void Player::Jump()
@@ -642,4 +647,23 @@ void Player::EndDash()
 	m_dDistanceCount = 0;
 	m_dDire[0] = DashDirection::NONE;
 	m_dDire[1] = DashDirection::NONE;
+}
+
+void Player::PlayerSpawn(const TileMap& tile)
+{
+	DirectX::XMFLOAT2 endPos;
+	endPos.x = 1920 ;
+	endPos.y = 1080 * 3 ;
+
+	for (int x = 0;x < endPos.x;x += tile.GetTileSize())
+	{
+		for (int y = 0;y < endPos.y;y += tile.GetTileSize())
+		{
+			if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_SPAWNp)
+			{
+				m_Position = DirectX::XMFLOAT2(x, y);
+				spawnFg = false;
+			}
+		}
+	}
 }

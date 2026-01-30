@@ -43,7 +43,8 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 	Enemy::Update(tile,charaList);
 	if (m_ActionState == ActionState::ATTACK)
 	{
-		AttackPlayer();
+		//AttackPlayer();
+		//nowOff
 	}
 	Move(tile);
 	//Attack(charaList);
