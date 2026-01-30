@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "GameData.h"
 
 
 Enemy::Enemy()
@@ -97,11 +98,18 @@ void Enemy::Attack(Character** charaList)
 int Enemy::TakeDamage()
 {
 	int damage = 1;
+
+	// 既に死亡フラグが立っている場合は重複処理を防止
+	if (m_IsDead) return m_Stats.m_HP;
+
 	m_Stats.m_HP -= damage;
 	if (m_Stats.m_HP <= 0)
 	{
 		m_Stats.m_HP = 0;
 		m_IsDead = true;
+
+		// 敵を倒したときにスコアを加算
+		GameData::AddScore(300);
 	}
 	return m_Stats.m_HP;
 }
