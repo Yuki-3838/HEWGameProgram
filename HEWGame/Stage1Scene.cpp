@@ -20,7 +20,7 @@ void Stage1Scene::Init()
     // 1. 各種マネージャー・マップの生成
     // タイル
     m_pTileMap = new TileMap();
-    m_pTileMap->LoadCSV("asset/map/Stage1.csv");
+    m_pTileMap->LoadCSV("asset/map/HH_stage.csv");
     // レンダー
     m_pMapRenderer = new MapRenderer();
     m_pCamera = new Camera(m_ScreenWidth, m_ScreenHeight);
@@ -55,6 +55,7 @@ void Stage1Scene::Init()
 
 
     m_IsFinished = false;
+    m_IsRestart = false;
 
     //エネミーにプレイヤーの位置情報を渡す
     //enemy->SetTarget(*player);
@@ -73,11 +74,12 @@ void Stage1Scene::Update()
 
     UpdateList();
 
-    CollisionResolve();
-    // シーン終了判定
-    if (m_pInput->GetKeyTrigger(VK_RETURN))
+    CollisionResolve(); 
+
+    GameClearCheck();
+    if (m_IsRestart)
     {
-        m_IsFinished = true;
+
     }
     if (m_pEffectManager)
     {
@@ -309,11 +311,11 @@ void Stage1Scene::CameraSeting()
 void Stage1Scene::EnemySpawn()
 {
     // 探索開始範囲
-    int X = m_pCharaList[0]->GetPosition().x / m_pTileMap->GetTileSize();
-    int Y = m_pCharaList[0]->GetPosition().y / m_pTileMap->GetTileSize();
+    int X = m_pCharaList[0]->GetPosition().x / m_pTileMap->GetTileSize() - m_ScreenWidth / 64;
+    int Y = m_pCharaList[0]->GetPosition().y / m_pTileMap->GetTileSize() - m_ScreenHeight / 64;
     // 探索終了範囲
-    int Xmax = m_pCharaList[0]->GetPosition().x + m_ScreenWidth / m_pTileMap->GetTileSize();
-    int Ymax = m_pCharaList[0]->GetPosition().y + m_ScreenHeight / m_pTileMap->GetTileSize();
+    int Xmax = m_pCharaList[0]->GetPosition().x / m_pTileMap->GetTileSize() + m_ScreenWidth / 64;
+    int Ymax = m_pCharaList[0]->GetPosition().y / m_pTileMap->GetTileSize() + m_ScreenHeight / 64;
     // キャラクターポジション　+ ScreenWidth
 	for (int x = X;x < Xmax;x++)
     {
@@ -449,5 +451,25 @@ void Stage1Scene::CollisionResolve()
                 m_pCharaList[i]->ResolveOverlap(*m_pTileMap,*m_pCharaList[j]);
             }
         }
+    }
+}
+
+void Stage1Scene::GameClearCheck()
+{
+    int cnt = 0;
+    for (int i = 0;;i++)
+    {
+        if (m_pCharaList[i] == nullptr) break;
+        if (m_pCharaList[i]->IsDead() && m_pCharaList[i]->GetCharaType() == State::CharaType::t_Player)break;
+        if (!m_pCharaList[i]->IsDead() && m_pCharaList[i]->GetCharaType() != State::CharaType::t_Player) break;
+        cnt++;
+    }
+    if (m_pCharaList[0]->IsDead())
+    {
+        m_IsRestart = true;
+    }
+    if (cnt == m_currentCharaNum)
+    {
+        m_IsFinished = true;
     }
 }

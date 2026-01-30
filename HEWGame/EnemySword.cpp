@@ -46,7 +46,7 @@ void EnemySword::Update(const TileMap& tile, Character** charaList)
 		AttackPlayer();
 	}
 	Move(tile);
-	//Attack(charaList);
+	Attack(charaList);
 	//アニメーションの切り替え判定(優先度はダッシュ＞溜め＞攻撃＞ジャンプ＞移動＞待機)
 	int nextAnim = 0; // 0:待機 (デフォルト)
 

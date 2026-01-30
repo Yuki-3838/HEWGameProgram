@@ -71,6 +71,9 @@ e_TileId TileMap::GetTileID(int x, int y) const
     case 9:
         return TILE_GOAL;
         break;
+    case 10:
+        return TILE_SPAWNp;
+        break;
     default:
         return TILE_NOTFOUND;
         break;

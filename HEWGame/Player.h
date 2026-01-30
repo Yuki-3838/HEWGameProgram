@@ -63,6 +63,8 @@ private:
 	Effect* m_pDashEffect = nullptr;
 	Effect* m_pDashIdolEffect = nullptr;
 	Effect* m_pAttackEffect = nullptr;
+
+    bool spawnFg = true;
 public:
     // コンストラクタ・デストラクタ
     Player();
@@ -94,6 +96,7 @@ public:
     void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump, ID3D11ShaderResourceView* fall, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* flyattack, ID3D11ShaderResourceView* abilityA = nullptr, ID3D11ShaderResourceView* abilityB = nullptr);
     void SetSound(Sound* pSound) { m_pSound = pSound; }
     void SetEffectManager(EffectManager* em) { m_pEffectManager = em; }
+    void PlayerSpawn(const TileMap& tile);
 };
 
 // 上書き用
