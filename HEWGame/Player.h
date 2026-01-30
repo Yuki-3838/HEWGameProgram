@@ -55,7 +55,7 @@ private:
     float m_sGaugeMAX; //ダッシュのゲージ最大値
     float m_sChage;  //1f当たりのチャージ量
     bool m_sChageF; // チャージオンオフフラグ
-    bool m_sQpush; //Q(ダッシュボタン)を押している間のフラグ
+    int m_cStayCount = 0;           // チャージ待機時間カウント
 
     Sound* m_pSound = nullptr;
     EffectManager* m_pEffectManager = nullptr;
