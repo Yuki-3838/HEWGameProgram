@@ -9,17 +9,16 @@ Enemy::Enemy()
 	m_Stats.m_Gravity = 5;
 	m_Stats.m_JumpPw = 25;
 
-	m_Size.x = 128.0f;
-	m_Size.y = 256.0f;
+	m_Size.x = 64 * 2;
+	m_Size.y = 64 * 2;
 	m_Position.x = 1000.0f;
 	m_Position.y = 0.0f;
 
 	searchSize = { 500.f, 128.0f };
 
-	m_charaType = State::CharaType::t_Enemy;
+	m_charaType = State::CharaType::t_EnemySword;
 
 	isDetection = false; //プレイヤーの発見状態
-	m_FlipX = true;   // 左右反転フラグ(最初は左向き)
 }
 
 Enemy::~Enemy()
@@ -27,137 +26,28 @@ Enemy::~Enemy()
 
 }
 
+void Enemy::EnemyInit()
+{
+	m_ActionState = ActionState::SERCH;
+	m_serchDistance = 500;
+}
+
 void Enemy::Update(const TileMap& tile, Character** charaList)
 {
-	m_MoveState = State::MoveState::NONE;
-	// 移動入力処理
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	if (m_ActionState == ActionState::SERCH)
 	{
+		SerchPlayer(charaList,tile);
+	}
+	CharacterColDir(charaList);
+	switch (m_charDir)
+	{
+	case State::CharDir::LEFT:
 		m_MoveState = State::MoveState::LEFT;
-		m_FlipX = true;
-	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-	{
+		break;
+	case State::CharDir::RIGHT:
 		m_MoveState = State::MoveState::RIGHT;
-		m_FlipX = false;
+		break;
 	}
-	if (GetAsyncKeyState(VK_UP) & 0x8000)
-	{
-		Jump();
-	}
-
-	if (m_IsAttack == false && GetAsyncKeyState(VK_Z) & 0x8000)
-	{
-		m_IsAttack = true;
-		m_AttackFrame = 0;
-	}
-
-	//攻撃処理
-	if (m_IsAttack)
-	{
-		m_AttackFrame++;
-		//攻撃判定のあるフレームならAttack関数を呼び出す
-		if (m_AttackFrame >= m_AttackHitStart && m_AttackFrame <= m_AttackHitEnd)
-		{
-			Attack(charaList);
-		}
-		//攻撃アニメ終了判定
-		if (m_AttackFrame >= m_AttackTotalFrame)
-		{
-			m_IsAttack = false;
-			m_AttackFrame = 0;
-		}
-	}
-
-	//非発見状態
-	if (isDetection == false)
-	{
-		//左右移動にする予定
-		SCount++;
-
-		if (SCount == 200)
-		{
-			m_MoveState = State::MoveState::RIGHT;
-			m_FlipX = false; //右を見る
-		}
-
-		if (SCount == 400)
-		{
-			m_MoveState = State::MoveState::LEFT;
-			m_FlipX = true; //左を見る
-
-			SCount = 0;
-		}
-
-
-		if (m_FlipX)//右向き
-		{
-			searchPos.x = GetPosition().x - searchSize.x;
-		}
-		else//左向き
-		{
-			// attackPos.x += (m_Size.x / 2) + (attackSize.x / 2);
-			searchPos.x = GetPosition().x + GetSize().x;
-		}
-		//attackPos.y += m_Size.y / 4;
-		searchPos.y = GetPosition().y + GetSize().y / 2 - GetSize().y / 4;
-
-		for (int i = 0; charaList[i] != nullptr; ++i)
-		{
-			auto obj = charaList[i];
-			//オブジェクトじゃなかったらスキップする
-			if (!obj)continue;
-
-			//Character* chara = dynamic_cast<Character*>(obj);
-			//if (!chara)continue;
-			if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
-
-			//ColRes hit = CollisionRect(attackPos, attackSize, chara->GetPosition(), chara->GetSize());]
-			ColRes hit = CollisionRect(*obj, searchPos, searchSize);
-
-			if (Col::Any(hit))
-			{
-				//敵にダメージを与える
-				/*obj->TakeDamage();*/
-				//ここではenemyをdeleteしない！
-
-				SCount2++;
-				if (SCount2 == 100) //テスト用に見つけてから一拍おいてます
-				{
-					isDetection = true;
-					SCount2 = 0;
-				}
-			}
-		}
-	}
-
-	//発見状態時
-	if (isDetection == true)
-	{
-		m_MoveState = State::MoveState::NONE;
-		if (m_pTarget)
-		{
-			DirectX::XMFLOAT2 targetPos = m_pTarget->GetPosition();
-			DirectX::XMFLOAT2 enemyPos = GetPosition();
-
-			targetPos.x += m_pTarget->GetSize().x * 0.5f;
-			enemyPos.x += GetSize().x * 0.5f;
-
-
-			if (targetPos.x + 250.0f < enemyPos.x)
-			{
-				m_MoveState = State::MoveState::LEFT;
-				m_FlipX = true;
-			}
-
-			else if (targetPos.x - 250.0f > enemyPos.x)
-			{
-				m_MoveState = State::MoveState::RIGHT;
-				m_FlipX = false;
-			}
-		}
-	}
-	Move(tile);
 }
 
 void Enemy::UnInit()
@@ -191,9 +81,10 @@ void Enemy::Attack(Character** charaList)
 		//オブジェクトじゃなかったらスキップする
 		if (!obj)continue;
 
-		if (obj->GetCharaType() != State::CharaType::t_Player)continue;  //player以外だったらスキップする
+		if (obj->GetCharaType() == State::CharaType::t_Player)continue;  //player以外だったらスキップする
 
 		ColRes hit = CollisionRect(*obj, attackPos, attackSize);
+
 		if (Col::Any(hit))
 		{
 			//敵にダメージを与える
@@ -232,11 +123,12 @@ void Enemy::SetTarget(const Character& target)
 	m_pTarget = &target;
 }
 
-void Enemy::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump)
+void Enemy::SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* attackTelegraph)
 {
 		m_eTexIdle = idle;
 		m_eTexWalk = walk;
-		m_eTexJump = jump;
+		m_eTexAttack = attack;
+		m_eTexAttackTelegraph = attackTelegraph;
 
 		// 初期状態として待機画像をセットしておく
 		SetAnimation(m_CurrentAnimState);
@@ -250,16 +142,22 @@ void Enemy::Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XM
 
 	////絵をどれくらい下にずらすか
 	//float drawOffsetY = 60.0f;   /*+ drawOffsetY*/
-	
+	float drawX = m_Position.x + f.renderOffsetX;
+	float drawY = m_Position.y + f.renderOffsetY;
+	float drawW = f.w * f.scale;
+	float drawH = f.h * f.scale;
 
 	// SpriteRendererで描画
 	if (m_pTexture && pSR)
 	{
+		
+		m_FlipX = (m_charDir != State::CharDir::RIGHT); // enumyの向きに合わせてbool型の反転設定
+
 		pSR->Draw(
 			pContext,
 			m_pTexture,
-			m_Position.x, m_Position.y,   
-			m_Size.x, m_Size.y,
+			drawX, drawY,
+			drawW, drawH,
 			viewProj,
 			f.x, f.y, f.w, f.h, // UV座標
 			0.0f,    // 回転なし
@@ -277,21 +175,170 @@ void Enemy::SetAnimation(int stateIndex)
 	//画像の構成に合わせて数値を変更してね
 	float w = 320.0f;
 	float h = 320.0f;
+	float animW = 0; // 今回設定するアニメの幅
+	float animH = 0; // 今回設定するアニメの高さ
+	float uvOffsetY = 0.0f; // UVのYオフセット
+	float scale = 1.0f;
+
+	float offX;
+	float offY;
 	// 状態に合わせてテクスチャとアニメ設定を切り替える
 	switch (stateIndex)
 	{
-	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置)
+	case 0://待機      全コマ数, 横の列数, 幅, 高さ, 1コマの時間, Y座標の開始位置, ループするかどうか)
 		//テクスチャの入れ替え
 		m_pTexture = m_eTexIdle;
-		m_Animator.Init(1, 1, w, h, 0.01f, 0.0f);
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, animW, animH, 0.01f, 0.0f, true, offX, offY, scale);
 		break;
 	case 1: //移動
 		m_pTexture = m_eTexWalk;
-		m_Animator.Init(1, 1, w, h, 0.2f, 0.0f);
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, w, h, 0.02f, 0.0f, true, offX, offY, scale);
 		break;
-	case 2:
-		m_pTexture = m_eTexJump;
-		m_Animator.Init(1, 1, w, h, 0.2f, 0.0f);
+	case 2: // 攻撃予備動作
+		m_pTexture = m_eTexAttackTelegraph;
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, true, offX, offY, scale);
+		break;
+	case 3: // 攻撃
+		m_pTexture = m_eTexAttack;
+		animW = w;
+		animH = h;
+		scale = 0.7f;
+		offX = (m_Size.x - animW * scale) / 2;
+		offY = (m_Size.y - animH * scale);
+		m_Animator.Init(32, 8, w, h, 0.2f, 0.0f, false, offX, offY, scale);
 		break;
 	}
+}
+
+void Enemy::SerchPlayer(Character** charaList,const TileMap& tile)
+{
+	int correction;
+	int nowSerchDistance = 0;
+	DirectX::XMFLOAT2 startpos;
+	DirectX::XMFLOAT2 endpos;
+	startpos.y = m_Position.y;
+	endpos.y = m_Position.y + m_Size.y;
+	if (m_charDir == State::CharDir::RIGHT)
+	{
+		nowSerchDistance = m_serchDistance;
+		startpos.x = m_Position.x + m_Size.x;
+		endpos.x = startpos.x + nowSerchDistance;
+		for (int x = startpos.x; x < endpos.x; x += tile.GetTileSize())
+		{
+			for (int y = startpos.y; y < endpos.y; y += tile.GetTileSize())
+			{
+				if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_WALL)return;
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					ReverseActionState();
+					PropagatePlayerDetection(charaList);
+				}
+			}
+		}
+	}
+	else if (m_charDir == State::CharDir::LEFT)
+	{
+		nowSerchDistance = m_serchDistance * -1;
+		startpos.x = m_Position.x;
+		endpos.x = startpos.x + nowSerchDistance;
+
+		for (int x = startpos.x; x > endpos.x; x -= tile.GetTileSize())
+		{
+			for (int y = startpos.y; y < endpos.y; y+= tile.GetTileSize())
+			{
+				if (tile.GetTileID(x / tile.GetTileSize(), y / tile.GetTileSize()) == TILE_WALL)return;
+				if (CollisionRect(*m_pTarget, DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					ReverseActionState();
+					PropagatePlayerDetection(charaList);
+				}
+			}
+		}
+	}
+}
+
+void Enemy::CharacterColDir(Character** charaList)
+{
+	ColRes res;
+	for (int i = 0;;i++)
+	{
+		if (charaList[i] == nullptr) break;
+		if (charaList[i] == this) continue;
+		res = CollisionRect(*this, *charaList[i]);
+		if (res & ColRes::LEFT && m_charDir == State::CharDir::RIGHT)
+		{	
+			ReverseDir();
+		}
+		if (res & ColRes::RIGHT && m_charDir == State::CharDir::LEFT)
+		{
+			ReverseDir();
+		}
+	}
+}
+
+void Enemy::ReverseActionState()
+{
+	switch (m_ActionState)
+	{
+	case ActionState::SERCH:
+		m_ActionState = ActionState::ATTACK;
+		SetSpeed(m_targetSpeed);
+		break;
+	case ActionState::ATTACK:
+		m_ActionState = ActionState::SERCH;
+		SetSpeed(m_serchSpeed);
+		break;
+	}
+}
+
+void Enemy::PropagatePlayerDetection(Character** charaList)
+{
+	DirectX::XMFLOAT2 startPos;
+	DirectX::XMFLOAT2 endPos;
+
+	startPos.x = m_Position.x - 480;
+	startPos.y = m_Position.y - 270;
+	endPos.x = m_Position.x + 480;
+	endPos.y = m_Position.y + 270;
+
+	for (int x = startPos.x;x < endPos.x;x += m_Size.x)
+	{
+		for (int y = startPos.y;y < endPos.y;y += m_Size.y)
+		{
+			for (int i = 1;;i++)
+			{
+				if (charaList[i] == nullptr) break;
+				if (charaList[i] == this)continue;
+				if (CollisionRect(*charaList[i], DirectX::XMFLOAT2(x, y), m_Size) != ColRes::NONE)
+				{
+					if (charaList[i]->GetCharaType() != State::CharaType::t_Player)
+					{
+						Enemy* enemy = dynamic_cast<Enemy*>(charaList[i]);
+						{
+							if (enemy->GetActionState() == ActionState::SERCH)
+							{
+								enemy->ReverseActionState();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 }

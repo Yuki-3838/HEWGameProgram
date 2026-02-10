@@ -2,16 +2,24 @@
 #include"Character.h"
 #include"Animator.h"
 
+enum class ActionState
+{
+	SERCH,
+	ATTACK
+};
 
 class Enemy :public Character
 {
-private:
 
+protected:
 	// 各状態のテクスチャを保持しておく変数
 	ID3D11ShaderResourceView* m_eTexIdle = nullptr; // 待機用
 	ID3D11ShaderResourceView* m_eTexWalk = nullptr; // 移動用
-	ID3D11ShaderResourceView* m_eTexJump = nullptr; // ジャンプ用
+	ID3D11ShaderResourceView* m_eTexAttack = nullptr; // 攻撃用
+	ID3D11ShaderResourceView* m_eTexAttackTelegraph = nullptr; // 攻撃予備動作
 
+
+	
 	bool m_FlipX = true; // 左右反転フラグ
 	Animator m_Animator;//アニメーション管理
 
@@ -19,8 +27,10 @@ private:
 	int m_CurrentAnimState = -1;
 
 	//アニメーション切り替え関数
-	void SetAnimation(int stateIndex);
+	virtual void SetAnimation(int stateIndex);
 
+	float m_targetSpeed;
+	float m_serchSpeed;
 
 	const Character* m_pTarget = nullptr; //ターゲット（プレイヤー）の
 	bool isDetection; //プレイヤーの発見状態
@@ -29,22 +39,34 @@ private:
 	//サーチ範囲設定
 	DirectX::XMFLOAT2 searchSize;
 	DirectX::XMFLOAT2 searchPos;
+	float m_serchDistance = 1000;
+	ActionState m_ActionState;
 
 public:
 	// コンストラクタ・デストラクタ
 	Enemy();
 	~Enemy() override;
 
-	void Update(const TileMap& tile, Character** charaList)override;
-	void UnInit()override;
+	void EnemyInit();
+	virtual void Update(const TileMap& tile, Character** charaList)override;
+	virtual  void UnInit()override;
 	void Draw();
 
-	void Attack(Character** charaList)override;
+	virtual void Attack(Character** charaList)override;
 	int TakeDamage() override;
-	void Jump()override;
+	void Jump() override;
 	void SetTarget(const Character& target);
-	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* jump);
+	void SetTextures(ID3D11ShaderResourceView* idle, ID3D11ShaderResourceView* walk, ID3D11ShaderResourceView* attack, ID3D11ShaderResourceView* attackTelegraph);
+	void SetSpeed(float speed) { m_Stats.m_Speed = speed; }
+	void ReverseActionState();
+	ActionState GetActionState() { return m_ActionState; }
 
 	//アニメーションさせるための描画
 	void Draw(ID3D11DeviceContext* pContext, SpriteRenderer* pSR, DirectX::XMMATRIX viewProj) override;
+
+	void SerchPlayer(Character** charaList, const TileMap& tile);
+	void PropagatePlayerDetection(Character** charaList);
+
+	void CharacterColDir(Character** charaList);
+
 };

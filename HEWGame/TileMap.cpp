@@ -12,20 +12,20 @@ bool TileMap::LoadCSV(const std::string& fileName)
     std::string line;
     while (std::getline(file, line))
     {
-        // Excel“Á—L‚Ì‰üsƒR[ƒh(\r)‚ª––”ö‚Éc‚Á‚Ä‚¢‚éê‡‚ğœ‹
+        // Excelç‰¹æœ‰ã®æ”¹è¡Œã‚³ãƒ¼ãƒ‰(\r)ãŒæœ«å°¾ã«æ®‹ã£ã¦ã„ã‚‹å ´åˆã‚’é™¤å»
         if (!line.empty() && line.back() == '\r')
         {
             line.pop_back();
         }
 
-        // ‹ós‚ğ“Ç‚İ”ò‚Î‚·
+        // ç©ºè¡Œã‚’èª­ã¿é£›ã°ã™
         if (line.empty()) continue;
 
         std::vector<int> row;
         std::stringstream ss(line);
         std::string value;
 
-        while (std::getline(ss, value, ',')) // ƒJƒ“ƒ}‹æØ‚è‚Å“Ç‚İ‚İ
+        while (std::getline(ss, value, ',')) // ã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã§èª­ã¿è¾¼ã¿
         {
             if (value.empty()) continue;
 
@@ -35,7 +35,7 @@ bool TileMap::LoadCSV(const std::string& fileName)
             }
             catch (...)
             {
-                // ”šˆÈŠO‚Ì•¶š‚ª“ü‚Á‚Ä‚¢‚½‚ç0‚Æ‚µ‚Äˆµ‚¤
+                // æ•°å­—ä»¥å¤–ã®æ–‡å­—ãŒå…¥ã£ã¦ã„ãŸã‚‰0ã¨ã—ã¦æ‰±ã†
                 row.push_back(0);
             }
         }
@@ -52,24 +52,27 @@ bool TileMap::LoadCSV(const std::string& fileName)
     return true;
 }
 
-Kaneda::e_TileId TileMap::GetTileID(int x, int y) const
+e_TileId TileMap::GetTileID(int x, int y) const
 {
-    if (x < 0 || x >= m_MapWidth || y < 0 || y >= m_MapHeight) return Kaneda::TILE_NOTFOUND;
+    if (x < 0 || x >= m_MapWidth || y < 0 || y >= m_MapHeight) return TILE_NOTFOUND;
 
-    // æ“¾‚µ‚½ƒ^ƒCƒ‹ID‚É
+    // å–å¾—ã—ãŸã‚¿ã‚¤ãƒ«IDã«
     switch (m_MapData[y][x])
     {
     case 0:
-        return Kaneda::TILE_EMPTY;
+        return TILE_EMPTY;
         break;
     case 1:
-        return Kaneda::TILE_WALL;
+        return TILE_WALL;
         break;
     case 2:
-        return Kaneda::TILE_GOAL;
+        return TILE_SPAWN;
+        break;
+    case 9:
+        return TILE_GOAL;
         break;
     default:
-        return Kaneda::TILE_NOTFOUND;
+        return TILE_NOTFOUND;
         break;
 
     }
@@ -77,10 +80,10 @@ Kaneda::e_TileId TileMap::GetTileID(int x, int y) const
 
 void TileMap::Clear()
 {
-    // 2ŸŒ³”z—ñ‚Ìƒf[ƒ^‚ğ‚·‚×‚Äíœ‚·‚é
+    // 2æ¬¡å…ƒé…åˆ—ã®ãƒ‡ãƒ¼ã‚¿ã‚’ã™ã¹ã¦å‰Šé™¤ã™ã‚‹
     m_MapData.clear();
 
-    // ƒTƒCƒYî•ñ‚à0‚É–ß‚·
+    // ã‚µã‚¤ã‚ºæƒ…å ±ã‚‚0ã«æˆ»ã™
     m_MapWidth = 0;
     m_MapHeight = 0;
 }
